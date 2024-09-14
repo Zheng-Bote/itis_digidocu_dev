@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<%#include "annexdatacomments.h" %>
+<% tfetch(AnnexDataComments, annexDataComments); %>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <html lang="de">
+
+  <title><%= controller()->name() + ": " + controller()->activeAction() %></title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <link rel="icon" href="/favicon.ico">
+
+  <script>
+    function doLocal()
+    {
+        console.log("this is local");
+
+        let l_footer = document.getElementById("itisFooter");
+        l_footer.message = '<a href="/stdsystem/license" title="licenses">Lizenzen</a>&nbsp;<a href="/stdsystem/imprint" title="Imprint">Impressum</a>';
+
+        //let l_menu = document.getElementById("itisMenu"); 
+        //l_menu.message = "<%= controller()->name() %>";
+    }
+
+	function setLanguage(lang)
+	{
+		if(lang == "0")
+		{lang = "de";}
+		else{lang = "en";}
+		document.cookie = "lang=" + lang + ";" + ";path=/";
+		location.reload();
+	}
+
+	function convertUTCDateToLocalDate(date, id) 
+	{
+		//var d = convertUTCDateToLocalDate(new Date("2020-09-13T10:49:02.174"));
+		var newDate = new Date(date.getTime()+date.getTimezoneOffset()*60*1000);
+
+		var offset = date.getTimezoneOffset() / 60;
+		var hours = date.getHours();
+
+		newDate.setHours(hours - offset);
+		
+		var mm = newDate.getMonth() + 1;
+		var dd = newDate.getDate();
+		var yy = newDate.getFullYear();
+		var hh = newDate.getHours();
+		var m = newDate.getMinutes();
+
+		if(mm < 10)
+		{
+			mm = "0" + mm;
+		}
+		if(dd < 10)
+		{
+			dd = "0" + dd;
+		}
+		if(hh < 10)
+		{
+			hh = "0" + hh;
+		}
+		if(m < 10)
+		{
+			m = "0" + m;
+		}
+		let datestr = yy + "-" + mm + "-" + dd + " " + hh + ":" + m;
+	
+		document.getElementById(id).value = datestr;   
+	}
+	
+  </script>
+
+  <script type="module" src="/js/itis_init.js" /></script>
+  
+  <link rel="stylesheet" href="/css/w3.css">  
+  <link rel="stylesheet" href="/css/custom.css">  
+
+</head>
+
+<body class="w3-container w3-margin" id="body">
+
+  <itis-menu id="itisMenu" message=""></itis-menu>
+
+  <div class="w3-container w3-light-blue">
+    <h2 id="portaltitle">ITIS-API::Admin-Portal</h2>
+  </div>
+
+  <itis-menusub id="itisMenuSub" message="<%= controller()->name() %>"></itis-menusub>
+
+<h3 id="pagetitle"><page-title message=""><%= controller()->name() + ": " + controller()->activeAction() %></page-title></h3>
+<div id="pagedesc"><page-desc message=""></page-desc></div>
+
+<p style="color: red"><span id="redmsg"><%==$ red_msg %></span> <%=$ error %></p><p style="color: green"><span id="greenmsg"><%==$ green_msg %></span> <%=$ notice %></p>
+
+<main>
+    
+<div id="pagecontent"><page-content message=""></page-content></div>	
+
+<span class="w3-btn w3-red w3-wide" style="border-radius: 0.5em 0px 0px 0px;"><img src="/Icons/trash.svg">&nbsp;<%== linkTo("Remove", urla("remove", annexDataComments.id()), Tf::Post, "confirm('Are you sure?')") %></span>
+&nbsp;&nbsp;&nbsp;
+<a href="/annexDataComments/save/<%= annexDataComments.id() %>" class="w3-btn w3-light-grey"><img src="/Icons/pencil.svg">&nbsp;Q-Edit</a>
+<a href="/annexDataComments/list_all" class="w3-btn w3-light-grey"><img src="/Icons/justify.svg">&nbsp;zur&uuml;ck</a>
+<br>
+
+<section>
+<div class="w3-row-padding">
+  <div class="w3-half">
+    <label class="w3-opacity">ID<br /><input type="text" class="w3-input w3-border w3-round" name="objects.id" value="<%= annexDataComments.id() %>" readonly="readonly" /></label>
+  </div>
+  <div class="w3-half">
+	  <label class="w3-opacity">commentCreated<br /><input class="w3-input w3-border w3-round" name="user[username]" value="" id="<%= annexDataComments.id() %>" readonly /></label>
+    <!-- <label class="w3-opacity">commentCreated<br /><input class="w3-input w3-border w3-round" name="user[username]" value="<%= annexDataComments.commentCreated() %>" readonly /></label> -->
+  </div>
+  <div class="w3-half" style="padding-top: 1rem;">
+    <label class="w3-opacity">specId<br /><input class="w3-input w3-border w3-round" name="user[firstname]" value="<%= annexDataComments.specId() %>" readonly /></label>
+  </div>
+ <div class="w3-half" style="padding-top: 1rem;">
+    <label class="w3-opacity">specTitle<br /><input class="w3-input w3-border w3-round" name="user[surname]" value="<%= annexDataComments.specTitle() %>" readonly /></label>
+  </div>
+  <div class="w3-half" style="padding-top: 1rem;">
+    <label class="w3-opacity">specVersion<br /><input class="w3-input w3-border w3-round" name="user[email]" value="<%= annexDataComments.specVersion() %>" readonly /></label>
+  </div>
+  <div class="w3-half" style="padding-top: 1rem; padding-bottom: 1rem;">
+    <label class="w3-opacity">username<br /><input class="w3-input w3-border w3-round" name="user[user_timezone]" value="<%= annexDataComments.username() %>" readonly /></label>
+  </div>
+
+  <p><label class="w3-opacity">User Comment</label><br><article><section><%== annexDataComments.userComment() %></section></article></p>
+</div>
+</section>
+
+<br>
+<span class="w3-btn w3-red" style="border-radius: 0px 0px 0px 0.5em"><img src="/Icons/trash.svg">&nbsp;<%== linkTo("Remove", urla("remove", annexDataComments.id()), Tf::Post, "confirm('Are you sure?')") %></span>
+&nbsp;&nbsp;&nbsp;
+<a href="/annexDataComments/save/<%= annexDataComments.id() %>" class="w3-btn w3-light-grey"><img src="/Icons/pencil.svg">&nbsp;Q-Edit</a>
+<a href="/annexDataComments/list_all" class="w3-btn w3-light-grey">&laquo;&nbsp;zur&uuml;ck</a>
+
+</main>
+<script>convertUTCDateToLocalDate(new Date("<%= annexDataComments.commentCreated() %>"), "<%= annexDataComments.id() %>")</script>
+<itis-footer id="itisFooter" message=""></itis-footer>
+</body>
+</html>
+

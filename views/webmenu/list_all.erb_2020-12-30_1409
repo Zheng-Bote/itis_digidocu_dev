@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<%#include "webmenu.h" %>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <html lang="de">
+
+  <title><%= controller()->name() + ": " + controller()->activeAction() %></title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <link rel="icon" href="/favicon.ico">
+
+  <script>
+    function doLocal()
+    {
+        console.log("this is local");
+
+        let l_footer = document.getElementById("itisFooter");
+        l_footer.message = '<a href="/stdsystem/license" title="license">License</a>&nbsp;<a href="/stdsystem/imprint" title="Impressum">Imprint</a>';
+
+        //let l_menu = document.getElementById("itisMenu"); 
+        //l_menu.message = "<%= controller()->name() %>";
+    }
+  </script>
+
+  <script type="module" src="/js/itis_init.js" /></script>
+  <link rel="stylesheet" href="/css/w3.css">  
+
+</head>
+
+<body class="w3-container w3-margin" id="body">
+
+  <itis-menu id="itisMenu" message=""></itis-menu>
+
+  <div class="w3-container w3-light-blue">
+    <h1>Admin::Portal</h1>
+  </div>
+
+  <itis-menusub id="itisMenuSub" message="<%= controller()->name() %>"></itis-menusub>
+
+<h3>Listing Webmenu</h3>
+<main>
+
+
+<%== linkTo("Create a new Webmenu", urla("create")) %><br />
+<br />
+<table border="1" cellpadding="5" style="border: 1px #d0d0d0 solid; border-collapse: collapse;">
+  <tr>
+    <th>ID</th>
+    <th>Mnu ID</th>
+    <th>Mnu Sub ID</th>
+    <th>Name De</th>
+    <th>Desc De</th>
+    <th>Name En</th>
+    <th>Desc En</th>
+    <th>Mnu Uri</th>
+    <th>Groups</th>
+    <th>Mnu Item</th>
+    <th>Sort</th>
+    <th>Active</th>
+  </tr>
+<% tfetch(QList<Webmenu>, webmenuList); %>
+<% for (const auto &i : webmenuList) { %>
+  <tr>
+    <td><%= i.id() %></td>
+    <td><%= i.mnuId() %></td>
+    <td><%= i.mnuSubId() %></td>
+    <td><%= i.nameDe() %></td>
+    <td><%= i.descDe() %></td>
+    <td><%= i.nameEn() %></td>
+    <td><%= i.descEn() %></td>
+    <td><%= i.mnuUri() %></td>
+    <td><%= i.groups() %></td>
+    <td><%= i.mnuItem() %></td>
+    <td><%= i.sort() %></td>
+    <td><%= i.active() %></td>
+    <td>
+      <%== linkTo("Show", urla("show", i.id())) %>
+      <%== linkTo("Edit", urla("save", i.id())) %>
+      <%== linkTo("Remove", urla("remove", i.id()), Tf::Post, "confirm('Are you sure?')") %>
+    </td>
+  </tr>
+<% } %>
+</table>
+
+</main>
+<itis-footer id="itisFooter" message=""></itis-footer>
+  
+</body>
+</html>

@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<%#include "lenkinfo.h" %>
+<% tfetch(Lenkinfo, lenkinfo); %>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <html lang="de">
+
+  <title><%= controller()->name() + ": " + controller()->activeAction() %></title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <link rel="icon" href="/favicon.ico">
+  
+  <link rel="preload" href="/fonts/Inter-Regular.woff2" as="font" type="font/woff2" crossorigin />
+
+  <script>
+    function doLocal()
+    {
+        console.log("this is local");
+
+        let l_footer = document.getElementById("itisFooter");
+        l_footer.message = '<a href="/stdsystem/license" title="licenses">Lizenzen</a>&nbsp;<a href="/stdsystem/imprint" title="Imprint">Impressum</a>';
+
+        //let l_menu = document.getElementById("itisMenu"); 
+        //l_menu.message = "<%= controller()->name() %>";
+    }
+
+	function setLanguage(lang)
+	{
+		if(lang == "0")
+		{lang = "de";}
+		else{lang = "en";}
+		document.cookie = "lang=" + lang + ";" + ";path=/";
+		location.reload();
+	}
+
+	function convertUTCDateToLocalDate(id, datetime) 
+	{
+		if(! datetime)
+		{
+			return;
+		}
+		//var date = new Date(datetime);
+		var newDate = new Date(datetime);
+		
+		/* var newDate = new Date(date.getTime()+date.getTimezoneOffset()*60*1000);
+
+		var offset = date.getTimezoneOffset() / 60;
+		var hours = date.getHours();
+
+		newDate.setHours(hours - offset);
+		*/
+		var mm = newDate.getMonth() + 1;
+		var dd = newDate.getDate();
+		var yy = newDate.getFullYear();
+		var hh = newDate.getHours();
+		var m = newDate.getMinutes();
+
+		if(mm < 10)
+		{
+			mm = "0" + mm;
+		}
+		if(dd < 10)
+		{
+			dd = "0" + dd;
+		}
+
+		let datestr = yy + "-" + mm + "-" + dd;
+		
+		if(id) {
+			document.getElementById(id).value = datestr;
+		}
+		else {
+			return datestr;
+		}   
+	}	
+  </script>
+
+  <script type="module" src="/js/itis_init.js" /></script>
+  
+  <link rel="stylesheet" href="/css/w3.css">  
+  <link rel="stylesheet" href="/css/custom.css">  
+
+<style>
+	.set-width { width: 250px;	border-radius: 5px;}
+	.w3-half, .w3-third { margin-bottom: 1rem; }
+	</style>
+
+</head>
+
+<body class="w3-container w3-margin" id="body">
+
+  <itis-menu id="itisMenu" message=""></itis-menu>
+
+  <div class="w3-container w3-light-blue">
+    <h2 id="portaltitle">ITIS-API::Admin-Portal</h2>
+  </div>
+
+  <itis-menusub id="itisMenuSub" message="<%= controller()->name() %>"></itis-menusub>
+
+<h3 id="pagetitle"><page-title message=""><%= controller()->name() + ": " + controller()->activeAction() %></page-title></h3>
+<div id="pagedesc"><page-desc message=""></page-desc></div>
+
+<span style="color: red;">
+	<span  id="redmsg"><%==$ red_msg %></span>&nbsp;<span><%=$ error %></span>
+</span>
+<span style="color: green;">
+	<span id="greenmsg"><%==$ green_msg %></span>&nbsp;<span><%=$ notice %></span>
+</span>
+
+<main>
+    
+<div id="pagecontent"><page-content message=""></page-content></div>	
+
+<span class="w3-btn w3-red w3-wide" style="border-radius: 0.5em 0px 0px 0px;"><img src="/Icons/trash.svg">&nbsp;<%== linkTo("Remove", urla("remove", lenkinfo.id()), Tf::Post, "confirm('Are you sure?')") %></span>
+&nbsp;&nbsp;&nbsp;
+<a href="/lenkinfo/save/<%= lenkinfo.id() %>" class="w3-btn w3-light-grey"><img src="/Icons/pencil.svg">&nbsp;Q-Edit</a>
+<a href="/lenkinfo/list_all" class="w3-btn w3-light-grey"><img src="/Icons/justify.svg">&nbsp;zur&uuml;ck</a>
+<br>
+
+<section>
+<div class="w3-row-padding">
+	<p>
+    <label class="w3-opacity">ID<br /><input type="text" class="w3-input w3-border w3-round set-width" name="" value="<%= lenkinfo.id() %>" readonly /></label>
+	</p>
+  
+  <div class="w3-half">
+    <label class="w3-opacity">Spec Obj<br /><input type="text" class="w3-input w3-border w3-round" name="appVars[id]" value="<%= lenkinfo.specObj() %>" readonly /></label>
+  </div>
+  <div class="w3-half">
+    <label class="w3-opacity">Spec Title<br /><input type="text" class="w3-input w3-border w3-round" name="appVars[id]" value="<%= lenkinfo.specTitle() %>" readonly /></label>
+  </div>
+  <div class="w3-half">
+    <label class="w3-opacity">Ac Class<br /><input type="text" class="w3-input w3-border w3-round" name="appVars[id]" value="<%= lenkinfo.acClass() %>" readonly /></label>
+  </div>
+  <div class="w3-half">
+    <label class="w3-opacity">Pc Class<br /><input type="text" class="w3-input w3-border w3-round" name="appVars[id]" value="<%= lenkinfo.pcClass() %>" readonly /></label>
+  </div>
+  <div class="w3-half">
+    <label class="w3-opacity">Country<br /><input type="text" class="w3-input w3-border w3-round" name="appVars[id]" value="<%= lenkinfo.country() %>" readonly /></label>
+  </div>
+  <div class="w3-half">
+    <label class="w3-opacity">Lang<br /><input type="text" class="w3-input w3-border w3-round" name="appVars[id]" value="<%= lenkinfo.lang() %>" readonly /></label>
+  </div>
+  <div class="w3-half">
+    <label class="w3-opacity">Lenk Version<br /><input type="text" class="w3-input w3-border w3-round" name="appVars[id]" value="<%= lenkinfo.lenkVersion() %>" readonly /></label>
+  </div>
+  <div class="w3-half">
+    <label class="w3-opacity">Lenk Status<br /><input type="text" class="w3-input w3-border w3-round" name="appVars[id]" value="<%= lenkinfo.lenkStatus() %>" readonly /></label>
+  </div>
+  <div class="w3-half">
+    <label class="w3-opacity">Lenk Valid Startdate<br /><input type="text" class="w3-input w3-border w3-round" name="appVars[id]" id="lenkValidStartdate" value="<%= lenkinfo.lenkValidStartdate() %>" readonly /></label>
+  </div>
+  <div class="w3-half">
+    <label class="w3-opacity">Lenk Departments<br /><input type="text" class="w3-input w3-border w3-round" name="appVars[id]" value="<%= lenkinfo.lenkDepartments() %>" readonly /></label>
+  </div>
+  <p>
+    <label class="w3-opacity">Lenk Content<br /><input type="text" class="w3-input w3-border w3-round" name="appVars[id]" value="<%= lenkinfo.lenkContent() %>" readonly /></label>
+  </p>
+  <div class="w3-half">
+    <label class="w3-opacity">Lenk Creator<br /><input type="text" class="w3-input w3-border w3-round" name="appVars[id]" value="<%= lenkinfo.lenkCreator() %>" readonly /></label>
+  </div>
+  <div class="w3-half">
+    <label class="w3-opacity">Lenk Creator Date<br /><input type="text" class="w3-input w3-border w3-round" name="appVars[id]" id="lenkCreatorDate" value="<%= lenkinfo.lenkCreatorDate() %>" readonly /></label>
+  </div>
+  <div class="w3-half">
+    <label class="w3-opacity">Lenk Auditor<br /><input type="text" class="w3-input w3-border w3-round" name="appVars[id]" value="<%= lenkinfo.lenkAuditor() %>" readonly /></label>
+  </div>
+  <div class="w3-half">
+    <label class="w3-opacity">Lenk Auditor Date<br /><input type="text" class="w3-input w3-border w3-round" name="appVars[id]" id="lenkAuditorDate" value="<%= lenkinfo.lenkAuditorDate() %>" readonly /></label>
+  </div>
+  <div class="w3-half">
+    <label class="w3-opacity">Lenk Approver<br /><input type="text" class="w3-input w3-border w3-round" name="appVars[id]" value="<%= lenkinfo.lenkApprover() %>" readonly /></label>
+  </div>
+  <div class="w3-half">
+    <label class="w3-opacity">Lenk Approver Date<br /><input type="text" class="w3-input w3-border w3-round" name="appVars[id]" id="lenkApproverDate" value="<%= lenkinfo.lenkApproverDate() %>" readonly /></label>
+  </div>
+</section>
+
+<br>
+<span class="w3-btn w3-red" style="border-radius: 0px 0px 0px 0.5em"><img src="/Icons/trash.svg">&nbsp;<%== linkTo("Remove", urla("remove", lenkinfo.id()), Tf::Post, "confirm('Are you sure?')") %></span>
+&nbsp;&nbsp;&nbsp;
+<a href="/lenkinfo/save/<%= lenkinfo.id() %>" class="w3-btn w3-light-grey"><img src="/Icons/pencil.svg">&nbsp;Q-Edit</a>
+<a href="/lenkinfo/list_all" class="w3-btn w3-light-grey"><img src="/Icons/justify.svg">&nbsp;zur&uuml;ck</a>
+
+
+</main>
+
+<script>
+	convertUTCDateToLocalDate("lenkValidStartdate","<%= lenkinfo.lenkValidStartdate() %>"); 
+    convertUTCDateToLocalDate("lenkCreatorDate", "<%= lenkinfo.lenkCreatorDate() %>"); 
+    convertUTCDateToLocalDate("lenkAuditorDate", "<%= lenkinfo.lenkAuditorDate() %>"); 
+    convertUTCDateToLocalDate("lenkApproverDate", "<%= lenkinfo.lenkApproverDate() %>"); 
+</script>
+
+
+<itis-footer id="itisFooter" message=""></itis-footer>
+</body>
+</html>

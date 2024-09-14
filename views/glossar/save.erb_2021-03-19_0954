@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<%#include "glossar.h" %>
+<% tfetch(QVariantMap, glossar); %>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <html lang="de">
+
+  <title><%= controller()->name() + ": " + controller()->activeAction() %></title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <link rel="icon" href="/favicon.ico">
+
+  <script>
+    function doLocal()
+    {
+        console.log("this is local");
+
+        let l_footer = document.getElementById("itisFooter");
+        l_footer.message = '<a href="/stdsystem/license" title="licenses">Lizenzen</a>&nbsp;<a href="/stdsystem/imprint" title="Imprint">Impressum</a>';
+
+        //let l_menu = document.getElementById("itisMenu"); 
+        //l_menu.message = "<%= controller()->name() %>";
+    }
+
+	function setLanguage(lang)
+	{
+		if(lang == "0")
+		{lang = "de";}
+		else{lang = "en";}
+		document.cookie = "lang=" + lang + ";" + ";path=/";
+		location.reload();
+	}
+	
+  </script>
+
+  <script type="module" src="/js/itis_init.js" /></script>
+  
+  <link rel="stylesheet" href="/css/w3.css">  
+  <link rel="stylesheet" href="/css/custom.css">  
+
+<style>
+	.set-width { width: 250px;	border-radius: 5px;}
+</style>
+
+</head>
+
+<body class="w3-container w3-margin" id="body">
+
+  <itis-menu id="itisMenu" message=""></itis-menu>
+
+  <div class="w3-container w3-light-blue">
+    <h2 id="portaltitle">ITIS-API::Admin-Portal</h2>
+  </div>
+
+  <itis-menusub id="itisMenuSub" message="<%= controller()->name() %>"></itis-menusub>
+
+<h3 id="pagetitle"><page-title message=""><%= controller()->name() + ": " + controller()->activeAction() %></page-title></h3>
+<div id="pagedesc"><page-desc message=""></page-desc></div>
+
+<p style="color: red"><span  id="redmsg"><%==$ red_msg %></span><%=$ error %></p><p style="color: green"><span id="greenmsg"><%==$ green_msg %></span><%=$ notice %></p>
+
+<main>
+    
+<div id="pagecontent"><page-content message=""></page-content></div>	
+
+<span class="w3-btn w3-red w3-wide" style="border-radius: 0.5em 0px 0px 0px;"><img src="/Icons/trash.svg">&nbsp;<%== linkTo("Remove", urla("remove", glossar["id"]), Tf::Post, "confirm('Are you sure?')") %></span>
+&nbsp;&nbsp;&nbsp;
+<a href="/glossar/show/<%= glossar["id"] %>" class="w3-btn w3-light-grey"><img src="/Icons/eyeglasses.svg">&nbsp;Anzeige</a>
+<a href="/glossar/list_all" class="w3-btn w3-light-grey">&laquo;&nbsp;zur&uuml;ck</a>
+
+<%== formTag(urla("save", glossar["id"]), Tf::Post) %>
+<div class="w3-container" style="max-width: 50%;">
+  <p>
+    <label>ID<br /><input type="text" class="w3-input set-width"  name="glossar[id]" value="<%= glossar["id"] %>" readonly="readonly" /></label>
+  </p>
+  <p>
+    <label>Acronym<br /><input type="text" class="w3-input set-width"  name="glossar[acronym]" value="<%= glossar["acronym"] %>" /></label>
+  </p>
+  <p>
+    <label>Term De<br /><input type="text" class="w3-input set-width"  name="glossar[termDe]" value="<%= glossar["termDe"] %>" /></label>
+  </p>
+  <p>
+    <label>Term En<br /><input type="text" class="w3-input set-width"  name="glossar[termEn]" value="<%= glossar["termEn"] %>" /></label>
+  </p>
+  <p>
+    <label>Desc De<br /><input type="text" class="w3-input"  name="glossar[descDe]" value="<%= glossar["descDe"] %>" /></label>
+  </p>
+  <p>
+    <label>Desc En<br /><input type="text" class="w3-input"  name="glossar[descEn]" value="<%= glossar["descEn"] %>" /></label>
+  </p>
+<!--  <p>
+    <label>Sort<br /><input type="text" class="w3-input set-width"  name="glossar[sort]" value="<%= glossar["sort"] %>" /></label>
+  </p>
+-->
+  <p>
+    <label>Active<br /><input type="text" class="w3-input set-width"  name="glossar[active]" value="<%= glossar["active"] %>" /></label>
+  </p>
+  <p>
+    <input type="submit" value="Save &raquo;" />
+  </p>
+  </div>
+</form>
+
+<br>
+<span class="w3-btn w3-red" style="border-radius: 0px 0px 0px 0.5em"><img src="/Icons/trash.svg">&nbsp;<%== linkTo("Remove", urla("remove", glossar["id"]), Tf::Post, "confirm('Are you sure?')") %></span>
+&nbsp;&nbsp;&nbsp;
+<a href="/glossar/show/<%= glossar["id"] %>" class="w3-btn w3-light-grey"><img src="/Icons/eyeglasses.svg">&nbsp;Anzeige</a>
+<a href="/glossar/list_all" class="w3-btn w3-light-grey">&laquo;&nbsp;zur&uuml;ck</a>
+
+</main>
+
+<itis-footer id="itisFooter" message=""></itis-footer>
+</body>
+</html>
+

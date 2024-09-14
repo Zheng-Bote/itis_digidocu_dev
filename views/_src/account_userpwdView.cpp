@@ -1,0 +1,39 @@
+#include <QtCore>
+#include <TreeFrogView>
+#include "applicationhelper.h"
+
+class T_VIEW_EXPORT account_userpwdView : public TActionView
+{
+  Q_OBJECT
+public:
+  account_userpwdView() : TActionView() { }
+  QString toString();
+};
+
+QString account_userpwdView::toString()
+{
+  responsebody.reserve(7417);
+  responsebody += QStringLiteral("<!DOCTYPE html>\n<html>\n<head>\n  <meta charset=\"UTF-8\">\n  <html lang=\"de\"> \n\n  <title>");
+  responsebody += THttpUtility::htmlEscape(controller()->name() + ": " + controller()->activeAction());
+  responsebody += tr("</title>\n\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, user-scalable=yes\">\n  <link rel=\"icon\" href=\"/favicon.ico\">\n\n  <meta name=\"description\" content=\"Imprint of ITIS-API.\">\n  <meta name=\"author\" content=\"ZHENG Bote\" /> \n        \n  <script>\n    function doLocal()\n    {\n        console.log(\"this is local\");\n\n        let l_footer = document.getElementById(\"itisFooter\");\n        l_footer.message = '<a href=\"/stdsystem/license\" title=\"licenses\">Lizenzen</a>&nbsp;<a href=\"/stdsystem/imprint\" title=\"Imprint\">Impressum</a>';\n\n\n		document.getElementById(\"formPwd\").addEventListener(\"submit\", function(event) \n		{\n			event.target.checkValidity();\n			event.preventDefault();\n			event.stopPropagation();\n			sendPwdChange();\n		}, false);\n		\n        var txtPassword = document.getElementById(\"txtPassword\");\n        var txtConfirmPassword = document.getElementById(\"txtConfirmPassword\");\n        var boolForm = false;\n        txtPassword.onchange = ConfirmPassword;\n        txtConfirmPassword.onkeyup = ConfirmPassword;\n\n    \n	}\n\n        function ConfirmPassword() \n        {\n            txtPassword.setCustomValidity(\"\");\n            txtConfirmPassword.setCustomValidity(\"\");\n            \n            const imgone = document.getElementById('pwdimg');\n            const imgtwo = document.getElementById('confirmimg');\n            const pwdform = document.getElementById('form1');\n            \n            if(txtPassword.validity.patternMismatch)\n            {\n				txtPassword.setCustomValidity(\"Passwort-Anfoderung: Minimum 8 Zeichen mit 1 Buchstaben und 1 Nummer\");\n				imgone.setAttribute(\"src\", \"/Icons/nok.svg\");\n				document.getElementById(\"redmsg\").innerHTML = txtPassword.validationMessage;\n				return;\n			}\n			else\n			{\n				imgone.setAttribute(\"src\", \"/Icons/ok.svg\");\n				document.getElementById(\"redmsg\").innerHTML = \"\";\n			}\n			\n            if (txtPassword.value != txtConfirmPassword.value) \n            {\n                txtConfirmPassword.setCustomValidity(\"Passwörter nicht identisch.\");\n                imgone.setAttribute(\"src\", \"/Icons/nok.svg\");\n                imgtwo.setAttribute(\"src\", \"/Icons/nok.svg\");\n                document.getElementById(\"redmsg\").innerHTML = txtConfirmPassword.validationMessage;\n                return;\n            }\n            else\n            {\n				imgone.setAttribute(\"src\", \"/Icons/ok.svg\");\n                imgtwo.setAttribute(\"src\", \"/Icons/ok.svg\");\n                document.getElementById(\"redmsg\").innerHTML = \"\";\n			}	\n\n			boolForm = true;\n        }	\n    \n		function sendPwdChange()\n		{\n			if(! boolForm) {return;}\n\ndocument.getElementById('pwdimg').setAttribute(\"src\", \"\");\ndocument.getElementById('confirmimg').setAttribute(\"src\", \"\");\n\n			data = new URLSearchParams([[\"pwd\", txtPassword.value]]);\n			fetch(\"/account/setUserPwd\", { body: data, method: \"post\" })\n				.then(data => data.json())\n				.then((json) => \n				{\n					if(json[0].ERROR === \"0\")\n					{\n						document.getElementById(\"greenmsg\").innerHTML = '<b>Password ge&auml;ndert.</b>';\n						doPopUp(`<p style=\"color: green\"><b>Password ge&auml;ndert.</b></p>`);\n					}\n					else\n					{\n						document.getElementById(\"redmsg\").innerHTML = \"<b>Password <u>nicht</u> ge&auml;ndert.</b><br/>\" + json[0].ERROR + \" \" + json[0].errMsg ;\n						doPopUp(`<p style=\"color: red\"><b>Password <u>nicht</u> ge&auml;ndert.</b><br/>${json[0].ERROR}<br/>${json[0].errMsg}</p>`);\n					}\n				})\n				.catch((error) => { document.getElementById(\"redmsg\").innerHTML = \"Fehler: \" + error + data; });	\n		}\n\n		function doPopUp(msg)\n		{\n			const mgsTxt = document.getElementById(\"msg\");\n			mgsTxt.innerHTML = msg;		\n			const test = document.getElementById(\"popupmsg\");\n			test.setAttribute(\"style\", \"display: block;\");\n			\n			window.location.href='#body';\n		}\n\n		function setLanguage(lang)\n		{\n			if(lang == \"0\")\n			{lang = \"de\";}\n			else{lang = \"en\";}\n			document.cookie = \"lang=\" + lang + \";\" + \";path=/\";\n			location.reload();\n		}\n  </script>\n\n  <script type=\"module\" src=\"/js/itis_init.js\" /></script>\n   \n  <link rel=\"stylesheet\" href=\"/css/w3.css\">  \n  <link rel=\"stylesheet\" href=\"/css/custom.css\">  \n\n</head>\n\n<body class=\"w3-container w3-margin\" id=\"body\">\n\n  <itis-menu id=\"itisMenu\" message=\"\"></itis-menu>\n\n  <div class=\"w3-container w3-light-blue\">\n    <h2 id=\"portaltitle\">ITIS-API::Admin-Portal</h2>\n  </div>\n\n  <itis-menusub id=\"itisMenuSub\" message=\"");
+  responsebody += THttpUtility::htmlEscape(controller()->name());
+  responsebody += QStringLiteral("\"></itis-menusub>\n\n<h3 id=\"pagetitle\"><page-title message=\"\">");
+  responsebody += THttpUtility::htmlEscape(controller()->name() + ": " + controller()->activeAction());
+  responsebody += QStringLiteral("</page-title></h3>\n<div id=\"pagedesc\"><page-desc message=\"\"></page-desc></div>\n\n<p id=\"redmsg\" style=\"color: red\">");
+  techoex(red_msg);
+  tehex(error);
+  responsebody += QStringLiteral("</p><p id=\"greenmsg\" style=\"color: green\">");
+  techoex(green_msg);
+  tehex(notice);
+  responsebody += QStringLiteral("</p>\n\n<div id=\"popupmsg\" style=\"display: none;\" class=\"w3-modal\">\n    <div class=\"w3-modal-content\">\n      <div class=\"w3-container\">\n        <span onclick=\"document.getElementById('popupmsg').style.display='none'\" class=\"w3-button w3-display-topright\">&times;</span>\n        <span id=\"msg\"></span>\n      </div>\n    </div>\n  </div>\n</div>\n\n<main>\n	\n<article>\n	<section id =\"userPwd\">\n		<form id=\"formPwd\" class=\"w3-container\">\n			<div style=\"max-width: 400px;\">\n				<h4>Passwort &auml;ndern f&uuml;r ");
+  techoex(uSname);
+  responsebody += QStringLiteral("&nbsp;");
+  techoex(uFname);
+  responsebody += QStringLiteral("</h4>\n				<br />\n				<label for=\"txtPassword\">Password &nbsp;<img src=\"\" id=\"pwdimg\" width=\"10px\" /></label><br/>\n				<input name=\"txtPassword\" type=\"password\" id=\"txtPassword\" title=\"Password must contain: Minimum 8 characters and at least 1 Alphabet and 1 Number\"\n					 class=\"w3-input\" placeholder=\"Enter Password\" required pattern=\"^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}$\" />\n				<br />\n				<label for=\"txtConfirmPassword\">Confirm Password &nbsp;<img src=\"\" id=\"confirmimg\" width=\"10px\" /></label>\n				<input name=\"txtConfirmPassword\" type=\"password\" id=\"txtConfirmPassword\" class=\"w3-input\" placeholder=\"Confirm Password\" />\n				<p><input type=\"submit\" id=\"submitpwd\" value=\"Passwort &auml;ndern &raquo;\" title=\"absenden\" onclick=\"sendPwdChange\" />&nbsp;<popup-info data-text=\"die Passwort-&Auml;nderung erfolgt &uuml;ber SSL-Verbindung sowie SHA2-256 Verschl&uuml;sselung.\"></popup-info></p>\n	\n			</div>\n		</form>\n	</section>\n\n<div id=\"pagecontent\"><page-content message=\"\"></page-content></div>	\n</article> \n\n</main>\n<itis-footer id=\"itisFooter\" message=\"\"></itis-footer>\n\n</body>\n</html>\n");
+
+  return responsebody;
+}
+
+T_DEFINE_VIEW(account_userpwdView)
+
+#include "account_userpwdView.moc"

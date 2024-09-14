@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+        
+        <title>IT-IS Standards::Edit</title>
+        <meta name="description" content="Admin-Seite des Applicationservers.">
+        <meta name="version" content="v00.00.01">
+        <meta name="author" content="ZHENG Bote" />
+        <meta name="date" content="2020-06-28T11:49:37+02:00">
+        <meta name="language" content="DE" />
+        <!-- <link rel=“alternate“ href=“https://www.meineDomain.de/seite1_de.html“ hreflang=“de“ /> -->
+        <!-- <link rel=“alternate“ href=“https://www.meineDomain.de/seite1_en.html“ hreflang=“en“ /> -->
+        
+        <script src="/js/custom.js" /></script>
+        <script src="/js/objspecs.js" /></script>
+        <script>
+            function doLocal()
+            {
+                console.log("this is local");
+                setSubMenue();
+                setObjAttr();
+                
+                let username = getUserName();
+                document.getElementById("last_editor").value = username;
+                
+                checkCookieStatus();
+            }
+        </script>
+        
+        <link rel="stylesheet" href="/css/w3.css">
+        <link rel="stylesheet" href="/css/custom.css">
+        
+       <!-- <script src="https://cdn.ckeditor.com/ckeditor5/20.0.0/classic/ckeditor.js"></script> -->
+</head>
+
+<body class="w3-container w3-margin">
+    
+<span id="menue"></span>
+
+<div class="w3-container w3-light-blue">
+    <h1>Objekt Spezifikationen</h1>
+</div>
+
+<span id="submenue"></span>
+
+    <h3>Obj-Specs :: neue Spec :: Editor</h3>
+    <p>Hinzuf&uuml;gen von Spezifikationen (Text-Bausteinen) sowie Zuweisung zu Objekten, Klassen und Kategorien. </p>
+
+<p><span style="color: red" id="errormsg"></span><span style="color: green" id="goodmsg"></span></p>
+
+<main>
+
+     <form action="/objspecs/setObjSpecs" method="post">
+     <!-- <%== formTag(urla("/specs/setObjSpecs")); %> -->
+        <section>
+            <div class="w3-cell-row">
+                <div class="w3-container w3-cell">
+                    <span class="w3-tooltip">
+                        <label for="spec_title">Titel:&nbsp;</label><br><input type="text" id="spec_title" name="spec_title" maxlength="100" style="width:80%" required>
+                    <span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag">intern f&uuml;r Baustein-Administration</span> </span>
+                    <br>
+                </div>
+                <div class="w3-container w3-cell">
+                    <span class="w3-tooltip">
+                        <label for="spec_desc">Beschreibung:&nbsp;</label><br><input type="text" id="spec_desc" name="spec_desc" maxlength="100" style="width:80%" required>
+                    <span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag">intern f&uuml;r Baustein-Administration</span> </span>
+                    <br>
+                </div>
+            </div>
+            <br>
+            <div class="w3-cell-row">
+                <fieldset><legend>Objekt-Attribute</legend>
+                    <div class="w3-container w3-cell">
+                        <label for="obj_name">Objekt:&nbsp;</label><br><select name="obj_name" id="obj_name"></select>
+                        <br>
+                    </div>
+                    <div class="w3-container w3-cell">
+                        <label for="cat">Kategorie:&nbsp;</label><br><select name="cat" id="cat"></select>
+                        <br>
+                    </div>
+                    <div class="w3-container w3-cell">
+                        <span class="w3-tooltip">
+                            <label for="country">Land:&nbsp;</label><br><input type="text" id="country" name="country" minlength="2" maxlength="2" size="5" placeholder="WW" required>
+                        <span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag">2-stelliger L&auml;ndercode</span> </span>
+                        <br>
+                    </div>
+                    <div class="w3-container w3-cell">
+                        <label for="lang">Sprache:&nbsp;</label><br><select name="lang" id="lang"></select>
+                        <br>
+                    </div>
+                    <div class="w3-container w3-cell">
+                        <span class="w3-tooltip">
+                            <label for="spec_version">Version:&nbsp;</label><br><input type="text" id="spec_version" name="spec_version" minlength="9" maxlength="9" size="10" placeholder="v00.00.00" required>
+                        <span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag">Text-Baustein Version</span> </span>
+                        <br>
+                    </div>
+                    <div class="w3-container w3-cell">
+                        <span class="w3-tooltip">
+                            <label for="lfdnr">lfdnr:&nbsp;</label><br><input type="text" id="lfdnr" name="lfdnr" minlength="3" maxlength="3" size="10" placeholder="099" required>
+                        <span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag">Text-Baustein Nummerierung</span> </span>
+                        <br>
+                    </div>
+                </fieldset>
+            </div>
+            <br>
+            <div class="w3-cell-row">
+                <div class="w3-container w3-cell">
+                    <fieldset><legend>Availability Class</legend>
+                        <button onclick="toggleCheckboxes('ac_classes')" type="button">toggle:</button>&nbsp;
+                        <span class="w3-tooltip">
+                            <span id="ac_classes"></span>
+                        <span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag">AC-0 nur mit Obj/Kat &quot;Allgemein&quot;</span> </span>
+                    </fieldset>
+                    <br>
+                </div>
+                <div class="w3-container w3-cell">
+                    <fieldset><legend>Protection Class</legend>
+                        <button onclick="toggleCheckboxes('pc_classes')" type="button">toggle:</button>&nbsp;
+                        <span class="w3-tooltip">
+                            <span id="pc_classes"></span>
+                        <span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag">PC-0 nur mit Obj/Kat &quot;Allgemein&quot;</span> </span>
+                    </fieldset>
+                    <br>
+                </div>
+            </div>
+
+            <div class="w3-cell-row">
+                <fieldset><legend>Text-Baustein G&uuml;ltigkeit</legend>
+                    <div class="w3-container w3-cell">
+                        <span class="w3-tooltip">
+                            <label for="spec_valid_start">g&uuml;ltig von:&nbsp;</label><br>
+                            <button onclick="setSpecValidDate()" type="button">set date:</button>&nbsp;
+                            <input type="date" id="spec_valid_start" name="spec_valid_start" required>
+                        <span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag">intern zur Dokumentation</span> </span>
+                        <br>
+                    </div>
+                    <div class="w3-container w3-cell">
+                        <span class="w3-tooltip">
+                            <label for="spec_valid_end">g&uuml;ltig bis:&nbsp;</label><br><input type="date" id="spec_valid_end" name="spec_valid_end" required>
+                        <span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag">intern zur Dokumentation</span> </span>
+                    </div>
+                    <div class="w3-container w3-cell">
+                        <br>
+                        <span class="w3-tooltip">
+                            <label><input type="checkbox" name="spec_active" id="spec_active">&nbsp;aktiv</label>
+                        <span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag">Baustein aktiv oder in-aktiv</span> </span>
+                        <br>
+                    </div>
+                    <div class="w3-container w3-cell">
+                            <label for="last_editor">Autor:&nbsp;</label><br><input type="text" id="last_editor" name="last_editor" value="last_editor" readonly style="width:80%">
+                        <br>
+                    </div>
+                </fieldset>
+            </div>
+        </section>
+        <div class="editor">
+
+        </div>
+        
+        <p><input type="submit" value="speichern" class="w3-btn w3-blue"></p>
+    </form>
+
+<script src="ckeditor.js"></script>
+	<script>
+        ClassicEditor
+			.create( document.querySelector( '.editor' ), {
+				
+				toolbar: {
+					items: [
+						'heading',
+						'|',
+						'bold',
+						'italic',
+						'highlight',
+						'bulletedList',
+						'numberedList',
+						'underline',
+						'|',
+						'indent',
+						'outdent',
+						'alignment',
+						'strikethrough',
+						'|',
+						'fontFamily',
+						'fontSize',
+						'fontColor',
+						'fontBackgroundColor',
+						'|',
+						'link',
+						'imageUpload',
+						'code',
+						'codeBlock',
+						'blockQuote',
+						'insertTable',
+						'|',
+						'undo',
+						'redo',
+						'|',
+						'specialCharacters',
+						'MathType',
+						'ChemType',
+						'horizontalLine',
+						'pageBreak',
+						'removeFormat',
+						'mediaEmbed'
+					]
+				},
+				language: 'de',
+				image: {
+					toolbar: [
+						'imageTextAlternative',
+						'imageStyle:full',
+						'imageStyle:side'
+					]
+				},
+				table: {
+					contentToolbar: [
+						'tableColumn',
+						'tableRow',
+						'mergeTableCells',
+						'tableCellProperties',
+						'tableProperties'
+					]
+				},
+				licenseKey: '',
+				
+			} )
+			.then( editor => {
+				window.editor = editor;
+		
+				
+				
+				
+			} )
+			.catch( error => {
+				console.error( 'Oops, something gone wrong!' );
+				console.error( 'Please, report the following error in the https://github.com/ckeditor/ckeditor5 with the build id and the error stack trace:' );
+				console.warn( 'Build id: 44449rthjowi-pwjc4psdq0gd' );
+				console.error( error );
+			} );
+             console.log(ClassicEditor.builtinPlugins.map( plugin => plugin.pluginName ));
+	</script>
+
+</main
+>
+<div id="footer"></div>
+</body>
+</html>

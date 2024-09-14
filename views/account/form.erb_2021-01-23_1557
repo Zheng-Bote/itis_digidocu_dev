@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <html lang="de"> 
+
+  <title><%= controller()->name() + ": " + controller()->activeAction() %></title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <link rel="icon" href="/favicon.ico">
+
+  <meta name="description" content="login form for ITIS API">
+  <meta name="author" content="ZHENG Bote" /> 
+        
+  <script>
+    function doLocal()
+    {
+        console.log("this is local");
+
+        let l_footer = document.getElementById("itisFooter");
+        l_footer.message = '<a href="/stdsystem/license" title="license">Lizenzen</a>&nbsp;<a href="/stdsystem/imprint" title="Imprint">Impressum</a>';
+
+		sessionStorage.removeItem("username");
+		sessionStorage.removeItem("firstname");
+		sessionStorage.removeItem("login");
+		sessionStorage.clear();
+    }
+ 
+function setLanguage(lang)
+{
+    if(lang == "0")
+    {lang = "de";}
+    else{lang = "en";}
+    document.cookie = "lang=" + lang + ";" + ";path=/";
+	location.reload();
+}
+    
+  </script>
+
+  <script type="module" src="/js/itis_init.js" /></script>
+   
+  <link rel="stylesheet" href="/css/w3.css">  
+  <link rel="stylesheet" href="/css/custom.css">  
+
+</head>
+
+<body class="w3-container w3-margin" id="body">
+
+  <itis-menu id="itisMenu" message=""></itis-menu>
+
+  <div class="w3-container w3-light-blue">
+    <h2 id="portaltitle">ITIS-API::Admin-Portal</h2>
+  </div>
+
+  <itis-menusub id="itisMenuSub" message="<%= controller()->name() %>"></itis-menusub>
+
+<h3 id="pagetitle"><page-title message="">Admin Login</page-title></h3>
+<div id="pagedesc"><page-desc message=""></page-desc></div>
+
+<p id="redmsg" style="color: red"><%==$ red_msg %><%=$ error %></p><p id="greenmsg" style="color: green"><%==$ green_msg %><%=$ notice %></p>
+
+<cookie-alert id="cookieAlert" message='Auch diese Webseite mag Cookies...<small><a href="/stdsystem/imprint#cookies" title="Impressum" style="color:rgb(255, 255, 255);">Details siehe: Impressum</a></small>'></cookie-alert>
+  
+<main>
+<div id="pagecontent"><page-content message=""></page-content></div>
+
+  <%== formTag(urla("login")); %>
+      <label for="username">Login Name: </label><input type="email" id="username" name="username" value="" />
+
+      <label for="password">Passwort: </label><span class="w3-tooltip"><input type="password" id="password" name="password" value="" /><span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag"><em>SHA2-256 secured hashed Password</em></span></span>
+
+      <p><input type="submit" value="login &raquo;"/></p>
+  </form>
+
+</main>
+<itis-footer id="itisFooter" message=""></itis-footer>
+</body>
+</html>

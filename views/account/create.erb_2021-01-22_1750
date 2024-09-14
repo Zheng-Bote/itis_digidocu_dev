@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<%#include "itisuser.h" %>
+<% tfetch(QVariantMap, user); %>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <html lang="de">
+
+  <title><%= controller()->name() + ": " + controller()->activeAction() %></title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <link rel="icon" href="/favicon.ico">
+
+  <script>
+    function doLocal()
+    {
+        console.log("this is local");
+
+        let l_footer = document.getElementById("itisFooter");
+        l_footer.message = '<a href="/stdsystem/license" title="licenses">Lizenzen</a>&nbsp;<a href="/stdsystem/imprint" title="Imprint">Impressum</a>';
+
+        //let l_menu = document.getElementById("itisMenu"); 
+        //l_menu.message = "<%= controller()->name() %>";
+    }
+
+	function setLanguage(lang)
+	{
+		if(lang == "0")
+		{lang = "de";}
+		else{lang = "en";}
+		document.cookie = "lang=" + lang + ";" + ";path=/";
+		location.reload();
+	}
+	
+  </script>
+
+  <script type="module" src="/js/itis_init.js" /></script>
+  
+  <link rel="stylesheet" href="/css/w3.css">  
+  <link rel="stylesheet" href="/css/custom.css">  
+
+</head>
+
+<body class="w3-container w3-margin" id="body">
+
+  <itis-menu id="itisMenu" message=""></itis-menu>
+
+  <div class="w3-container w3-light-blue">
+    <h2 id="portaltitle">ITIS-API::Admin-Portal</h2>
+  </div>
+
+  <itis-menusub id="itisMenuSub" message="<%= controller()->name() %>"></itis-menusub>
+
+<h3 id="pagetitle"><page-title message=""><%= controller()->name() + ": " + controller()->activeAction() %></page-title></h3>
+<div id="pagedesc"><page-desc message=""></page-desc></div>
+
+<p id="redmsg" style="color: red"><%=$ red_msg %><%=$ error %></p><p id="greenmsg" style="color: green"><%=$ green_msg %><%=$ notice %></p>
+
+<main>
+    
+<div id="pagecontent"><page-content message=""></page-content></div>	
+
+<%== formTag(urla("create"), Tf::Post) %>
+<div class="w3-container" style="max-width: 50%;">
+  <p>
+    <label>username<br /><input class="w3-input" type="email" name="user[username]" value="<%= user["username"] %>" /></label>
+  </p>
+  <p>
+    <label>firstname<br /><input class="w3-input" name="user[firstname]" pattern="[A-Za-z]{3,128}" value="<%= user["firstname"] %>" /></label>
+  </p>
+  <p>
+    <label>surname<br /><input class="w3-input" name="user[surname]" pattern="[A-Za-z]{3,128}" value="<%= user["surname"] %>" /></label>
+  </p>
+  <p>
+    <label>email<br /><input class="w3-input" name="user[email]" type="email" value="<%= user["email"] %>" /></label>
+  </p>
+  <p>
+    <label>company<br /><input class="w3-input" name="user[company]" value="<%= user["company"] %>" /></label>
+  </p>
+  <p>
+    <label>user_timezone<br /><input class="w3-input" name="user[userTimezone]" value="<%= user["userTimezone"] %>" /></label>
+  </p>
+  <p>
+    <label>groupname<br /><input class="w3-input" name="user[groupname]" pattern="[A-Za-z]{3,128}" value="<%= user["groupname"] %>" /></label>
+  </p>
+  <p>
+    <label>Groups<br /><input class="w3-input" name="user[groups]" value="{ALL}" /></label>
+  </p>
+  <p>
+    <label>password<br /><input class="w3-input" name="user[password]" value="<%= user["password"] %>" /></label>
+  </p>
+    <p>
+    <label>force change Pwd<br /><input type="text" class="w3-input" type="number" pattern="[0-1]{1}" name="user[pwdChangeForce]" value="1" readonly /></label>
+  </p>
+    <p>
+    <label>Active<br /><input type="text" class="w3-input" type="number" pattern="[0-1]{1}" name="user[active]" value="0" /></label>
+  </p>
+  <p>
+    <input type="submit" value="Create &raquo;" />
+  </p>
+  </div>
+</form>
+
+<br/>
+<a href="/accoun/show/<%= user["id"] %>" class="w3-btn w3-light-grey"><img src="/Icons/eyeglasses.svg">&nbsp;Anzeige</a>
+<a href="/acount/list_all" class="w3-btn w3-light-grey">&laquo;&nbsp;zur&uuml;ck</a>
+
+</main>
+
+<itis-footer id="itisFooter" message=""></itis-footer>
+</body>
+</html>

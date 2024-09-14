@@ -1,0 +1,80 @@
+BODY {
+    counter-reset: h6; 
+    font-family: Arial, serif; color: #333333;
+    font-size: 12pt;
+    background-color: white;
+}
+@page { margin: 1cm;}
+
+data-pbreak h6 {font-size: 9px;}
+data-pbreak h6:before 
+{
+	font-size: 9px;
+	content: "Seite "  counter(h6) "/";
+    counter-increment: h6;
+}
+data-pbreak h6 {page-break-after: always;}
+
+
+.printarea:before {
+content: "\ --- DRAFT, not for production ---";
+color: #ff0000 !important;
+font-size: 2rem;
+text-align: center;
+margin: auto;
+padding-top: 30px;
+}
+.printarea:after {
+content: "\ --- DRAFT, not for production ---";
+color: #ff0000 !important;
+font-size: 2em;
+text-align: center;
+padding-top: 30px;
+}
+
+.noprint { display: none; }
+
+#btnprint, #btnsubmit, #btnimg, #menue, #submenue, #searchform { display: none; }
+header, nav, aside, footer { display: none; }
+#footer { display: none; }
+
+img { width: 100%; max-width: 100%; height: auto;}
+ 
+article,section {border-radius: none;border: none; padding: none;margin: none; background: #fff; border-color: #fff;}
+
+data-rnav {float: right;font-size: 12px; max-width: 12cm;}
+
+a:link,a:active, a:visited {color: black; text-decoration: none;}
+
+table {max-width:100%;}
+table, th, td {
+  border-collapse: collapse;
+  border: 1px solid black;
+  padding: 2px; 
+}
+thead {background-color:#D0CECE;border:1.0pt solid windowtext;}
+caption {font-size: small;}
+
+/* FUNKTIONIERT
+BODY {
+    counter-reset: H1;      Create a chapter counter scope
+}
+H1:before {
+    content: "Chapter " counter(H1) ". ";
+    counter-increment: H1;  
+}
+H1 {
+    counter-reset: H2;   
+}
+H2:before {
+    content: counter(H1) "." counter(H2) " ";
+    counter-increment: H2;
+}
+*/
+
+
+
+
+
+
+

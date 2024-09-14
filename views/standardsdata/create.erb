@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<%#include "standardsdata.h" %>
+<% tfetch(QVariantMap, standardsData); %>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title><%= controller()->name() + ": " + controller()->activeAction() %></title>
+</head>
+<body>
+
+<p id="redmsg" style="color: red"><%==$ red_msg %><%=$ error %></p><p id="greenmsg" style="color: green"><%==$ green_msg %><%=$ notice %></p>
+
+<h1>New Standards Data</h1>
+
+<%== formTag(urla("create"), Tf::Post) %>
+  <p>
+    <label>Lfdnr<br /><input name="standardsData[lfdnr]" value="<%= standardsData["lfdnr"] %>" /></label>
+  </p>
+  <p>
+    <label>Spec Title<br /><input name="standardsData[specTitle]" value="<%= standardsData["specTitle"] %>" /></label>
+  </p>
+  <p>
+    <label>Spec Desc<br /><input name="standardsData[specDesc]" value="<%= standardsData["specDesc"] %>" /></label>
+  </p>
+  <p>
+    <label>Spec Version<br /><input name="standardsData[specVersion]" value="<%= standardsData["specVersion"] %>" /></label>
+  </p>
+  <p>
+    <label>Spec Release<br /><input name="standardsData[specRelease]" value="<%= standardsData["specRelease"] %>" /></label>
+  </p>
+  <p>
+    <label>Obj Sname<br /><input name="standardsData[objSname]" value="<%= standardsData["objSname"] %>" /></label>
+  </p>
+  <p>
+    <label>Ac Classes<br /><input name="standardsData[acClasses]" value="<%= standardsData["acClasses"] %>" /></label>
+  </p>
+  <p>
+    <label>Pc Classes<br /><input name="standardsData[pcClasses]" value="<%= standardsData["pcClasses"] %>" /></label>
+  </p>
+  <p>
+    <label>Cat Class<br /><input name="standardsData[catClass]" value="<%= standardsData["catClass"] %>" /></label>
+  </p>
+  <p>
+    <label>Country<br /><input name="standardsData[country]" value="<%= standardsData["country"] %>" /></label>
+  </p>
+  <p>
+    <label>Lang<br /><input name="standardsData[lang]" value="<%= standardsData["lang"] %>" /></label>
+  </p>
+  <p>
+    <label>Spec Content<br /><input name="standardsData[specContent]" value="<%= standardsData["specContent"] %>" /></label>
+  </p>
+  <p>
+    <label>Spec Active<br /><input name="standardsData[specActive]" value="<%= standardsData["specActive"] %>" /></label>
+  </p>
+  <p>
+    <input type="submit" value="Create" />
+  </p>
+</form>
+
+<%== linkTo("Back", urla("index")) %>
+
+</body>
+</html>

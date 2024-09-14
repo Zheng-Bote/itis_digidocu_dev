@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<%#include "standardsdata.h" %>
+<%#include "standardsmeta.h" %>
+<% tfetch(StandardsData, standardsData); %>
+<% tfetch(StandardsMeta, standardsMeta); %>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <html lang="de">
+
+  <title><%= controller()->name() + ": " + controller()->activeAction() %></title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="alternate icon" href="/favicon.ico">
+  <link rel="mask-icon" href="/favicon.svg" color="#b2b2b2">
+  
+  <link rel="preload" href="/fonts/Inter-Regular.woff2" as="font" type="font/woff2" crossorigin />
+
+  <script>
+    function doLocal()
+    {
+        console.log("this is local");
+        
+        getCategories(<%==$ jsonCategories %>);
+
+        let l_footer = document.getElementById("itisFooter");
+        l_footer.message = '<a href="/stdsystem/license" title="licenses">Lizenzen</a>&nbsp;<a href="/stdsystem/imprint" title="Impressum">Imprint</a>';
+        
+	}
+
+
+	function setLanguage(lang)
+	{
+		if(lang == "0")	{lang = "de";}
+		else {lang = "en";}
+		document.cookie = "lang=" + lang + ";" + ";path=/";
+		location.reload();
+	}
+	
+	function open_show(id) 
+	{
+		window.open("/annexdata/show/" + id);
+	}
+
+	function open_qedit(id) 
+	{
+		window.open("/annexdata/save/" + id);
+	}
+
+	function open_edit(id) 
+	{
+		window.open("/annexdata/editor_upd/" + id);
+	}	
+	
+  </script>
+
+  <script type="module" src="/js/itis_init.js" /></script>
+  <link rel="stylesheet" href="/css/w3.css" media="screen">  
+  <link rel="stylesheet" href="/css/custom.css" media="screen">
+ 
+  <script src="/js/annex/showciannex.js" /></script>
+  <script src="/js/glossar-data/GlossarData.js" /></script>
+  <script src="/js/annex-toc/AnnexToc.js" /></script>
+  <script src="/js/struct-data/StructData.js" /></script>
+  <script src="/js/i18n.min.js" /></script>
+
+</head>
+
+<body class="w3-container w3-margin" id="body">
+<div class="noprint">
+	
+  <itis-menu id="itisMenu" message=""></itis-menu>
+
+  <div class="w3-container w3-light-blue">
+    <h2 id="portaltitle">ITIS-API::Admin-Portal</h2>
+  </div>
+
+  <itis-menusub id="itisMenuSub" message="<%= controller()->name() %>"></itis-menusub>
+
+<h3 id="pagetitle"><page-title message=""><%= controller()->name() + ": " + controller()->activeAction() %></page-title></h3>
+	<div id="pagedesc"><page-desc message=""><p>Release Review eines Anhangs.</p></page-desc></div>
+
+<span id="spinner" class="loader" style="display: none; margin: auto; color: Dodgerblue;" align="center"></span>
+
+<span style="color: red">
+	<span  id="redmsg"><%==$ red_msg %></span>&nbsp;<span id="rederror"><%=$ error %></span>
+</span>
+<span style="color: green">
+	<span id="greenmsg"><%==$ green_msg %></span>&nbsp;<span id="greennotice"><%=$ notice %></span>
+</span>
+<span id="prerel" style="visibility: hidden">
+	<span id="prelMsg"></span>&nbsp;<span id="prelCount">0</span>
+</span>
+
+<div id="test" style="display: none;" class="w3-modal">
+    <div class="w3-modal-content">
+      <div class="w3-container">
+        <span onclick="document.getElementById('test').style.display='none'" class="w3-btn w3-display-topright">&times;</span>
+        <span id="msg"></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<dialog id="dialog">
+	<form>
+		Kommentar zu "<label id="spec_title"></label>&nbsp;<label id="spec_version"></label>"</br>
+		<input type="hidden" id="spec_id" value=""/>
+		
+		<textarea id="user_comment" class="editor" rows="8" cols="50"></textarea>
+	</form>
+    <button id="savecomment">speichern &raquo;</button>&nbsp;&nbsp;<button id="close-dialog">abbrechen</button>
+</dialog>
+
+<main>
+<div id="pagecontent"><page-content message=""></page-content></div>
+
+    <form id="searchform">
+        <section>
+            <div class="w3-cell-row">
+                <fieldset><legend>Objekt-Attribute</legend>
+                    <div class="w3-container w3-cell">
+                        <label for="obj_name">Objekt:&nbsp;</label><br><input type="text" name="obj_name" id="obj_name" value="<%==$ obj_sname %>" readonly>
+                        <br>
+                    </div>
+                    <div class="w3-container w3-cell">
+                        <label for="obj_name">AC Class:&nbsp;</label><br>
+                            <input type="text" name="ac_classes" id="ac_classes" value="<%==$ ac_class %>" size="4" readonly>
+                        <br>
+                    </div>
+                    <div class="w3-container w3-cell">
+                        <label for="lang">PC Class:&nbsp;</label><br>
+                            <input type="text" name="pc_classes" id="pc_classes" value="<%==$ pc_class %>" size="4" readonly>
+                        <br>
+                    </div>
+                    <div class="w3-container w3-cell">
+                       <label for="cat">Kategorie:&nbsp;</label><br><select name="cat" id="cat" disabled="true" ></select>
+                        <br>
+                    </div>
+                    <div class="w3-container w3-cell">
+                            <label for="countries">Land:&nbsp;</label><br><input type="text" id="countries" name="countries" value="<%==$ country %>" size="4" readonly>
+                        <br>
+                    </div>
+                    <div class="w3-container w3-cell">
+                        <label for="lang">Sprache:&nbsp;</label><br><input type="text" name="lang" id="lang" value="<%==$ lang %>" size="4" readonly>
+                        <br>
+                    </div>
+                </fieldset>
+            </div>
+            <div class="w3-cell-row">
+                <fieldset><legend>Release</legend>
+                    <div class="w3-container w3-cell">
+                        <label for="releases">Release Status:&nbsp;</label><br><input type="text" name="releases" id="releases" value="<%==$ spec_release %>" readonly>
+                        <br>
+                    </div>
+                    <div class="w3-container w3-cell">
+                        <label for="release_id">Release-ID:&nbsp;</label><br><input type="text" name="release_id" id="release_id" value="<%==$ release_id %>" size="4" readonly>
+                        <br>
+                    </div>
+                    <div class="w3-container w3-cell">
+                        <br>
+                            <label for="spec_active"><input type="checkbox" name="spec_active" id="spec_active" disabled="disabled" checked="checked">&nbsp;aktive Bausteine</label>
+                        <br>
+                    </div>
+                    <div class="w3-container w3-cell">
+                        <br>
+                            <label for="spec_complete"><input type="checkbox" name="spec_complete" id="spec_complete" disabled="disabled" checked="checked">&nbsp;komplette Vorgaben</label>
+                        <br>
+                    </div>
+                </fieldset>
+            </div>
+
+        </section>
+    </form>
+   
+    <p>
+		<input class="noprint w3-btn w3-light-grey" type="submit" value="suche &raquo;" onClick="getlListAnnex()" style="margin-left: 10px;" id="sucheBtn">
+		<!-- <a id="btnpdf" style="margin-right: 10px;" href="javascript:writeFile()" class="noprint w3-btn w3-light-grey w3-right"><img class="noprint" src="/Icons/pdf.svg" style="width: 20px; height: auto;"> &nbsp;Anhang als PDF</a> -->
+		<button id="btnpdf" onClick="writeFile()" style="margin-right: 10px;" class="noprint w3-btn w3-light-grey w3-right"><img id="imgpdf" class="noprint" src="/Icons/pdf.svg" style="width: 20px; height: auto;"> &nbsp;Anhang als PDF</button>
+		<a id="btnprint" style="margin-right: 10px; display: none;" href="javascript:doPrint()" class="noprint w3-btn w3-light-grey w3-right"><img class="noprint" src="/Icons/printer.svg"> &nbsp;Vorgabe drucken</a>
+		<button id="prelDoBtn" style="visibility: hidden; margin-right: 2px;" class="noprint w3-btn w3-light-grey w3-right" onClick="doprelDoBtn()"> &uarr; Release</button>
+	</p>
+</div>
+    <div class="printarea" id="listErg"></div>
+
+<br>
+
+</main>
+
+<dialog id="list_txtcomments" style="border-color: grey;">
+	<label>Kommentare zum Baustein</label></br>
+	<data-content id="content_list_txtcomments"></data-content>
+    <button id="close_list_txtcomments">schließen</button>
+</dialog>
+
+<script>
+	// document.getElementById("show-modal-dialog").addEventListener("click", () => { document.getElementById("dialog").showModal(); });
+	document.getElementById("close-dialog").addEventListener("click", () => { document.getElementById("user_comment").value = ""; document.getElementById("dialog").close(); document.getElementById("greenmsg").innerHTML = "";});
+	document.getElementById("savecomment").addEventListener("click", () => { sendComment(); });
+	document.getElementById("close_list_txtcomments").addEventListener("click", () => { document.getElementById("list_txtcomments").close(); });
+	function doPrint()
+	{
+		document.getElementById('btnprint').style.display = 'none';  
+
+/*
+		let sel = document.createElement("div");
+		sel.setAttribute('class', 'divHeader');
+		sel.innerHTML = '<span><img src="/bmw-mini_logo.png" alt="BMW Logo"></span>';
+		document.getElementById('listErg').appendChild(sel);
+*/		
+		const D = new Date();
+		let mm = D.getMonth() + 1;
+		let dd = D.getDate();
+		const YYYY = D.getFullYear();
+		if(mm < 10)
+		{
+			mm = "0" + mm;
+		}
+		if(dd < 10)
+		{
+			dd = "0" + dd;
+		}
+		const DATESTRING = YYYY + "-" + mm + "-" + dd;
+		
+		let el = document.createElement("h10");
+		el.setAttribute('class', 'divFooter');
+		el.innerHTML = DATESTRING + ': ' + translate("not for production");
+		document.getElementById('listErg').appendChild(el);
+		
+		window.print();	
+	}
+counter = 5;
+function setCount()
+{
+counter = counter - 1;
+	let btnpdf = document.getElementById("btnpdf");
+	btnpdf.innerHTML = "gleich: " + counter;
+}
+
+function dowriteFile()
+{
+	counter = 5;
+	let btnpdf = document.getElementById("btnpdf");
+	let myVar = setInterval(setCount, 1000);
+	
+	setTimeout(() => {clearInterval(myVar); doWriteFile();}, 5000);
+}
+	function writeFile()
+	{
+		let content = document.getElementById('listErg').innerHTML;
+console.log(content.length);
+		document.getElementById("spinner").style.display = "block";
+		document.getElementById('btnpdf').disabled = true; 
+		
+		let doctitle = document.getElementById("obj_name").value;
+		let docrelease = document.getElementById("releases").value;
+		let lenkinfo = document.getElementById("idlenkinfo").innerText;
+			
+		document.getElementById('greenmsg').innerHTML = '';
+		document.getElementById('greennotice').innerText = '';
+		document.getElementById('redmsg').innerHTML = '';
+		document.getElementById('rederror').innerText = '';
+		
+
+		if(docrelease == "pre-released")
+		{
+			docrelease = "pre-release";
+		}
+//console.log(content.length / 1000);
+let contentSize = content.length;
+
+		data = new URLSearchParams([["docsize", contentSize], ["doctype", "annex"], ["docrelease", docrelease], ["doctitle", doctitle], ["lenkinfo", lenkinfo], ["doccontent", content]]);
+			
+		// fetch("/releasemgmt/writeFile", 
+		fetch("https://itisnode.hitchhiker.tech/daten-verschickt", 
+		{
+			body: data,
+			method: "post"
+		})
+		.then(data => data.json())
+		.then((json) => 
+		{
+		if(json.ERROR === "0")
+		{
+			/*console.log("0: " + json.errMsg);
+			console.log("0: " + json.Msg); */
+			document.getElementById('greenmsg').innerHTML = document.getElementById('greenmsg').innerHTML = `OK: ${json.Msg}` + '. Siehe <a href="/releasemgmt/listAllAnnexCi" alt="Release-Mgmt => CI Annex">Release-Mgmt => CI Annex</a>';
+			document.getElementById('greennotice').innerText = '';
+			//document.getElementById('imgpdf').style.backgroundColor = "lightgreen";
+			document.getElementById('btnpdf').disabled = false; 
+			document.getElementById("spinner").style.display = "none";
+		}
+		else
+		{
+			console.log("else: " + json.errMsg);
+			console.log("else: " + json.Msg);
+			document.getElementById('redmsg').innerHTML = 'PDF wurde nicht generiert.';
+			document.getElementById('rederror').innerText = json.errMsg + " " + json.Msg;
+			document.getElementById('imgpdf').style.backgroundColor = "red";
+			document.getElementById("spinner").style.display = "none";
+		}
+	  })
+	  .catch((error) => { 
+		  console.log("Fehler: " + error + data); 
+		  document.getElementById('redmsg').innerHTML = 'PDF wurde nicht generiert.';
+		  document.getElementById('rederror').innerText = error + " " + data;
+		  document.getElementById('imgpdf').style.backgroundColor = "red";
+		  document.getElementById("spinner").style.display = "none";
+		});
+
+	//document.getElementById("btnpdf").innerHTML = "Anhang als PDF";
+	}
+</script>
+
+<script src="/js/lenkinfo-data/LenkInfo.js"></script>
+<script src="/js/annexlist-data/AnnexlistData.js"></script>
+<link rel="stylesheet" href="/css/ci_print.css" type="text/css" media="print" />
+
+
+<script>
+	// autostart
+	const queryString = document.documentURI;
+	let str = queryString.match(/show/);
+
+     if(str)
+     {
+		setTimeout(() => { 
+			document.getElementById('sucheBtn').click();
+		}, 1000);
+	 }
+</script>
+
+<itis-footer class="noprint" id="itisFooter" message=""></itis-footer>
+  
+</body>
+</html>

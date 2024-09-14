@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<%#include "releasemgmt.h" %>
+<% tfetch(QVariantMap, releaseMgmt); %>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <html lang="de">
+
+  <title><%= controller()->name() + ": " + controller()->activeAction() %></title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="alternate icon" href="/favicon.ico">
+  <link rel="mask-icon" href="/favicon.svg" color="#b2b2b2">
+
+  <script>
+    function doLocal()
+    {
+        console.log("this is local");
+
+        let l_footer = document.getElementById("itisFooter");
+        l_footer.message = '<a href="/stdsystem/license" title="licenses">Lizenzen</a>&nbsp;<a href="/stdsystem/imprint" title="Imprint">Impressum</a>';
+
+        //let l_menu = document.getElementById("itisMenu"); 
+        //l_menu.message = "<%= controller()->name() %>";
+    }
+
+	function setLanguage(lang)
+	{
+		if(lang == "0")
+		{lang = "de";}
+		else{lang = "en";}
+		document.cookie = "lang=" + lang + ";" + ";path=/";
+		location.reload();
+	}
+  </script>
+
+  <script type="module" src="/js/itis_init.js" /></script>
+  
+  <link rel="stylesheet" href="/css/w3.css">  
+  <link rel="stylesheet" href="/css/custom.css">  
+
+	<style>
+		.set-width { width: 33%; min-width: 100px; border-radius: 5px;}
+		.w3-half {	margin-bottom: 5px;	}
+	</style>
+</head>
+
+<body class="w3-container w3-margin" id="body">
+
+  <itis-menu id="itisMenu" message=""></itis-menu>
+
+  <div class="w3-container w3-light-blue">
+    <h2 id="portaltitle">ITIS-API::Admin-Portal</h2>
+  </div>
+
+  <itis-menusub id="itisMenuSub" message="<%= controller()->name() %>"></itis-menusub>
+
+<h3 id="pagetitle"><page-title message=""><%= controller()->name() + ": " + controller()->activeAction() %></page-title></h3>
+<div id="pagedesc"><page-desc message=""></page-desc></div>
+
+<span style="color: red">
+	<span  id="redmsg"><%==$ red_msg %></span>&nbsp;<span><%=$ error %></span>
+</span>
+<span style="color: green">
+	<span id="greenmsg"><%==$ green_msg %></span>&nbsp;<span><%=$ notice %></span>
+</span>
+
+<main>
+<div id="pagecontent"><page-content message=""></page-content></div>
+
+<span class="w3-btn w3-red w3-wide" style="border-radius: 0.5em 0px 0px 0px;"><img src="/Icons/trash.svg">&nbsp;<%== linkTo("Remove", urla("remove", releaseMgmt["id"]), Tf::Post, "confirm('Are you sure?')") %></span>
+&nbsp;&nbsp;&nbsp;
+<a href="javascript:window.close();" class="w3-btn w3-light-grey"><img src="/Icons/justify.svg">&nbsp;zur&uuml;ck</a>
+<br/><br>
+
+<section>
+<%== formTag(urla("save", releaseMgmt["id"]), Tf::Post) %>
+	<div class="w3-row-padding">
+	  <p>
+		<label class="w3-opacity">ID<br /><input class="w3-input w3-border w3-round set-width" type="text" name="releaseMgmt[id]" value="<%= releaseMgmt["id"] %>" readonly="readonly" /></label>
+	  </p>
+	  <div class="w3-half">
+		<label class="w3-opacity">Obj Sname<br /><input class="w3-input w3-border w3-round" name="releaseMgmt[objSname]" value="<%= releaseMgmt["objSname"] %>" /></label>
+	  </div>
+	  <div class="w3-half">
+		<label class="w3-opacity">Spec Version<br /><input class="w3-input w3-border w3-round" name="releaseMgmt[specVersion]" value="<%= releaseMgmt["specVersion"] %>" /></label>
+	  </div>
+	  <div class="w3-half">
+		<label class="w3-opacity">Ac Classes<br /><input class="w3-input w3-border w3-round" name="releaseMgmt[acClasses]" value="<%= releaseMgmt["acClasses"] %>" /></label>
+	  </div>
+	  <div class="w3-half">
+		<label class="w3-opacity">Pc Classes<br /><input class="w3-input w3-border w3-round" name="releaseMgmt[pcClasses]" value="<%= releaseMgmt["pcClasses"] %>" /></label>
+	  </div>
+	  <div class="w3-half">
+		<label class="w3-opacity">Cat Class<br /><input class="w3-input w3-border w3-round" name="releaseMgmt[catClass]" value="<%= releaseMgmt["catClass"] %>" /></label>
+	  </div>
+	  <div class="w3-half">
+		<label class="w3-opacity">Country<br /><input class="w3-input w3-border w3-round" name="releaseMgmt[country]" value="<%= releaseMgmt["country"] %>" /></label>
+	  </div>
+	  <div class="w3-half">
+		<label class="w3-opacity">Lang<br /><input class="w3-input w3-border w3-round" name="releaseMgmt[lang]" value="<%= releaseMgmt["lang"] %>" /></label>
+	  </div>
+	  <div class="w3-half">
+		<label class="w3-opacity">Doc Type<br /><input class="w3-input w3-border w3-round" name="releaseMgmt[docType]" value="<%= releaseMgmt["docType"] %>" /></label>
+	  </div>
+	  <div class="w3-half">
+		<label class="w3-opacity">Rel Requester<br /><input class="w3-input w3-border w3-round" name="releaseMgmt[relRequester]" value="<%= releaseMgmt["relRequester"] %>" /></label>
+	  </div>
+	  <div class="w3-half">
+		<label class="w3-opacity">Relrequest Date<br /><input class="w3-input w3-border w3-round" name="releaseMgmt[relrequestDate]" value="<%= releaseMgmt["relrequestDate"] %>" /></label>
+	  </div>
+	  <div class="w3-half">
+		<label class="w3-opacity">Rel Creator<br /><input class="w3-input w3-border w3-round" name="releaseMgmt[relCreator]" value="<%= releaseMgmt["relCreator"] %>" /></label>
+	  </div>
+	  <div class="w3-half">
+		<label class="w3-opacity">Relcreator Decisdate<br /><input class="w3-input w3-border w3-round" name="releaseMgmt[relcreatorDecisdate]" value="<%= releaseMgmt["relcreatorDecisdate"] %>" /></label>
+	  </div>
+	  <div class="w3-half">
+		<label class="w3-opacity">Rel Inspector<br /><input class="w3-input w3-border w3-round" name="releaseMgmt[relInspector]" value="<%= releaseMgmt["relInspector"] %>" /></label>
+	  </div>
+	  <div class="w3-half">
+		<label class="w3-opacity">Relinspect Decisdate<br /><input class="w3-input w3-border w3-round" name="releaseMgmt[relinspectDecisdate]" value="<%= releaseMgmt["relinspectDecisdate"] %>" /></label>
+	  </div>
+	  <div class="w3-half">
+		<label class="w3-opacity">Rel Approver<br /><input class="w3-input w3-border w3-round" name="releaseMgmt[relApprover]" value="<%= releaseMgmt["relApprover"] %>" /></label>
+	  </div>
+	  <div class="w3-half">
+		<label class="w3-opacity">Relapprov Decisdate<br /><input class="w3-input w3-border w3-round" name="releaseMgmt[relapprovDecisdate]" value="<%= releaseMgmt["relapprovDecisdate"] %>" /></label>
+	  </div>
+	  <div class="w3-third">
+		<label class="w3-opacity">CI Date<br /><input class="w3-input w3-border w3-round" name="releaseMgmt[ciDate]" value="<%= releaseMgmt["ciDate"] %>" /></label>
+	  </div>
+	  <div class="w3-third">
+		<label class="w3-opacity">CD Date<br /><input class="w3-input w3-border w3-round" name="releaseMgmt[cdDate]" value="<%= releaseMgmt["cdDate"] %>" /></label>
+	  </div>
+	  <div class="w3-third">
+		<label class="w3-opacity">CDD Date<br /><input class="w3-input w3-border w3-round" name="releaseMgmt[cddDate]" value="<%= releaseMgmt["cddDate"] %>" /></label>
+	  </div>
+	  <p>&nbsp;</p>
+	  <p>
+		<input type="submit" value="speichern &raquo;"/>
+	  </p>
+  
+	</div>
+</form>
+</section>
+
+<br>
+<span class="w3-btn w3-red"><img src="/Icons/trash.svg">&nbsp;<%== linkTo("Remove", urla("remove", releaseMgmt["id"]), Tf::Post, "confirm('Are you sure?')") %></span>
+&nbsp;&nbsp;&nbsp;
+<a href="javascript:window.close();" class="w3-btn w3-light-grey"><img src="/Icons/justify.svg">&nbsp;zur&uuml;ck</a>
+
+
+
+</main>
+<itis-footer id="itisFooter" message=""></itis-footer>
+  
+</body>
+</html>

@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<%#include "releasemgmt.h" %>
+<%#include "releaseannex.h" %>
+
+
+<html>
+<head>
+  <meta charset="UTF-8">
+  <html lang="de">
+
+  <title><%= controller()->name() + ": " + controller()->activeAction() %></title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="alternate icon" href="/favicon.ico">
+  <link rel="mask-icon" href="/favicon.svg" color="#b2b2b2">
+  
+  <link rel="preload" href="/fonts/Inter-Regular.woff2" as="font" type="font/woff2" crossorigin />
+
+  <script>
+	  
+    function doLocal()
+    {
+        console.log("this is local");
+        
+        getCategories(<%==$ jsonCategories %>);
+
+        let l_footer = document.getElementById("itisFooter");
+        l_footer.message = '<a href="/stdsystem/license" title="licenses">Lizenzen</a>&nbsp;<a href="/stdsystem/imprint" title="Impressum">Imprint</a>';
+	}
+
+
+	function setLanguage(lang)
+	{
+		if(lang == "0")	{lang = "de";}
+		else {lang = "en";}
+		document.cookie = "lang=" + lang + ";" + ";path=/";
+		location.reload();
+	}
+	
+	function open_show(id) 
+	{
+		window.open("/annexdata/show/" + id);
+	}
+
+	function open_qedit(id) 
+	{
+		window.open("/annexdata/save/" + id);
+	}
+
+	function open_edit(id) 
+	{
+		window.open("/annexdata/editor_upd/" + id);
+	}	
+	
+  </script>
+
+  <script type="module" src="/js/itis_init.js" /></script>
+  <link rel="stylesheet" href="/css/tbl_print.css" media="all"> 
+  <!-- <link rel="stylesheet" href="/css/annexRel.css" media="all">  -->
+  <!-- <link rel="stylesheet" href="/css/w3.css" media="screen">  
+  <link rel="stylesheet" href="/css/custom.css" media="screen"> -->
+ 
+  <script src="/js/annex/printcdannex.js" /></script>
+  <script src="/js/glossar-data/GlossarData.js" /></script>
+  <script src="/js/annex-toc/AnnexToc.js" /></script>
+  <script src="/js/struct-data/StructData.js" /></script>
+  <script src="/js/i18n.min.js" /></script>
+
+</head>
+
+<body class="w3-container w3-margin" id="body">
+<div class="noprint" style="display: none;">
+<div class="noprint">
+	
+  <itis-menu id="itisMenu" message=""></itis-menu>
+
+  <div class="w3-container w3-light-blue">
+    <h2 id="portaltitle">ITIS-API::Admin-Portal</h2>
+  </div>
+
+  <itis-menusub id="itisMenuSub" message="<%= controller()->name() %>"></itis-menusub>
+
+<h3 id="pagetitle"><page-title message=""><%= controller()->name() + ": " + controller()->activeAction() %></page-title></h3>
+	<div id="pagedesc"><page-desc message=""><p>Release Review eines Anhangs.</p></page-desc></div>
+
+<span style="color: red">
+	<span  id="redmsg"><%==$ red_msg %></span>&nbsp;<span id="rederror"><%=$ error %></span>
+</span>
+<span style="color: green">
+	<span id="greenmsg"><%==$ green_msg %></span>&nbsp;<span id="greennotice"><%=$ notice %></span>
+</span>
+<span id="prerel" style="visibility: hidden">
+	<span id="prelMsg"></span>&nbsp;<span id="prelCount">0</span>
+</span>
+
+<div id="test" style="display: none;" class="w3-modal">
+    <div class="w3-modal-content">
+      <div class="w3-container">
+        <span onclick="document.getElementById('test').style.display='none'" class="w3-btn w3-display-topright">&times;</span>
+        <span id="msg"></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<dialog id="dialog">
+	<form>
+		Kommentar zu "<label id="spec_title"></label>&nbsp;<label id="spec_version"></label>"</br>
+		<input type="hidden" id="spec_id" value=""/>
+		
+		<textarea id="user_comment" class="editor" rows="8" cols="50"></textarea>
+	</form>
+    <button id="savecomment">speichern &raquo;</button>&nbsp;&nbsp;<button id="close-dialog">abbrechen</button>
+</dialog>
+
+<main>
+<div id="pagecontent"><page-content message=""></page-content></div>
+
+    <form id="searchform">
+        <section>
+            <div class="w3-cell-row">
+                <fieldset><legend>Objekt-Attribute</legend>
+                    <div class="w3-container w3-cell">
+                        <label for="obj_name">Objekt:&nbsp;</label><br><input type="text" name="obj_name" id="obj_name" value="<%==$ obj_sname %>" readonly>
+                        <br>
+                    </div>
+                    <div class="w3-container w3-cell">
+                        <label for="obj_name">Availability Class:&nbsp;</label><br>
+                            <input type="text" name="ac_classes" id="ac_classes" value="<%==$ ac_class %>" size="4" readonly>
+                        <br>
+                    </div>
+                    <div class="w3-container w3-cell">
+                        <label for="lang">Protection Class:&nbsp;</label><br>
+                            <input type="text" name="pc_classes" id="pc_classes" value="<%==$ pc_class %>" size="4" readonly>
+                        <br>
+                    </div>
+                    <div class="w3-container w3-cell">
+                       <label for="cat">Kategorie:&nbsp;</label><br><select name="cat" id="cat" disabled="true"></select>
+                        <br>
+                    </div>
+                    <div class="w3-container w3-cell">
+                            <label for="countries">Land:&nbsp;</label><br><input type="text" id="countries" name="countries" value="<%==$ country %>" size="4" readonly>
+                        <br>
+                    </div>
+                    <div class="w3-container w3-cell">
+                        <label for="lang">Sprache:&nbsp;</label><br><input type="text" name="lang" id="lang" value="<%==$ lang %>" size="4" readonly>
+                        <br>
+                    </div>
+                </fieldset>
+            </div>
+            <div class="w3-cell-row">
+                <fieldset><legend>Release</legend>
+                    <div class="w3-container w3-cell">
+                        <label for="releases">Release:&nbsp;</label><br><input type="text" name="releases" id="releases" value="<%==$ spec_release %>" readonly>
+                        <br>
+                    </div>
+                    <div class="w3-container w3-cell">
+                        <label for="release_id">Release-ID:&nbsp;</label><br><input type="text" name="release_id" id="release_id" value="<%==$ release_id %>" size="4" readonly>
+                        <br>
+                    </div>
+                    <div class="w3-container w3-cell">
+                        <br>
+                            <label for="spec_active"><input type="checkbox" name="spec_active" id="spec_active" disabled="disabled" checked="checked">&nbsp;aktive Bausteine</label>
+                        <br>
+                    </div>
+                    <div class="w3-container w3-cell">
+                        <br>
+                            <label for="spec_complete"><input type="checkbox" name="spec_complete" id="spec_complete" disabled="disabled" checked="checked">&nbsp;komplette Vorgaben</label>
+                        <br>
+                    </div>
+                </fieldset>
+            </div>
+
+        </section>
+    </form>
+   
+    <p>
+		<input class="noprint w3-btn w3-light-grey" type="submit" value="suche &raquo;" onClick="getlListAnnex()" style="margin-left: 10px;">
+		<a id="btnprint" style="margin-right: 10px; display: none;" href="javascript:doPrint()" class="noprint w3-btn w3-light-grey w3-right"><img class="noprint" src="/Icons/printer.svg"> &nbsp;Vorgabe drucken</a>
+		<button id="prelDoBtn" style="visibility: hidden; margin-right: 2px;" class="noprint w3-btn w3-light-grey w3-right" onClick="doprelDoBtn()"> &uarr; Release</button>
+	</p>
+</div>
+    <div class="printarea" id="listErg"></div>
+
+<br>
+
+</main>
+
+<dialog id="list_txtcomments" style="border-color: grey;">
+	<label>Kommentare zum Baustein</label></br>
+	<data-content id="content_list_txtcomments"></data-content>
+    <button id="close_list_txtcomments">schließen</button>
+</dialog>
+
+<script>
+	// document.getElementById("show-modal-dialog").addEventListener("click", () => { document.getElementById("dialog").showModal(); });
+	document.getElementById("close-dialog").addEventListener("click", () => { document.getElementById("user_comment").value = ""; document.getElementById("dialog").close(); document.getElementById("greenmsg").innerHTML = "";});
+	document.getElementById("savecomment").addEventListener("click", () => { sendComment(); });
+	document.getElementById("close_list_txtcomments").addEventListener("click", () => { document.getElementById("list_txtcomments").close(); });
+	function doPrint()
+	{
+		document.getElementById('btnprint').style.display = 'none';  
+
+/*
+		let sel = document.createElement("div");
+		sel.setAttribute('class', 'divHeader');
+		sel.innerHTML = '<span><img src="/bmw-mini_logo.png" alt="BMW Logo"></span>';
+		document.getElementById('listErg').appendChild(sel);
+*/		
+		const D = new Date();
+		let mm = D.getMonth() + 1;
+		let dd = D.getDate();
+		const YYYY = D.getFullYear();
+		if(mm < 10)
+		{
+			mm = "0" + mm;
+		}
+		if(dd < 10)
+		{
+			dd = "0" + dd;
+		}
+		const DATESTRING = YYYY + "-" + mm + "-" + dd;
+		
+		let el = document.createElement("h10");
+		el.setAttribute('class', 'divFooter');
+		el.innerHTML = DATESTRING + ': ' + translate("not for production");
+		document.getElementById('listErg').appendChild(el);
+		
+		window.print();	
+	}
+</script>
+
+<!-- <link rel="stylesheet" href="/css/print.css" type="text/css" media="print" /> -->
+
+<!-- <itis-footer class="noprint" id="itisFooter" message=""></itis-footer> -->
+
+</div>
+
+<div class="page-header" style="text-align: right; font-weight: bold;">
+Vorgabedokument der BMW Group &nbsp; <img src="/images/bmw-mini_logo.png" alt="" width=100 height=35>
+    <br/>
+    <button type="button" onClick="window.print()" style="background: pink">
+      PRINT ME!
+    </button>
+  </div>
+
+  <div class="page-footer" style="text-align: center">
+    <small>Copyright <span id="fullyear"></span>. Alle Rechte vorbehalten. Schutzvermerk nach DIN ISO 16016 beachten.</small>
+  </div>
+
+  <table>
+
+    <thead>
+      <tr>
+        <td>
+          <!--place holder for the fixed-position header-->
+          <div class="page-header-space"></div>
+        </td>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr>
+        <td>
+          <!--*** CONTENT GOES HERE ***-->
+          <div class="page"><div class="printarea" id="listErg"></div></div>
+        </td>
+      </tr>
+    </tbody>
+
+    <tfoot>
+      <tr>
+        <td>
+          <!--place holder for the fixed-position footer-->
+          <div class="page-footer-space"></div>
+        </td>
+      </tr>
+    </tfoot>
+
+  </table>
+<script>
+const DT = new Date();
+	  var fullyear = DT.getFullYear();
+	  document.getElementById("fullyear").innerHTML = fullyear;
+</script>
+
+
+<script>
+	setTimeout(() => { getlListAnnex(); }, 2000);
+	// OK setTimeout(() => { getlListAnnex(); setTimeout(() => { saveFile();}, 2000);}, 2000);
+	
+	//doPrintAnnex("<%==$ obj_sname %>", "<%==$ ac_class %>", "<%==$ pc_class %>", "<%==$ country %>", "<%==$ lang %>", "<%==$ spec_release %>", "<%==$ release_id %>");
+	
+// setTimeout(() => { const textArea = document.getElementById("listErg").innerHTML;  downloadToFile(textArea.value, './my-new-file.txt', 'text/plain');  alert("Done");  }, 2000);
+
+function saveFile()
+{
+let input = document.getElementById('listErg').innerHTML;
+var text = input,
+    blob = new Blob([text], { type: 'text/plain' }),
+    anchor = document.createElement('a');
+
+anchor.download = "hello.txt";
+anchor.href = (window.webkitURL || window.URL).createObjectURL(blob);
+anchor.dataset.downloadurl = ['text/plain', anchor.download, anchor.href].join(':');
+anchor.click();
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<%#include "releasemgmt.h" %>
+<% tfetch(ReleaseMgmt, releaseMgmt); %>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <html lang="de">
+
+  <title><%= controller()->name() + ": " + controller()->activeAction() %></title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="alternate icon" href="/favicon.ico">
+  <link rel="mask-icon" href="/favicon.svg" color="#b2b2b2">
+  
+    <link rel="preload" href="/fonts/Inter-Regular.woff2" as="font" type="font/woff2" crossorigin />
+
+  <script>
+    function doLocal()
+    {
+        console.log("this is local");
+
+        let l_footer = document.getElementById("itisFooter");
+        l_footer.message = '<a href="/stdsystem/license" title="licenses">Lizenzen</a>&nbsp;<a href="/stdsystem/imprint" title="Imprint">Impressum</a>';
+        
+		let doctype = "<%= releaseMgmt.docType() %>";
+		let formid = document.getElementById("formid");
+		if(doctype === "annex")
+		{
+			formid.setAttribute("action", "/annexdata/showCiAnnex");
+		}
+		else
+		{
+			formid.setAttribute("action", "/standardsdata/showCiStd");
+		}
+		
+		getLenkStatus();
+    }
+
+	function setLanguage(lang)
+	{
+		if(lang == "0")
+		{lang = "de";}
+		else{lang = "en";}
+		document.cookie = "lang=" + lang + ";" + ";path=/";
+		location.reload();
+	}
+
+	function convertUTCDateToLocalDate(id, date) 
+	{
+		//var d = convertUTCDateToLocalDate(new Date("2020-09-13T10:49:02.174"));
+		var newDate = new Date(date.getTime()+date.getTimezoneOffset()*60*1000);
+
+		var offset = date.getTimezoneOffset() / 60;
+		var hours = date.getHours();
+
+		newDate.setHours(hours - offset);
+		
+		var mm = newDate.getMonth() + 1;
+		var dd = newDate.getDate();
+		var yy = newDate.getFullYear();
+		var hh = newDate.getHours();
+		var m = newDate.getMinutes();
+
+		if(mm < 10)
+		{
+			mm = "0" + mm;
+		}
+		if(dd < 10)
+		{
+			dd = "0" + dd;
+		}
+		if(hh < 10)
+		{
+			hh = "0" + hh;
+		}
+		if(m < 10)
+		{
+			m = "0" + m;
+		}
+		let datestr = yy + "-" + mm + "-" + dd + " " + hh + ":" + m;
+		
+		document.getElementById(id).innerHTML = datestr;
+		
+		//return newDate;   
+	}
+
+	async function getLenkStatus() {
+	  // GET request using fetch with async/await
+	  let pdata = new URLSearchParams([["spec_obj", "<%= releaseMgmt.objSname() %>"], ["ac_class", "<%= releaseMgmt.acClasses() %>"], ["pc_class", "<%= releaseMgmt.pcClasses() %>"], ["country", "<%= releaseMgmt.country() %>"], ["lang", "<%= releaseMgmt.lang() %>"]]);
+	  const response = await fetch("/lenkinfo/getJson",
+	  {
+		body: pdata,
+		method: "post"
+	  });
+	  const data = await response.json();
+	  let dlength = data.length;
+	  // console.log('getLenkStatus: ' + data[dlength -1].lenk_status);
+		if(dlength > 0)
+		{
+			check3Btns(data[dlength -1].lenk_status);
+		}
+		else
+		{
+			check3Btns('pre-released');
+		}
+	}
+
+	function check3Btns(status)
+	{
+		switch(status) {
+			case 'draft': {
+				document.getElementById('prereleaseBtn').disabled = true; 
+				document.getElementById('showreleasedBtn').disabled = true; 
+				document.getElementById('releasedBtn').disabled = true;
+				//console.log('check3Btns: ' + status);
+				break;
+			}
+			case 'pre-released': {
+				document.getElementById('prereleaseBtn').disabled = false;
+				document.getElementById('prereleasePrintBtn').disabled = false; 
+				document.getElementById('showreleasedBtn').disabled = true; 
+				document.getElementById('releasedBtn').disabled = true;
+				//console.log('check3Btns: ' + status);
+				break;
+			}
+			case 'pre-released review': {
+				document.getElementById('prereleaseBtn').disabled = false; 
+				document.getElementById('showreleasedBtn').disabled = true; 
+				document.getElementById('releasedBtn').disabled = true;
+				//console.log('check3Btns: ' + status);
+				break;
+			}
+			case 'released': {
+				document.getElementById('prereleaseBtn').disabled = true; 
+				document.getElementById('showreleasedBtn').disabled = false; 
+				document.getElementById('releasedBtn').disabled = false;
+				//console.log('check3Btns: ' + status);
+				break;
+			}
+			case 'expired': {
+				document.getElementById('prereleaseBtn').disabled = true; 
+				document.getElementById('showreleasedBtn').disabled = true; 
+				document.getElementById('releasedBtn').disabled = true;
+				//console.log('check3Btns: ' + status);
+				break;
+			}
+			default: {
+				document.getElementById('prereleaseBtn').disabled = false; 
+				document.getElementById('showreleasedBtn').disabled = true; 
+				document.getElementById('releasedBtn').disabled = true;
+				//console.log('check3Btns DEFAULT: ' + status);
+			}
+		}	
+   }
+   	
+  </script>
+
+  <script type="module" src="/js/itis_init.js" /></script>
+  
+  <link rel="stylesheet" href="/css/w3.css">  
+  <link rel="stylesheet" href="/css/custom.css">  
+ 
+	<style>
+		.set-width { width: 33%; min-width: 100px; border-radius: 5px;}
+		.w3-half, .w3-third { margin-bottom: 1rem; }
+	</style>
+
+</head>
+
+<body class="w3-container w3-margin" id="body">
+
+  <itis-menu id="itisMenu" message=""></itis-menu>
+
+  <div class="w3-container w3-light-blue">
+    <h2 id="portaltitle">ITIS-API::Admin-Portal</h2>
+  </div>
+
+  <itis-menusub id="itisMenuSub" message="<%= controller()->name() %>"></itis-menusub>
+
+<h3 id="pagetitle"><page-title message=""><%= controller()->name() + ": " + controller()->activeAction() %></page-title></h3>
+<div id="pagedesc"><page-desc message=""></page-desc></div>
+
+<span style="color: red">
+	<span  id="redmsg"><%==$ red_msg %></span>&nbsp;<span><%=$ error %></span>
+</span>
+<span style="color: green">
+	<span id="greenmsg"><%==$ green_msg %></span>&nbsp;<span><%=$ notice %></span>
+</span>
+
+<main>
+<div id="pagecontent"><page-content message=""></page-content></div>
+
+<span class="w3-btn w3-red w3-wide" style="border-radius: 0.5em 0px 0px 0px;"><img src="/Icons/trash.svg">&nbsp;<%== linkTo("Remove", urla("remove", releaseMgmt.id()), Tf::Post, "confirm('Are you sure?')") %></span>
+&nbsp;&nbsp;&nbsp;
+<a href="/releasemgmt/save/<%= releaseMgmt.id() %>" class="w3-btn w3-light-grey"><img src="/Icons/pencil.svg">&nbsp;Q-Edit</a>
+<a href="javascript:window.close();" class="w3-btn w3-light-grey"><img src="/Icons/justify.svg">&nbsp;zur&uuml;ck</a>
+<a href="javascript:void(0)" class="w3-btn w3-light-grey" onclick="open_show()" title="Show Annex"><img src="/Icons/eyeglasses.svg"></a>
+<br>
+
+<section>
+	
+<form id="formid" class="w3-container" action="/annexdata/showCiAnnex" method="post">
+<input type=text" name="spec_release" value="pre-released" hidden>
+<input type=text" name="getStdType" value="show" hidden>
+ 
+<div class="w3-row-padding"> 
+	
+  <p>
+    <label class="w3-opacity">ID<br /><input type="text" class="w3-input w3-border w3-round set-width" name="release_id" value="<%= releaseMgmt.id() %>" readonly></label>
+  </p>
+  <div class="w3-half">
+    <label class="w3-opacity">Obj Sname<br /><input type="text" class="w3-input w3-border w3-round" name="obj_sname" value="<%= releaseMgmt.objSname() %>" readonly></label>
+  </div>
+  <div class="w3-half">
+    <label class="w3-opacity">Spec Version<br /><input class="w3-input" type="text" value="<%= releaseMgmt.specVersion() %>" readonly></label>
+  </div>
+  <p>&nbsp;</p>
+  <div class="w3-half">
+    <label class="w3-opacity">Ac Classes<br /><input type="text" class="w3-input w3-border w3-round" name="ac_class" value="<%= releaseMgmt.acClasses() %>" readonly></label>
+  </div>
+  <div class="w3-half">
+    <label class="w3-opacity">Pc Classes<br /><input type="text" class="w3-input w3-border w3-round" name="pc_class" value="<%= releaseMgmt.pcClasses() %>" readonly></label>
+  </div>
+  <div class="w3-half">
+    <label class="w3-opacity">Cat Class<br><input class="w3-input" type="text" value="<%= releaseMgmt.catClass() %>" readonly></label>
+  </div>
+  <div class="w3-half">
+    <label class="w3-opacity">Country<br /><input type="text" class="w3-input w3-border w3-round" name="country" value="<%= releaseMgmt.country() %>" readonly></label>
+  </div>
+  <div class="w3-half">
+    <label class="w3-opacity">Lang<br /><input type="text" class="w3-input w3-border w3-round" name="lang" value="<%= releaseMgmt.lang() %>" readonly></label>
+  </div>
+  <div class="w3-half">
+    <label class="w3-opacity">Doc Type<br /><input type="text" class="w3-input w3-border w3-round" name="" value="<%= releaseMgmt.docType() %>" readonly></label>
+  </div>
+  <div class="w3-half">
+    <label class="w3-opacity">Rel Requester<br /><input type="text" class="w3-input w3-border w3-round" name="" value="<%= releaseMgmt.relRequester() %>" readonly></label>
+  </div>
+  <div class="w3-half">
+    <label class="w3-opacity">Relrequest Date<br /><input type="text" class="w3-input w3-border w3-round" name="" id="relrequestDate" value="<%= releaseMgmt.relrequestDate() %>" readonly></label>
+  </div>
+  <div class="w3-half">
+    <label class="w3-opacity">Rel Creator<br /><input type="text" class="w3-input w3-border w3-round" name="" value="<%= releaseMgmt.relCreator() %>" readonly></label>
+  </div>
+  <div class="w3-half">
+    <label class="w3-opacity">Relcreator Decisdate<br /><input type="text" class="w3-input w3-border w3-round" name="" value="<%= releaseMgmt.relcreatorDecisdate() %>" readonly></label>
+  </div>
+  <div class="w3-half">
+    <label class="w3-opacity">Rel Inspector<br /><input type="text" class="w3-input w3-border w3-round" name="" value="<%= releaseMgmt.relInspector() %>" readonly></label>
+  </div>
+  <div class="w3-half">
+    <label class="w3-opacity">Relinspect Decisdate<br /><input type="text" class="w3-input w3-border w3-round" name="" value="<%= releaseMgmt.relinspectDecisdate() %>" readonly></label>
+  </div>
+  <div class="w3-half">
+    <label class="w3-opacity">Rel Approver<br /><input type="text" class="w3-input w3-border w3-round" name="" value="<%= releaseMgmt.relApprover() %>" readonly></label>
+  </div>
+  <div class="w3-half">
+    <label class="w3-opacity">Relapprov Decisdate<br /><input type="text" class="w3-input w3-border w3-round" name="" value="<%= releaseMgmt.relapprovDecisdate() %>" readonly></label>
+  </div>
+  <div class="w3-third">
+    <label class="w3-opacity">Ci Date<br /><input type="text" class="w3-input w3-border w3-round" name="" value="<%= releaseMgmt.ciDate() %>" readonly></label>
+  </div>
+  <div class="w3-third">
+    <label class="w3-opacity">Cd Date<br /><input type="text" class="w3-input w3-border w3-round" name="" value="<%= releaseMgmt.cdDate() %>" readonly></label>
+  </div>
+  <div class="w3-third">
+    <label class="w3-opacity">Cdd Date<br /><input type="text" class="w3-input w3-border w3-round" name="" value="<%= releaseMgmt.cddDate() %>" readonly></label>
+  </div>
+
+<input type="submit" id="prerelease" value="Pre-Release anschauen &raquo;" style="display:none;">
+<button id="prereleaseBtn" class="w3-btn w3-light-grey w3-border" onClick="showIt('pre-release')" disabled = true > &uarr; show Pre-Release</button>
+
+<input type="submit" id="prereleaseprint" value="Pre-Release drucken &raquo;" style="display:none;">
+<button id="prereleasePrintBtn" class="w3-btn w3-light-grey w3-border" onClick="showIt('pre-release', true)" disabled = true > &uarr; print Pre-Release</button>
+
+<input type="submit" id="showreleased" value="Release anschauen &raquo;" style="display:none;">
+<button id="showreleasedBtn" class="w3-btn w3-light-grey w3-border" onClick="showIt('showreleased')" disabled = true > &uarr; show Released</button>
+
+<input type="submit" id="printreleased" value="Release drucken &raquo;" style="display:none;">
+<button id="releasedBtn" class="w3-btn w3-light-grey w3-border" onClick="showIt('printreleased')" disabled = true > &uarr; print Released</button>
+
+</div>
+</form>
+
+</section> 
+
+
+<br>
+<span class="w3-btn w3-red" style="border-radius: 0px 0px 0px 0.5em"><img src="/Icons/trash.svg">&nbsp;<%== linkTo("Remove", urla("remove", releaseMgmt.id()), Tf::Post, "confirm('Are you sure?')") %></span>
+&nbsp;&nbsp;&nbsp;
+<a href="/releasemgmt/save/<%= releaseMgmt.id() %>" class="w3-btn w3-light-grey"><img src="/Icons/pencil.svg">&nbsp;Q-Edit</a>
+<a href="javascript:window.close();" class="w3-btn w3-light-grey"><img src="/Icons/justify.svg">&nbsp;zur&uuml;ck</a>
+
+</main>
+
+<script>
+function showIt(releaseType, print)
+{
+		let doctype = "<%= releaseMgmt.docType() %>";
+		if(doctype === 'annex')
+		{
+			if(releaseType === "pre-release" && print === true )
+			{
+				let form = document.getElementById("formid");
+				form.setAttribute("action", "/annexdata/printCiAnnex?show");
+				document.getElementById("prereleaseprint").click();
+				return;
+			}
+			if(releaseType === "pre-release")
+			{
+				let form = document.getElementById("formid");
+				form.setAttribute("action", "/annexdata/showCiAnnex?show");
+				document.getElementById("prerelease").click();
+			}
+			if(releaseType === "showreleased")
+			{
+				let form = document.getElementById("formid");
+				form.setAttribute("action", "/releasemgmt/showCdAnnex?show");
+				document.getElementById("showreleased").click();
+			}
+			if(releaseType === "printreleased")
+			{
+				let form = document.getElementById("formid");
+				form.setAttribute("action", "/releasemgmt/printCdAnnex?show");
+				document.getElementById("printreleased").click();
+			}
+		}
+		if(doctype === 'standard')
+		{
+			if(releaseType === "pre-release")
+			{
+				let form = document.getElementById("formid");
+				form.setAttribute("action", "/standardsdata/showCiStd?show");
+				document.getElementById("prerelease").click();
+			}
+			if(releaseType === "showreleased")
+			{
+				let form = document.getElementById("formid");
+				form.setAttribute("action", "/releasemgmt/showCdStd?show");
+				document.getElementById("showreleased").click();
+			}
+			if(releaseType === "printreleased")
+			{
+				let form = document.getElementById("formid");
+				form.setAttribute("action", "/releasemgmt/printCdStd?show");
+				document.getElementById("printreleased").click();
+			}
+		}
+}
+
+</script>
+
+<itis-footer id="itisFooter" message=""></itis-footer>
+  
+</body>
+</html>

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<%#include "standardsdatacomments.h" %>
+<% tfetch(StandardsDataComments, standardsDataComments); %>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <html lang="de">
+
+  <title><%= controller()->name() + ": " + controller()->activeAction() %></title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <link rel="icon" href="/favicon.ico">
+
+  <script>
+    function doLocal()
+    {
+        console.log("this is local");
+
+        let l_footer = document.getElementById("itisFooter");
+        l_footer.message = '<a href="/stdsystem/license" title="licenses">Lizenzen</a>&nbsp;<a href="/stdsystem/imprint" title="Imprint">Impressum</a>';
+
+        //let l_menu = document.getElementById("itisMenu"); 
+        //l_menu.message = "<%= controller()->name() %>";
+    }
+
+	function setLanguage(lang)
+	{
+		if(lang == "0")
+		{lang = "de";}
+		else{lang = "en";}
+		document.cookie = "lang=" + lang + ";" + ";path=/";
+		location.reload();
+	}
+	
+  </script>
+
+  <script type="module" src="/js/itis_init.js" /></script>
+  
+  <link rel="stylesheet" href="/css/w3.css">  
+  <link rel="stylesheet" href="/css/custom.css">  
+
+</head>
+
+<body class="w3-container w3-margin" id="body">
+
+  <itis-menu id="itisMenu" message=""></itis-menu>
+
+  <div class="w3-container w3-light-blue">
+    <h2 id="portaltitle">ITIS-API::Admin-Portal</h2>
+  </div>
+
+  <itis-menusub id="itisMenuSub" message="<%= controller()->name() %>"></itis-menusub>
+
+<h3 id="pagetitle"><page-title message=""><%= controller()->name() + ": " + controller()->activeAction() %></page-title></h3>
+<div id="pagedesc"><page-desc message=""></page-desc></div>
+
+<p style="color: red"><span id="redmsg"><%==$ red_msg %></span> <%=$ error %></p><p style="color: green"><span id="greenmsg"><%==$ green_msg %></span> <%=$ notice %></p>
+
+<main>
+    
+<div id="pagecontent"><page-content message=""></page-content></div>	
+
+<span class="w3-btn w3-red w3-wide" style="border-radius: 0.5em 0px 0px 0px;"><img src="/Icons/trash.svg">&nbsp;<%== linkTo("Remove", urla("remove", standardsDataComments.id()), Tf::Post, "confirm('Are you sure?')") %></span>
+&nbsp;&nbsp;&nbsp;
+<a href="/standardsDataComments/save/<%= standardsDataComments.id() %>" class="w3-btn w3-light-grey"><img src="/Icons/pencil.svg">&nbsp;Q-Edit</a>
+<a href="/standardsDataComments/list_all" class="w3-btn w3-light-grey"><img src="/Icons/justify.svg">&nbsp;zur&uuml;ck</a>
+<br>
+
+<div class="w3-container" style="max-width: 50%;">
+  <p>
+    <label>ID<br /><input type="text" class="w3-input" name="objects.id" value="<%= standardsDataComments.id() %>" readonly="readonly" /></label>
+  </p>
+  <p>
+    <label>commentCreated<br /><input class="w3-input" name="user[username]" value="<%= standardsDataComments.commentCreated() %>" readonly /></label>
+  </p>
+  <p>
+    <label>specId<br /><input class="w3-input" name="user[firstname]" value="<%= standardsDataComments.specId() %>" readonly /></label>
+  </p>
+  <p>
+    <label>specTitle<br /><input class="w3-input" name="user[surname]" value="<%= standardsDataComments.specTitle() %>" readonly /></label>
+  </p>
+  <p>
+    <label>specVersion<br /><input class="w3-input" name="user[email]" value="<%= standardsDataComments.specVersion() %>" readonly /></label>
+  </p>
+  <p>
+    <label>username<br /><input class="w3-input" name="user[user_timezone]" value="<%= standardsDataComments.username() %>" readonly /></label>
+  </p>
+  <p>
+  <p><label>User Comment</label><br><article><section><%== standardsDataComments.userComment() %></section></article></p>
+</div>
+
+<br>
+<span class="w3-btn w3-red" style="border-radius: 0px 0px 0px 0.5em"><img src="/Icons/trash.svg">&nbsp;<%== linkTo("Remove", urla("remove", standardsDataComments.id()), Tf::Post, "confirm('Are you sure?')") %></span>
+&nbsp;&nbsp;&nbsp;
+<a href="/standardsDataComments/save/<%= standardsDataComments.id() %>" class="w3-btn w3-light-grey"><img src="/Icons/pencil.svg">&nbsp;Q-Edit</a>
+<a href="/standardsDataComments/list_all" class="w3-btn w3-light-grey">&laquo;&nbsp;zur&uuml;ck</a>
+
+</main>
+
+<itis-footer id="itisFooter" message=""></itis-footer>
+</body>
+</html>
+

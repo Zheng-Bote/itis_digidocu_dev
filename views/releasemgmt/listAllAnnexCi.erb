@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<%#include "releasemgmt.h" %>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <html lang="de">
+
+  <title><%= controller()->name() + ": " + controller()->activeAction() %></title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <link rel="icon" href="/favicon.ico">
+  
+    <link rel="preload" href="/fonts/Inter-Regular.woff2" as="font" type="font/woff2" crossorigin />
+
+  <script>
+    function doLocal()
+    {
+        console.log("this is local");
+
+        let l_footer = document.getElementById("itisFooter");
+        l_footer.message = '<a href="/stdsystem/license" title="license">Lizenzen</a>&nbsp;<a href="/stdsystem/imprint" title="Imprint">Impressum</a>';
+        
+        var ageMutator = function(value, data, type, params, component)
+		{
+			//change age value into boolean, true if over the provided legal age
+			//var erg = "<a href=\"/ObjSpecs/show/" + value + "\"><span class=\"w3-text-blue\">Bearbeitung</span></a>";   
+			var erg = '<div style="margin: auto; width: 50%;"><a href="/ReleaseMgmt/show/' + value + '" alt="Show" style="background: none;" ><img alt="" src="/Icons/eyeglasses.svg"></a>&nbsp;&nbsp;';  
+			erg += '<a href="/ReleaseMgmt/save/' + value + '" alt="Q-Edit" style="background: none;" ><img alt="" src="/Icons/pencil.svg"></a>&nbsp;&nbsp;';
+			erg += '<a href="/ReleaseMgmt/show/' + value + '" alt="Remove" style="background: none;" ><img alt="" src="/Icons/trash.svg"></a></div>';
+			
+			return erg;
+		}
+								
+		var table = new Tabulator("#example-table", 
+		{
+			layout:"fitColumns",
+			responsiveLayout:"collapse",
+			placeholder:"keine Daten",
+			columns:[
+				{title:"Object", field:"obj_sname", sorter:"string", width:300},
+				{title:"Country", field:"country", sorter:"string"},
+				{title:"Lang", field:"lang", sorter:"string"},
+				{title:"AC", field:"ac_classes", sorter:"string"},
+				{title:"PC", field:"pc_classes", sorter:"string"},
+				{title:"Version", field:"spec_version", sorter:"string"},
+				{title:"CI Date", field:"ci_date", sorter:"string"},
+				{title:"Baustein", field:"id", formatter:"html", width:150, mutatorData:ageMutator, mutatorDataParams:{legalAge:18}},
+			],
+			htmlOutputConfig:{
+				formatCells:false, 
+			},
+		});
+
+		var pdfMutator = function(value, data, type, params, component)
+		{
+			//var erg = '<div style="margin: auto; width: 50%;"><a href="/ReleaseMgmt/show/' + value + '" alt="remove PDF" style="background: none;" ><img alt="" src="/Icons/trash.svg"></a></div>';   
+			var erg = '<div style="margin: auto; width: 50%;"><a href="#" onClick="fileRemove(\'annex\', \'pre-release\', \'' + value + '\')" alt="remove PDF" style="background: none;" ><img alt="" src="/Icons/trash.svg"></a></div>';   
+			
+			return erg;
+		}
+		var pdfNameMutator = function(value, data, type, params, component)
+		{
+			//change age value into boolean, true if over the provided legal age
+			//var erg = "<a href=\"/ObjSpecs/show/" + value + "\"><span class=\"w3-text-blue\">Bearbeitung</span></a>";   
+			var erg = `<a href="${value}" alt="PDF URI">${data.name}</a>`;   
+			
+			return erg;
+		}
+		table.setData("/ReleaseMgmt/list_allAnnexCi");
+
+		var annexTable = new Tabulator("#annex-table", 
+		{
+			layout:"fitColumns",
+			responsiveLayout:"collapse",
+			placeholder:"keine Daten",
+			columns:[
+				{title:"PDF (download)", field:"uri", sorter:"string", formatter:"html", mutatorData:pdfNameMutator, mutatorDataParams:{url:"name"}},
+				{title:"Größe (kB)", field:"size", sorter:"number"},
+				{title:"letzte Aktualisierung", field:"last_modified", sorter:"string"},
+				{title:"PDF löschen", field:"name", formatter:"html", width:150, mutatorData:pdfMutator, mutatorDataParams:{legalAge:18}},
+			],
+			htmlOutputConfig:{
+				formatCells:false, 
+			},
+		});
+
+		annexTable.setData("/releasemgmt/getAnnexCiPDFs");
+		
+		//getAnnexCiPDFs();
+    }
+
+	function fileRemove(docType, docRelease, docFile)
+	{
+		let ret = confirm("Wirklich löschen?\n" + docFile);
+		if(ret === true) {
+			data = new URLSearchParams([["doctype", docType], ["docrelease", docRelease], ["docname", docFile]]);
+			
+			fetch("/ReleaseMgmt/fileRemove", 
+			{
+				body: data,
+				method: "post"
+			})
+			.then(data => data.json())
+			.then((json) => 
+			{
+			if(json.ERROR === "0")
+			{
+				/*console.log("0: " + json.errMsg); */
+				console.log("0: " + json.Msg);
+				document.getElementById('greenmsg').innerHTML = document.getElementById('greenmsg').innerHTML = `OK: ${json.Msg}`;
+			}
+			else
+			{
+				console.log("else: " + json.errMsg);
+				document.getElementById('redmsg').innerHTML = `else: ${json.ERROR} ${json.errMsg}`;
+			}
+		  })
+		  .catch((error) => { 
+			  console.log("Fehler: " + error + data); 
+			  document.getElementById('redmsg').innerHTML = 'PDF wurde nicht gelöscht.';
+		}
+		event.preventDefault();
+	}
+	
+	function setLanguage(lang)
+	{
+		if(lang == "0")
+		{lang = "de";}
+		else{lang = "en";}
+		document.cookie = "lang=" + lang + ";" + ";path=/";
+		location.reload();
+	}
+	
+	function open_show(id) 
+	{
+		window.open("/releasemgmt/show/" + id);
+	}
+
+	function open_qedit(id) 
+	{
+		window.open("/releasemgmt/save/" + id);
+	}
+ 	
+  </script>
+
+  <script type="module" src="/js/itis_init.js" /></script>
+  <link rel="stylesheet" href="/css/w3.css">  
+  <link rel="stylesheet" href="/css/custom.css">
+  
+  <link href="/css/tabulator/tabulator.min.css" rel="stylesheet">
+  <script type="text/javascript" src="/js/tabulator/tabulator.min.js"></script>
+
+		
+	<script src="/js/utc-data/UtcData.js"></script>
+</head>
+
+<body class="w3-container w3-margin" id="body">
+
+  <itis-menu id="itisMenu" message=""></itis-menu>
+
+  <div class="w3-container w3-light-blue">
+    <h2 id="portaltitle">ITIS-API::Admin-Portal</h2>
+  </div>
+
+  <itis-menusub id="itisMenuSub" message="<%= controller()->name() %>"></itis-menusub>
+
+<h3 id="pagetitle"><page-title message=""><%= controller()->name() + ": " + controller()->activeAction() %></page-title></h3>
+<div id="pagedesc"><page-desc message="">Auflistung <u>aller</u> Annex Pre-Releases (CI).</u></page-desc></div>
+
+<span style="color: red">
+	<span  id="redmsg"><%==$ red_msg %></span>&nbsp;<span><%=$ error %></span>
+</span>
+<span style="color: green">
+	<span id="greenmsg"><%==$ green_msg %></span>&nbsp;<span><%=$ notice %></span>
+</span>
+
+<main>
+<div id="pagecontent"><page-content message=""></page-content></div>
+
+<br />
+
+<section>
+	<h4>Anhänge CI</h4>
+	<div id="example-table"></div>
+</section>
+
+<section>
+	<h4>Anhänge CI PDF's</h4>
+		<span id="annex"></span>
+		<div id="annex-table"></div>
+</section>
+
+</main>
+<itis-footer id="itisFooter" message=""></itis-footer>
+  
+</body>
+</html>

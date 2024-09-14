@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<%#include "releasemgmt.h" %>
+<% tfetch(QVariantMap, releaseMgmt); %>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <html lang="de">
+
+  <title><%= controller()->name() + ": " + controller()->activeAction() %></title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <link rel="icon" href="/favicon.ico">
+
+  <script>
+    function doLocal()
+    {
+        console.log("this is local");
+
+        let l_footer = document.getElementById("itisFooter");
+        l_footer.message = '<a href="/stdsystem/license" title="license">Lizenzen</a>&nbsp;<a href="/stdsystem/imprint" title="Imprint">Impressum</a>';
+    }
+
+	function setLanguage(lang)
+	{
+		if(lang == "0")
+		{lang = "de";}
+		else{lang = "en";}
+		document.cookie = "lang=" + lang + ";" + ";path=/";
+		location.reload();
+	}
+	
+	function open_show(id) 
+	{
+		window.open("/releasemgmt/show/" + id);
+	}
+
+	function open_qedit(id) 
+	{
+		window.open("/releasemgmt/save/" + id);
+	}
+
+	function open_edit(id) 
+	{
+		window.open("/releasemgmt/save/" + id);
+	}
+
+  </script>
+
+  <script type="module" src="/js/itis_init.js" /></script>
+  <link rel="stylesheet" href="/css/w3.css">  
+  <link rel="stylesheet" href="/css/custom.css">
+   
+</head>
+
+<body class="w3-container w3-margin" id="body">
+
+  <itis-menu id="itisMenu" message=""></itis-menu>
+
+  <div class="w3-container w3-light-blue">
+    <h2 id="portaltitle">ITIS-API::Admin-Portal</h2>
+  </div>
+
+  <itis-menusub id="itisMenuSub" message="<%= controller()->name() %>"></itis-menusub>
+
+<h3><page-title id="pagetitle" message=""><%= controller()->name() + ": " + controller()->activeAction() %></page-title></h3>
+<page-desc id="pagedesc" message=""></page-desc>
+
+<span style="color: red">
+	<span  id="redmsg"><%==$ red_msg %></span>&nbsp;<span><%=$ error %></span>
+</span>
+<span style="color: green">
+	<span id="greenmsg"><%==$ green_msg %></span>&nbsp;<span><%=$ notice %></span>
+</span>
+
+<main>
+<div id="pagecontent"><page-content message=""></page-content></div>	
+
+<section> 
+
+<%== formTag(urla("create"), Tf::Post) %>
+  <p>
+    <label>Obj Sname<br /><input name="releaseMgmt[objSname]" value="<%= releaseMgmt["objSname"] %>" /></label>
+  </p>
+  <p>
+    <label>Spec Version<br /><input name="releaseMgmt[specVersion]" value="<%= releaseMgmt["specVersion"] %>" /></label>
+  </p>
+  <p>
+    <label>Ac Classes<br /><input name="releaseMgmt[acClasses]" value="<%= releaseMgmt["acClasses"] %>" /></label>
+  </p>
+  <p>
+    <label>Pc Classes<br /><input name="releaseMgmt[pcClasses]" value="<%= releaseMgmt["pcClasses"] %>" /></label>
+  </p>
+  <p>
+    <label>Cat Class<br /><input name="releaseMgmt[catClass]" value="<%= releaseMgmt["catClass"] %>" /></label>
+  </p>
+  <p>
+    <label>Country<br /><input name="releaseMgmt[country]" value="<%= releaseMgmt["country"] %>" /></label>
+  </p>
+  <p>
+    <label>Lang<br /><input name="releaseMgmt[lang]" value="<%= releaseMgmt["lang"] %>" /></label>
+  </p>
+  <p>
+    <label>Doc Type<br /><input name="releaseMgmt[docType]" value="<%= releaseMgmt["docType"] %>" /></label>
+  </p>
+  <p>
+    <label>Rel Requester<br /><input name="releaseMgmt[relRequester]" value="<%= releaseMgmt["relRequester"] %>" /></label>
+  </p>
+  <p>
+    <label>Relrequest Date<br /><input name="releaseMgmt[relrequestDate]" value="<%= releaseMgmt["relrequestDate"] %>" /></label>
+  </p>
+  <p>
+    <label>Rel Creator<br /><input name="releaseMgmt[relCreator]" value="<%= releaseMgmt["relCreator"] %>" /></label>
+  </p>
+  <p>
+    <label>Relcreator Decisdate<br /><input name="releaseMgmt[relcreatorDecisdate]" value="<%= releaseMgmt["relcreatorDecisdate"] %>" /></label>
+  </p>
+  <p>
+    <label>Rel Inspector<br /><input name="releaseMgmt[relInspector]" value="<%= releaseMgmt["relInspector"] %>" /></label>
+  </p>
+  <p>
+    <label>Relinspect Decisdate<br /><input name="releaseMgmt[relinspectDecisdate]" value="<%= releaseMgmt["relinspectDecisdate"] %>" /></label>
+  </p>
+  <p>
+    <label>Rel Approver<br /><input name="releaseMgmt[relApprover]" value="<%= releaseMgmt["relApprover"] %>" /></label>
+  </p>
+  <p>
+    <label>Relapprov Decisdate<br /><input name="releaseMgmt[relapprovDecisdate]" value="<%= releaseMgmt["relapprovDecisdate"] %>" /></label>
+  </p>
+  <p>
+    <label>Ci Date<br /><input name="releaseMgmt[ciDate]" value="<%= releaseMgmt["ciDate"] %>" /></label>
+  </p>
+  <p>
+    <label>Cd Date<br /><input name="releaseMgmt[cdDate]" value="<%= releaseMgmt["cdDate"] %>" /></label>
+  </p>
+  <p>
+    <label>Cdd Date<br /><input name="releaseMgmt[cddDate]" value="<%= releaseMgmt["cddDate"] %>" /></label>
+  </p>
+  <p>
+    <input type="submit" value="Create &raquo;" />
+  </p>
+</form>
+
+</section>
+<br/>
+<a href="/releasemgmt/list_all" class="w3-btn w3-light-grey">&laquo;&nbsp;zur&uuml;ck</a>
+
+</main>
+
+<itis-footer id="itisFooter" message=""></itis-footer>
+</body>
+</html>
+

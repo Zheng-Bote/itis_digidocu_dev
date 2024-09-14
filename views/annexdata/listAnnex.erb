@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<%#include "standardsdata.h" %>
+<%#include "standardsmeta.h" %>
+<% tfetch(StandardsData, standardsData); %>
+<% tfetch(StandardsMeta, standardsMeta); %>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <html lang="de">
+
+  <title><%= controller()->name() + ": " + controller()->activeAction() %></title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="alternate icon" href="/favicon.ico">
+  <link rel="mask-icon" href="/favicon.svg" color="#b2b2b2">
+
+  <script>
+    function doLocal()
+    {
+        console.log("this is local");
+
+        let l_footer = document.getElementById("itisFooter");
+        l_footer.message = '<a href="/stdsystem/license" title="licenses">Lizenzen</a>&nbsp;<a href="/stdsystem/imprint" title="Impressum">Imprint</a>';
+
+		// load defaults
+        getObjects(<%==$ jsonObjects %>);
+        getCategories(<%==$ jsonCategories %>);
+        getjsonExistCountries(<%==$ jsonExistCountries %>);
+        getLanguages(<%==$ jsonLanguages %>);
+        getReleaseTypes(<%==$ jsonReleaseTypes %>);
+        
+        document.getElementById("releases").selectedIndex = "0";
+        document.getElementById("releases").options[2].disabled = true;
+        document.getElementById("releases").options[3].disabled = true;
+	}
+
+	function setLanguage(lang)
+	{
+		if(lang == "0")	{lang = "de";}
+		else {lang = "en";}
+		document.cookie = "lang=" + lang + ";" + ";path=/";
+		location.reload();
+	}
+	
+  </script>
+
+  <script type="module" src="/js/itis_init.js" /></script>
+  <link rel="stylesheet" href="/css/w3.css">  
+  <link rel="stylesheet" href="/css/custom.css">
+ 
+  <script src="/js/annex/listannex.js" /></script>
+
+</head>
+
+<body class="w3-container w3-margin" id="body">
+
+  <itis-menu id="itisMenu" message=""></itis-menu>
+
+  <div class="w3-container w3-light-blue">
+    <h2 id="portaltitle">ITIS-API::Admin-Portal</h2>
+  </div>
+
+  <itis-menusub id="itisMenuSub" message="<%= controller()->name() %>"></itis-menusub>
+
+<h3 id="pagetitle"><page-title message=""><%= controller()->name() + ": " + controller()->activeAction() %></page-title></h3>
+	<div id="pagedesc"><page-desc message=""><p>Auflistung <b>aller</b> Bausteine eines Anhangs, <b>ohne</b> Filterung.</p></page-desc></div>
+
+<p id="redmsg" style="color: red"><%==$ red_msg %><%=$ error %></p><p id="greenmsg" style="color: green"><%==$ green_msg %><%=$ notice %></p>
+
+<div id="test" style="display: none;" class="w3-modal">
+    <div class="w3-modal-content">
+      <div class="w3-container">
+        <span onclick="document.getElementById('test').style.display='none'" class="w3-button w3-display-topright">&times;</span>
+        <span id="msg"></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<main>
+<div id="pagecontent"><page-content message=""></page-content></div>
+
+    <form id="searchform">
+        <section>
+            <div class="w3-cell-row">
+                <fieldset><legend>Objekt-Attribute</legend>
+                    <div class="w3-container w3-cell">
+                        <label for="obj_name">Objekt:&nbsp;</label><br><select name="obj_name" id="obj_name"><option value="0" selected>Objekt-Auswahl</option></select>
+                        <br>
+                    </div>
+                    <div class="w3-container w3-cell">
+                        <label for="obj_name">Availability Class:&nbsp;</label><br>
+                            <select name="ac_classes" id="ac_classes"></select>
+                        <br>
+                    </div>
+                    <div class="w3-container w3-cell">
+                        <label for="lang">Protection Class:&nbsp;</label><br>
+                            <select name="pc_classes" id="pc_classes"></select>
+                        <br>
+                    </div>
+                    <div class="w3-container w3-cell">
+                        <label for="cat">Kategorie:&nbsp;</label><br><select name="cat" id="cat"></select>
+                        <br>
+                    </div>
+                    <div class="w3-container w3-cell">
+                        <span class="w3-tooltip">
+                            <label for="countries">Land:&nbsp;</label><br><select id="countries" name="countries"></select>
+                        <span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag">WW = World Wide</span>
+                        <br>
+                    </div>
+                    <div class="w3-container w3-cell">
+                        <label for="lang">Sprache:&nbsp;</label><br><select name="lang" id="lang"></select>
+                        <br>
+                    </div>
+                </fieldset>
+            </div>
+            <div class="w3-cell-row">
+                <fieldset><legend>Release</legend>
+                    <div class="w3-container w3-cell">
+                        <label for="releases">Release:&nbsp;</label><br><select name="releases" id="releases"></select>
+                        <br>
+                    </div>
+                    <div class="w3-container w3-cell">
+                        <br>
+                        <span class="w3-tooltip">
+                            <label for="spec_active"><input type="checkbox" name="spec_active" id="spec_active" checked />&nbsp;aktive Bausteine</label>
+                        <span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag">nur de-/aktive Bausteine</span>
+                        <br>
+                    </div>
+                    <div class="w3-container w3-cell">
+                        <br>
+                        <span class="w3-tooltip">
+                            <label for="spec_complete"><input type="checkbox" name="spec_complete" id="spec_complete">&nbsp;komplette Vorgaben</label>
+                        <span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag">alle Objekt-spezifische Bausteine</span>
+                        <br>
+                    </div>
+                </fieldset>
+            </div>
+
+        </section>
+    </form>
+   
+    <p><input type="submit" value="suche &raquo;" onClick="getlListAnnex()" style="margin-left: 10px;"></p>
+    
+    <div id="listErg"></div>
+
+<br>
+
+</main>
+
+<itis-footer id="itisFooter" message=""></itis-footer>
+  
+</body>
+</html>

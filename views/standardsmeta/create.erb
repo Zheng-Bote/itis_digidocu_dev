@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<%#include "standardsmeta.h" %>
+<% tfetch(QVariantMap, standardsMeta); %>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title><%= controller()->name() + ": " + controller()->activeAction() %></title>
+</head>
+<body>
+
+<p id="redmsg" style="color: red"><%==$ red_msg %><%=$ error %></p><p id="greenmsg" style="color: green"><%==$ green_msg %><%=$ notice %></p>
+
+<h1>New Standards Meta</h1>
+
+<%== formTag(urla("create"), Tf::Post) %>
+  <p>
+    <label>Spec Data ID<br /><input name="standardsMeta[specDataId]" value="<%= standardsMeta["specDataId"] %>" /></label>
+  </p>
+  <p>
+    <label>Spec Created<br /><input name="standardsMeta[specCreated]" value="<%= standardsMeta["specCreated"] %>" /></label>
+  </p>
+  <p>
+    <label>Spec Last Modified<br /><input name="standardsMeta[specLastModified]" value="<%= standardsMeta["specLastModified"] %>" /></label>
+  </p>
+  <p>
+    <label>Spec Valid Start<br /><input name="standardsMeta[specValidStart]" value="<%= standardsMeta["specValidStart"] %>" /></label>
+  </p>
+  <p>
+    <label>Spec Valid End<br /><input name="standardsMeta[specValidEnd]" value="<%= standardsMeta["specValidEnd"] %>" /></label>
+  </p>
+  <p>
+    <label>Last Editor<br /><input name="standardsMeta[lastEditor]" value="<%= standardsMeta["lastEditor"] %>" /></label>
+  </p>
+  <p>
+    <label>G Legacy<br /><input name="standardsMeta[gLegacy]" value="<%= standardsMeta["gLegacy"] %>" /></label>
+  </p>
+  <p>
+    <label>Responsibility<br /><input name="standardsMeta[responsibility]" value="<%= standardsMeta["responsibility"] %>" /></label>
+  </p>
+  <p>
+    <label>Spec Comment<br /><input name="standardsMeta[specComment]" value="<%= standardsMeta["specComment"] %>" /></label>
+  </p>
+  <p>
+    <label>Spec Marker<br /><input name="standardsMeta[specMarker]" value="<%= standardsMeta["specMarker"] %>" /></label>
+  </p>
+  <p>
+    <label>Groups<br /><input name="standardsMeta[groups]" value="<%= standardsMeta["groups"] %>" /></label>
+  </p>
+  <p>
+    <input type="submit" value="Create" />
+  </p>
+</form>
+
+<%== linkTo("Back", urla("index")) %>
+
+</body>
+</html>

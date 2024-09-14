@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<%#include "annexdatacomments.h" %>
+<% tfetch(QVariantMap, annexDataComments); %>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <html lang="de">
+
+  <title><%= controller()->name() + ": " + controller()->activeAction() %></title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <link rel="icon" href="/favicon.ico">
+
+  <script>
+    function doLocal()
+    {
+        console.log("this is local");
+
+        let l_footer = document.getElementById("itisFooter");
+        l_footer.message = '<a href="/stdsystem/license" title="licenses">Lizenzen</a>&nbsp;<a href="/stdsystem/imprint" title="Imprint">Impressum</a>';
+
+        //let l_menu = document.getElementById("itisMenu"); 
+        //l_menu.message = "<%= controller()->name() %>";
+		setNewsDate();
+	}
+
+	function setNewsDate()
+	{
+		var d = new Date();
+		var mm = d.getMonth() + 1;
+		var dd = d.getDate();
+		var yy = d.getFullYear();
+		var hh = d.getHours();
+		var m = d.getMinutes();
+
+		if(mm < 10)
+		{
+			mm = "0" + mm;
+		}
+		if(dd < 10)
+		{
+			dd = "0" + dd;
+		}
+		if(hh < 10)
+		{
+			hh = "0" + hh;
+		}
+		if(m < 10)
+		{
+			m = "0" + m;
+		}
+		let datestr = yy + "-" + mm + "-" + dd + " " + hh + ":" + m;
+		
+		document.getElementById("createDate").value = datestr;
+	}
+
+	function setLanguage(lang)
+	{
+		if(lang == "0")
+		{lang = "de";}
+		else{lang = "en";}
+		document.cookie = "lang=" + lang + ";" + ";path=/";
+		location.reload();
+	}
+	
+  </script>
+
+  <script type="module" src="/js/itis_init.js" /></script>
+  
+  <link rel="stylesheet" href="/css/w3.css">  
+  <link rel="stylesheet" href="/css/custom.css">  
+
+</head>
+
+<body class="w3-container w3-margin" id="body">
+
+  <itis-menu id="itisMenu" message=""></itis-menu>
+
+  <div class="w3-container w3-light-blue">
+    <h2 id="portaltitle">ITIS-API::Admin-Portal</h2>
+  </div>
+
+  <itis-menusub id="itisMenuSub" message="<%= controller()->name() %>"></itis-menusub>
+
+<h3 id="pagetitle"><page-title message=""><%= controller()->name() + ": " + controller()->activeAction() %></page-title></h3>
+<div id="pagedesc"><page-desc message=""></page-desc></div>
+
+<p style="color: red"><span id="redmsg"><%==$ red_msg %></span> <%=$ error %></p><p style="color: green"><span id="greenmsg"><%==$ green_msg %></span> <%=$ notice %></p>
+
+<main>
+    
+<div id="pagecontent"><page-content message=""></page-content></div>
+
+<section>
+<%== formTag(urla("create"), Tf::Post) %>
+<div class="w3-row-padding">
+	<div class="w3-half">
+		<label class="w3-opacity">Comment Created<br /><input class="w3-input w3-border w3-round" name="annexDataComments[commentCreated]" value="" id="createDate" readonly /></label>
+	</div>
+	<div class="w3-half">
+		<label class="w3-opacity">Spec ID<br /><input class="w3-input w3-border w3-round" name="annexDataComments[specId]" value="<%= annexDataComments["specId"] %>" /></label>
+	</div>
+	<div class="w3-half" style="padding-top: 1rem;">
+		<label class="w3-opacity">Spec Title<br /><input class="w3-input w3-border w3-round" name="annexDataComments[specTitle]" value="<%= annexDataComments["specTitle"] %>" /></label>
+	</div>
+	<div class="w3-half" style="padding-top: 1rem;">
+		<label class="w3-opacity">Spec Version<br /><input class="w3-input w3-border w3-round" name="annexDataComments[specVersion]" value="<%= annexDataComments["specVersion"] %>" /></label>
+  </div>
+  <div class="w3-half" style="padding-top: 1rem;">
+		<label class="w3-opacity">User Comment<br /><input class="w3-input w3-border w3-round" name="annexDataComments[userComment]" value="<%= annexDataComments["userComment"] %>" /></label>
+  </div>
+  <div class="w3-half" style="padding-top: 1rem; padding-bottom: 1rem;">
+		<label class="w3-opacity">Username<br /><input class="w3-input w3-border w3-round" name="annexDataComments[username]" value="<%==$ usermail %>" readonly /></label>
+ </div>
+  <p>
+    <input type="submit" value="Create &raquo;" />
+  </p>
+</form>
+</section>
+
+<br/>
+<a href="/annexDataComments/show/<%= annexDataComments["id"] %>" class="w3-btn w3-light-grey"><img src="/Icons/eyeglasses.svg">&nbsp;Anzeige</a>
+<a href="/annexDataComments/list_all" class="w3-btn w3-light-grey">&laquo;&nbsp;zur&uuml;ck</a>
+
+</main>
+
+<itis-footer id="itisFooter" message=""></itis-footer>
+</body>
+</html>

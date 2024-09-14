@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<%#include "releaseannex.h" %>
+<% tfetch(QVariantMap, releaseAnnex); %>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <html lang="de">
+
+  <title><%= controller()->name() + ": " + controller()->activeAction() %></title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="alternate icon" href="/favicon.ico">
+  <link rel="mask-icon" href="/favicon.svg" color="#b2b2b2">
+
+  <script>
+    function doLocal()
+    {
+        console.log("this is local");
+
+        let l_footer = document.getElementById("itisFooter");
+        l_footer.message = '<a href="/stdsystem/license" title="licenses">Lizenzen</a>&nbsp;<a href="/stdsystem/imprint" title="Imprint">Impressum</a>';
+
+        //let l_menu = document.getElementById("itisMenu"); 
+        //l_menu.message = "<%= controller()->name() %>";
+    }
+
+	function setLanguage(lang)
+	{
+		if(lang == "0")
+		{lang = "de";}
+		else{lang = "en";}
+		document.cookie = "lang=" + lang + ";" + ";path=/";
+		location.reload();
+	}
+  </script>
+
+  <script type="module" src="/js/itis_init.js" /></script>
+  <link rel="stylesheet" href="/css/w3.css">  
+  <link rel="stylesheet" href="/css/custom.css">  
+
+</head>
+
+<body class="w3-container w3-margin" id="body">
+
+  <itis-menu id="itisMenu" message=""></itis-menu>
+
+  <div class="w3-container w3-light-blue">
+    <h2 id="portaltitle">ITIS-API::Admin-Portal</h2>
+  </div>
+
+  <itis-menusub id="itisMenuSub" message="<%= controller()->name() %>"></itis-menusub>
+
+<h3 id="pagetitle"><page-title message=""><%= controller()->name() + ": " + controller()->activeAction() %></page-title></h3>
+<div id="pagedesc"><page-desc message=""></page-desc></div>
+
+<p id="redmsg" style="color: red"><%==$ red_msg %><%=$ error %></p><p id="greenmsg" style="color: green"><%==$ green_msg %><%=$ notice %></p>
+
+<main>
+<div id="pagecontent"><page-content message=""></page-content></div>
+
+<a href="javascript:window.close();" class="w3-btn w3-light-grey" style="border-radius: 0.5em 0px 0px 0px;"><img src="/Icons/justify.svg">&nbsp;zur&uuml;ck</a>
+<br/><br>
+
+<%== formTag(urla("saveAnnex", releaseAnnex["id"]), Tf::Post) %>
+  <p>
+    <label>ID<br /><input class="w3-input" type="text" name="releaseAnnex[id]" value="<%= releaseAnnex["id"] %>" readonly="readonly" /></label>
+  </p>
+  <p>
+    <label>Lfdnr<br /><input class="w3-input" type="text" name="releaseAnnex[lfdnr]" value="<%= releaseAnnex["lfdnr"] %>" /></label>
+  </p>
+  <p>
+    <label>Spec Title<br /><input class="w3-input" type="text" name="releaseAnnex[specTitle]" value="<%= releaseAnnex["specTitle"] %>" /></label>
+  </p>
+
+  <p>
+    <label>Spec Desc<br /><input class="w3-input" type="text" name="releaseAnnex[specDesc]" value="<%= releaseAnnex["specDesc"] %>" /></label>
+  </p>
+  <p>
+    <label>Spec Version<br /><input class="w3-input" type="text" name="releaseAnnex[specVersion]" value="<%= releaseAnnex["specVersion"] %>" /></label>
+  </p>
+  <p>
+    <label>Spec Release<br /><input class="w3-input" type="text" name="releaseAnnex[specRelease]" value="<%= releaseAnnex["specRelease"] %>" /></label>
+  </p>
+  <p>
+    <label>Obj Sname<br /><input class="w3-input" type="text" name="releaseAnnex[objSname]" value="<%= releaseAnnex["objSname"] %>" /></label>
+  </p>
+  <p>
+    <label>Ac Classes<br /><input class="w3-input" type="text" name="releaseAnnex[acClasses]" value="<%= releaseAnnex["acClass"] %>" /></label>
+  </p>
+  <p>
+    <label>Pc Classes<br /><input class="w3-input" type="text" name="releaseAnnex[pcClasses]" value="<%= releaseAnnex["pcClass"] %>" /></label>
+  </p>
+  <p>
+    <label>Cat Class<br /><input class="w3-input" type="text" name="releaseAnnex[catClass]" value="<%= releaseAnnex["catClass"] %>" /></label>
+  </p>
+  <p>
+    <label>Country<br /><input class="w3-input" type="text" name="releaseAnnex[country]" value="<%= releaseAnnex["country"] %>" /></label>
+  </p>
+  <p>
+    <label>Lang<br /><input class="w3-input" type="text" name="releaseAnnex[lang]" value="<%= releaseAnnex["lang"] %>" /></label>
+  </p>
+<!--
+  <p>
+    <label>Spec Content<br /><input class="w3-input" type="text" name="releaseAnnex[specContent]" value="<%= releaseAnnex["specContent"] %>" /></label>
+  </p>
+
+  <p>
+    <label>Spec Active<br /><input class="w3-input" type="text" name="releaseAnnex[specActive]" value="<%= releaseAnnex["specActive"] %>" /></label>
+  </p>
+  <p>
+    <input id="dosave" type="submit" value="speichern &raquo;"/>
+  </p>
+</form>
+-->
+
+  <br/>
+  <h4>Daten Quellcode</h4>
+  <p>
+    <label>Spec Content Source Code</label><br /><article><textarea name="releaseAnnex[specContent]" style="width:100%; height:350px;"><%= releaseAnnex["specContent"] %></textarea></article>
+  </p>
+  <p>
+    <input type="submit" value="speichern &raquo;"/>
+  </p>
+</form>
+
+<br>
+<a href="javascript:window.close();" class="w3-btn w3-light-grey"><img src="/Icons/justify.svg">&nbsp;zur&uuml;ck</a>
+
+<br/><br/>
+<h4>Daten Anzeige</h4>
+<p><label>Spec Content View</label><br><article><section><%== releaseAnnex["specContent"] %></section></article></p>
+
+<br>
+<a href="javascript:window.close();" class="w3-btn w3-light-grey" style="border-radius: 0px 0px 0px 0.5em"><img src="/Icons/justify.svg">&nbsp;zur&uuml;ck</a>
+<input type="submit" value="speichern &raquo;" onClick="doSave()"/>
+
+</main>
+
+<script>
+function doSave()
+{
+	document.getElementById("dosave").click();
+}
+</script>
+
+<itis-footer id="itisFooter" message=""></itis-footer>
+  
+</body>
+</html>

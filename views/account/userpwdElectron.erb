@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <html lang="de"> 
+
+  <title><%= controller()->name() + ": " + controller()->activeAction() %></title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <link rel="icon" href="/favicon.ico">
+
+  <meta name="description" content="Imprint of ITIS-API.">
+  <meta name="author" content="ZHENG Bote" /> 
+        
+  <script>
+    function doLocal()
+    {
+        console.log("this is local");
+
+		document.getElementById("formPwd").addEventListener("submit", function(event) 
+		{
+			event.target.checkValidity();
+			event.preventDefault();
+			event.stopPropagation();
+			sendPwdChange();
+		}, false);
+		
+        var txtPassword = document.getElementById("txtPassword");
+        var txtConfirmPassword = document.getElementById("txtConfirmPassword");
+        var boolForm = false;
+        txtPassword.onchange = ConfirmPassword;
+        txtConfirmPassword.onkeyup = ConfirmPassword;
+
+    
+	}
+
+        function ConfirmPassword() 
+        {
+            txtPassword.setCustomValidity("");
+            txtConfirmPassword.setCustomValidity("");
+            
+            const imgone = document.getElementById('pwdimg');
+            const imgtwo = document.getElementById('confirmimg');
+            const pwdform = document.getElementById('form1');
+            
+            if(txtPassword.validity.patternMismatch)
+            {
+				txtPassword.setCustomValidity("Passwort-Anfoderung: Minimum 8 Zeichen mit 1 Buchstaben und 1 Nummer");
+				imgone.setAttribute("src", "/Icons/nok.svg");
+				document.getElementById("redmsg").innerHTML = txtPassword.validationMessage;
+				return;
+			}
+			else
+			{
+				imgone.setAttribute("src", "/Icons/ok.svg");
+				document.getElementById("redmsg").innerHTML = "";
+			}
+			
+            if (txtPassword.value != txtConfirmPassword.value) 
+            {
+                txtConfirmPassword.setCustomValidity("Passwörter nicht identisch.");
+                imgone.setAttribute("src", "/Icons/nok.svg");
+                imgtwo.setAttribute("src", "/Icons/nok.svg");
+                document.getElementById("redmsg").innerHTML = txtConfirmPassword.validationMessage;
+                return;
+            }
+            else
+            {
+				imgone.setAttribute("src", "/Icons/ok.svg");
+                imgtwo.setAttribute("src", "/Icons/ok.svg");
+                document.getElementById("redmsg").innerHTML = "";
+			}	
+
+			boolForm = true;
+        }	
+    
+		function sendPwdChange()
+		{
+			if(! boolForm) {return;}
+
+document.getElementById('pwdimg').setAttribute("src", "");
+document.getElementById('confirmimg').setAttribute("src", "");
+
+			data = new URLSearchParams([["pwd", txtPassword.value]]);
+			fetch("/account/setUserPwd", { body: data, method: "post" })
+				.then(data => data.json())
+				.then((json) => 
+				{
+					if(json[0].ERROR === "0")
+					{
+						document.getElementById("greenmsg").innerHTML = '<b>Password ge&auml;ndert.</b>';
+						document.getElementById("submitpwd").disabled = true;
+						doPopUp(`<p style="color: green"><b>Password ge&auml;ndert.</b></p>`);
+					}
+					else
+					{
+						document.getElementById("redmsg").innerHTML = "<b>Password <u>nicht</u> ge&auml;ndert.</b><br/>" + json[0].ERROR + " " + json[0].errMsg ;
+						doPopUp(`<p style="color: red"><b>Password <u>nicht</u> ge&auml;ndert.</b><br/>${json[0].ERROR}<br/>${json[0].errMsg}</p>`);
+					}
+				})
+				.catch((error) => { document.getElementById("redmsg").innerHTML = "Fehler: " + error + data; });	
+		}
+
+		function doPopUp(msg)
+		{
+			const mgsTxt = document.getElementById("msg");
+			mgsTxt.innerHTML = msg;		
+			const test = document.getElementById("popupmsg");
+			test.setAttribute("style", "display: block;");
+			
+			window.location.href='#body';
+		}
+
+		function setLanguage(lang)
+		{
+			if(lang == "0")
+			{lang = "de";}
+			else{lang = "en";}
+			document.cookie = "lang=" + lang + ";" + ";path=/";
+			location.reload();
+		}
+  </script>
+
+  <script type="module" src="/js/itis_init.js" /></script>
+   
+  <link rel="stylesheet" href="/css/w3.css">  
+  <link rel="stylesheet" href="/css/custom.css">  
+
+</head>
+
+<body class="w3-container w3-margin" id="body">
+
+<h3 id="pagetitle"><page-title message="">Anwender-Passwort</page-title></h3>
+<div id="pagedesc"><page-desc message=""></page-desc></div>
+
+<p id="redmsg" style="color: red"><%==$ red_msg %><%=$ error %></p><p id="greenmsg" style="color: green"><%==$ green_msg %><%=$ notice %></p>
+
+<div id="popupmsg" style="display: none;" class="w3-modal">
+    <div class="w3-modal-content">
+      <div class="w3-container">
+        <span onclick="document.getElementById('popupmsg').style.display='none'" class="w3-button w3-display-topright">&times;</span>
+        <span id="msg"></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<main>
+	
+<article>
+	<section id ="userPwd">
+		<form id="formPwd" class="w3-container">
+			<div style="max-width: 400px;">
+				<h4>Passwort &auml;ndern f&uuml;r <%==$ uSname %>&nbsp;<%==$ uFname %></h4>
+				<br />
+				<label for="txtPassword">Password &nbsp;<img src="" id="pwdimg" width="10px" /></label><br/>
+				<input name="txtPassword" type="password" id="txtPassword" title="Password must contain: Minimum 8 characters and at least 1 Alphabet and 1 Number"
+					 class="w3-input" placeholder="Enter Password" required pattern="^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$" />
+				<br />
+				<label for="txtConfirmPassword">Confirm Password &nbsp;<img src="" id="confirmimg" width="10px" /></label>
+				<input name="txtConfirmPassword" type="password" id="txtConfirmPassword" class="w3-input" placeholder="Confirm Password" />
+				<p><input type="submit" id="submitpwd" value="Passwort &auml;ndern &raquo;" title="absenden" onclick="sendPwdChange" />&nbsp;<popup-info data-text="die Passwort-&Auml;nderung erfolgt &uuml;ber SSL-Verbindung sowie SHA2-256 Verschl&uuml;sselung."></popup-info></p>
+	
+			</div>
+		</form>
+	</section>
+
+<div id="pagecontent"><page-content message=""></page-content></div>	
+</article> 
+
+</main>
+
+</body>
+</html>

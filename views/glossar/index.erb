@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<%#include "glossar.h" %>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <html lang="de">
+
+  <title><%= controller()->name() + ": " + controller()->activeAction() %></title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <link rel="icon" href="/favicon.ico">
+
+  <script>
+    function doLocal()
+    {
+        console.log("this is local");
+
+        let l_footer = document.getElementById("itisFooter");
+        l_footer.message = '<a href="/stdsystem/license" title="license">Lizenzen</a>&nbsp;<a href="/stdsystem/imprint" title="Imprint">Impressum</a>';
+
+        //let l_menu = document.getElementById("itisMenu"); 
+        //l_menu.message = "<%= controller()->name() %>";
+    }
+
+	function setLanguage(lang)
+	{
+		if(lang == "0")
+		{lang = "de";}
+		else{lang = "en";}
+		document.cookie = "lang=" + lang + ";" + ";path=/";
+		location.reload();
+	}
+	
+	function open_show(id) 
+	{
+		window.open("/glossar/show/" + id);
+	}
+
+	function open_qedit(id) 
+	{
+		window.open("/glossar/save/" + id);
+	}
+
+	function open_edit(id) 
+	{
+		window.open("/glossar/save/" + id);
+	}
+
+  </script>
+
+  <script type="module" src="/js/itis_init.js" /></script>
+  <link rel="stylesheet" href="/css/w3.css">  
+  <link rel="stylesheet" href="/css/custom.css">
+    
+  <link href="/css/tabulator/tabulator.min.css" rel="stylesheet">
+  <script type="text/javascript" src="/js/tabulator/tabulator.min.js"></script>
+		<script src="/js/tabulator/tblsort.js"></script>
+		<style>
+			table.sortable th:not(.sorttable_sorted):not(.sorttable_sorted_reverse):not(.sorttable_nosort):after { content: " \25B4\25BE" }
+			table, th, td { border: 1px solid #bbb; text-align: left; }
+			th { background-color: #ddd; }
+		</style>
+</head>
+
+<body class="w3-container w3-margin" id="body">
+
+  <itis-menu id="itisMenu" message=""></itis-menu>
+
+  <div class="w3-container w3-light-blue">
+    <h2 id="portaltitle">ITIS-API::Admin-Portal</h2>
+  </div>
+
+  <itis-menusub id="itisMenuSub" message="<%= controller()->name() %>"></itis-menusub>
+
+<h3 id="pagetitle"><page-title message=""><%= controller()->name() + ": " + controller()->activeAction() %></page-title></h3>
+<div id="pagedesc"><page-desc message=""></page-desc></div>
+
+<p id="redmsg" style="color: red"><%==$ red_msg %><%=$ error %></p><p id="greenmsg" style="color: green"><%==$ green_msg %><%=$ notice %></p>
+
+<main>
+<annex-data id="annexdata"></annex-data>
+<article>
+    <p>Eintr&auml;ge: <%=$ glossar_count %></p>
+    <p>deutsch: <%=$ de_terms %></p>
+    <p>englisch: <%=$ en_terms %></p>
+</article>    
+<div id="pagecontent"><page-content message=""></page-content></div>	
+
+<br />
+<table class="w3-table-all w3-hoverable sortable" id="myTable">
+  <tr class="w3-text-grey">
+    <th>Acronym</th>
+    <th>Term De</th>
+    <th>Term En</th>
+    <th>Desc De</th>
+    <th>Desc En</th>
+    <!-- <th>Sort</th> -->
+    <th>Active</th>
+  </tr>
+<% tfetch(QList<Glossar>, glossarList); %>
+<% for (const auto &i : glossarList) { %>
+  <tr>
+    <td><%= i.acronym() %></td>
+    <td><%= i.termDe() %></td>
+    <td><%= i.termEn() %></td>
+    <td><%= i.descDe() %></td>
+    <td><%= i.descEn() %></td>
+    <!-- <td><%= i.sort() %></td> -->
+    <td><%= i.active() %></td>
+  </tr>
+<% } %>
+</table>
+
+</main>
+
+<itis-footer id="itisFooter" message=""></itis-footer>
+  
+</body>
+</html>
+

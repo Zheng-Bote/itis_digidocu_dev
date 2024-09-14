@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<%#include "releasemgmt.h" %>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <html lang="de">
+
+  <title><%= controller()->name() + ": " + controller()->activeAction() %></title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <link rel="icon" href="/favicon.ico">
+
+  <script>
+    function doLocal()
+    {
+        console.log("this is local");
+
+        let l_footer = document.getElementById("itisFooter");
+        l_footer.message = '<a href="/stdsystem/license" title="license">Lizenzen</a>&nbsp;<a href="/stdsystem/imprint" title="Imprint">Impressum</a>';
+
+        //let l_menu = document.getElementById("itisMenu"); 
+        //l_menu.message = "<%= controller()->name() %>";	
+        crTable();
+    }
+
+function crTable()
+{
+	const obj = JSON.parse('<%==$ ci_annex %>');
+		
+	if(obj.length == 1 && obj[0].ERROR == "1")
+	{
+		try{console.log("setListAnnex ERROR: " + obj[0].errMsg);}
+		catch(err)
+		{}
+		return;
+	}
+
+	let table = document.createElement("table");
+	table.classList.add("w3-table-all");
+	table.setAttribute('id', 'listable');
+	
+	let header = document.createElement("thead");
+	header.insertRow(0);
+	header.rows[0].insertCell(0);
+	header.rows[0].cells[0].appendChild(document.createTextNode('id'));
+	header.rows[0].cells[0].setAttribute('style', 'font-weight: bold;');
+	header.rows[0].insertCell(1);
+	header.rows[0].cells[1].appendChild(document.createTextNode('Object'));
+	header.rows[0].cells[1].setAttribute('style', 'font-weight: bold;');
+	header.rows[0].insertCell(2);
+	header.rows[0].cells[2].appendChild(document.createTextNode("Title"));
+	header.rows[0].cells[2].setAttribute('style', 'font-weight: bold;');
+	header.rows[0].insertCell(3);
+	header.rows[0].cells[3].appendChild(document.createTextNode("country"));
+	header.rows[0].cells[3].setAttribute('style', 'font-weight: bold;');
+	header.rows[0].insertCell(4);
+	header.rows[0].cells[4].appendChild(document.createTextNode("lang"));
+	header.rows[0].cells[4].setAttribute('style', 'font-weight: bold;');
+	header.rows[0].insertCell(5);
+	header.rows[0].cells[5].appendChild(document.createTextNode("lfdnr"));
+	header.rows[0].cells[5].setAttribute('style', 'font-weight: bold;');
+	header.rows[0].insertCell(6);
+	header.rows[0].cells[6].appendChild(document.createTextNode("cat"));
+	header.rows[0].cells[6].setAttribute('style', 'font-weight: bold;');
+	header.rows[0].insertCell(7);
+	header.rows[0].cells[7].appendChild(document.createTextNode("Baustein"));
+	header.rows[0].cells[7].setAttribute('class', 'w3-red w3-center');
+	header.rows[0].cells[7].setAttribute('style', 'font-weight: bold; width:150px;');
+	table.appendChild(header);
+	
+	let tbody = document.createElement("tbody");
+	table.appendChild(tbody);
+	
+	var count = document.getElementById("greenmsg").innerHTML;
+	document.getElementById("greenmsg").innerHTML = Number(count) + obj.length + ' Bausteine gefunden';
+	
+	for (i in obj) 
+	{
+		if(!obj[i].hasOwnProperty('ERROR'))
+		{
+			tbody.insertRow(i);
+			tbody.rows[i].insertCell(0);
+			tbody.rows[i].cells[0].appendChild(document.createTextNode(obj[i].id));
+			tbody.rows[i].insertCell(1);
+			tbody.rows[i].cells[1].appendChild(document.createTextNode(obj[i].obj_sname));
+			tbody.rows[i].insertCell(2);
+			tbody.rows[i].cells[2].appendChild(document.createTextNode(obj[i].spec_title));
+			tbody.rows[i].insertCell(3);
+			tbody.rows[i].cells[3].appendChild(document.createTextNode(obj[i].country));
+			tbody.rows[i].insertCell(4);
+			tbody.rows[i].cells[4].appendChild(document.createTextNode(obj[i].lang));
+			tbody.rows[i].insertCell(5);
+			tbody.rows[i].cells[5].appendChild(document.createTextNode(obj[i].lfdnr));
+			tbody.rows[i].insertCell(6);
+			tbody.rows[i].cells[6].appendChild(document.createTextNode(obj[i].cat_class));
+			tbody.rows[i].insertCell(7);
+			a = document.createElement('a');
+			a.href =  '/annexdata/show/' + obj[i].id;
+			a.title= 'Show';
+			a.style = 'text-decoration: none';
+			a.innerHTML = '<img src="/Icons/eyeglasses.svg" title="show" />&nbsp;&nbsp;&nbsp;&nbsp;';
+			tbody.rows[i].cells[7].appendChild(a);
+			a = document.createElement('a');
+			a.href =  '/annexdata/save/' + obj[i].id;
+			a.title = 'Q-Edit';
+			a.style = 'text-decoration: none';
+			a.innerHTML = '<img src="/Icons/pencil.svg" />&nbsp;&nbsp;&nbsp;&nbsp;';
+			tbody.rows[i].cells[7].appendChild(a);
+			a = document.createElement('a');
+			a.href =  '/releasemgmt/editor_upd_annex/' + obj[i].id;
+			a.title = 'Editor';
+			a.style = 'text-decoration: none';
+			a.innerHTML = '<img src="/Icons/textarea-t.svg" />&nbsp;&nbsp;&nbsp;&nbsp;';
+			tbody.rows[i].cells[7].appendChild(a);
+			a = document.createElement('a');
+			a.href =  '/annexdata/show/' + obj[i].id;
+			a.title = 'delete';
+			a.style = 'text-decoration: none';
+			a.innerHTML = '<img src="/Icons/trash.svg" />';
+			tbody.rows[i].cells[7].appendChild(a);
+		}
+		else
+		{
+			document.getElementById("redmsg").innerHTML = "Fehler passiert: " + obj[i].errMsg;
+		}
+		
+		document.getElementById("pagecontent").appendChild(table);
+	}	
+}
+
+	function setLanguage(lang)
+	{
+		if(lang == "0")
+		{lang = "de";}
+		else{lang = "en";}
+		document.cookie = "lang=" + lang + ";" + ";path=/";
+		location.reload();
+	}
+	
+	function open_show(id) 
+	{
+		window.open("/annexdata/show/" + id);
+	}
+
+	function open_qedit(id) 
+	{
+		window.open("/annexdata/save/" + id);
+	}
+
+	function open_edit(id) 
+	{
+		window.open("/annexdata/editor_upd/" + id);
+	}
+
+  </script>
+
+  <script type="module" src="/js/itis_init.js" /></script>
+  <link rel="stylesheet" href="/css/w3.css">  
+  <link rel="stylesheet" href="/css/custom.css">
+    
+</head>
+
+<body class="w3-container w3-margin" id="body">
+
+  <itis-menu id="itisMenu" message=""></itis-menu>
+
+  <div class="w3-container w3-light-blue">
+    <h2 id="portaltitle">ITIS-API::Admin-Portal</h2>
+  </div>
+
+  <itis-menusub id="itisMenuSub" message="<%= controller()->name() %>"></itis-menusub>
+
+<h3 id="pagetitle"><page-title message=""><%= controller()->name() + ": " + controller()->activeAction() %></page-title></h3>
+<div id="pagedesc"><page-desc message="">Ungefilterte Auflistung <u>aller</u> Bausteine.</u></page-desc></div>
+
+<p id="redmsg" style="color: red"><%==$ red_msg %><%=$ error %></p><p id="greenmsg" style="color: green"><%==$ green_msg %><%=$ notice %></p>
+
+<main>
+<div id="pagecontent"><page-content message=""></page-content></div>
+
+<br />
+
+</main>
+<itis-footer id="itisFooter" message=""></itis-footer>
+  
+</body>
+</html>

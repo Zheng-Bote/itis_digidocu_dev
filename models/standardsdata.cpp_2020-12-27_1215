@@ -1,0 +1,1097 @@
+#include <TreeFrogModel>
+#include "standardsdata.h"
+#include "sqlobjects/standardsdataobject.h"
+
+#include <string>
+#include <regex>
+#include<string.h>
+
+#include "catclasses.h"
+
+StandardsData::StandardsData() :
+    TAbstractModel(),
+    d(new StandardsDataObject())
+{
+    // set the initial parameters
+}
+
+StandardsData::StandardsData(const StandardsData &other) :
+    TAbstractModel(),
+    d(other.d)
+{ }
+
+StandardsData::StandardsData(const StandardsDataObject &object) :
+    TAbstractModel(),
+    d(new StandardsDataObject(object))
+{ }
+
+StandardsData::~StandardsData()
+{
+    // If the reference count becomes 0,
+    // the shared data object 'StandardsDataObject' is deleted.
+}
+
+// #####
+
+QJsonArray StandardsData::sqlGet_crObjCatalog(bool doToc, QMap<QString, QString> outList)
+{
+    TSqlQuery query;
+    QJsonObject jsonObject;
+    QJsonArray jsonArray;
+    QString msg, id;
+
+    QMapIterator<QString,QString> i(outList);
+    while(i.hasNext())
+    {
+        i.next();
+        id = i.value();
+
+        if(doToc == false)
+        {
+            query.prepare("SELECT standards_data.id, lfdnr, spec_title, spec_desc, spec_version, spec_release, obj_sname, ac_classes, pc_classes, cat_class, country, lang, spec_active, spec_created, spec_last_modified, spec_valid_start, spec_valid_end, last_editor, g_legacy, responsibility, spec_comment, spec_marker, groups FROM standards_data INNER JOIN standards_meta ON standards_meta.spec_data_id = standards_data.id WHERE standards_data.id = ?");
+            query.addBindValue(id);
+        }
+        else
+        {
+            query.prepare("SELECT standards_data.id, spec_title, spec_content, cat_class FROM standards_data WHERE standards_data.id = ?");
+            query.addBindValue(id);
+        }
+
+        if(!query.exec())
+         {
+            msg = query.lastError().text();
+            jsonObject["errMsg"] = msg;
+            jsonObject["ERROR"] = "1";
+            jsonArray.append(jsonObject);
+         }
+
+         while (query.next())
+         {
+             if(doToc == false)
+             {
+                 jsonObject["id"] = query.value(0).toString();
+                 jsonObject["lfdnr"] = query.value(1).toString();
+                 jsonObject["spec_title"] = query.value(2).toString();
+                 jsonObject["spec_desc"] = query.value(3).toString();
+                 jsonObject["spec_version"] = query.value(4).toString();
+                 jsonObject["spec_release"] = query.value(5).toString();
+                 jsonObject["obj_sname"] = query.value(6).toString();
+                 jsonObject["ac_classes"] = query.value(7).toString();
+                 jsonObject["pc_classes"] = query.value(8).toString();
+                 jsonObject["cat_class"] = query.value(9).toString();
+                 jsonObject["country"] = query.value(10).toString();
+                 jsonObject["lang"] = query.value(11).toString();
+                 jsonObject["spec_active"] = query.value(12).toString();
+                 jsonObject["spec_created"] = query.value(13).toString();
+                 jsonObject["spec_last_modified"] = query.value(14).toString();
+                 jsonObject["spec_valid_start"] = query.value(15).toString();
+                 jsonObject["spec_valid_end"] = query.value(16).toString();
+                 jsonObject["last_editor"] = query.value(17).toString();
+                 jsonObject["g_legacy"] = query.value(18).toString();
+                 jsonObject["responsibility"] = query.value(19).toString();
+                 jsonObject["spec_comment"] = query.value(20).toString();
+                 jsonObject["spec_marker"] = query.value(21).toString();
+                 jsonObject["groups"] = query.value(22).toString();
+
+                 jsonArray.append(jsonObject);
+             }
+             else
+             {
+                 jsonObject["id"] = query.value(0).toString();
+                 jsonObject["spec_title"] = query.value(1).toString();
+                 jsonObject["cat_class"] = query.value(3).toString();
+
+                 //jsonObject["spec_content"] = query.value(2).toString();
+                 std::string erg = query.value(2).toString().toStdString();
+                 //findAndReplaceAll(erg, outList["lang"], "standard");
+                 std::string line = erg.c_str();
+
+                 std::regex reg1("(<h1>)(.{0,100})(</h1>)", std::regex_constants::icase);
+                 std::smatch match1;
+
+                 std::regex reg2("(<h2>)(.{0,100})(</h2>)", std::regex_constants::icase);
+                 std::smatch match2;
+
+                 std::regex reg3("(<h3>)(.{0,100})(</h3>)", std::regex_constants::icase);
+                 std::smatch match3;
+
+                 QString toc;
+                 std::string ahref1 = "<a href=\"#";
+                 std::string ahref2 = ">";
+                 std::string ahref3 = "</a><br>";
+
+                 std::string class1 = "\" class=\"htoc1\"";
+                 std::string class2 = "\" class=\"htoc2\" style=\"padding-left: 25px;\"";
+                 std::string class3 = "\" class=\"htoc3\" style=\"padding-left: 45px;\"";
+
+                 //std::string line = query.value(16).toString().toStdString();
+
+                 try
+                 {
+                   std::regex re("((<h1>.{0,100}</h1>)|(<h2>.{0,100}</h2>)|(<h3>.{0,100}</h3>))", std::regex_constants::icase);
+                   std::sregex_iterator next(line.begin(), line.end(), re);
+                   std::sregex_iterator end;
+                   while (next != end)
+                   {
+                     std::smatch match = *next;
+                     //std::cout << "MATCH: " << match.str() << "\n";
+                     std::string item = match.str();
+                     if(std::regex_search(item, match1, reg1))
+                     {
+                         std::string to = match1.str();
+                         std::regex vowel_re("(<h1>)|(</h1>)");
+                         to = regex_replace(to, vowel_re, "");
+                         to = ahref1 + query.value(0).toString().toStdString() + class1 + ahref2 + to + ahref3;
+                         toc.append(to.c_str());
+                         next++;
+                         continue;
+                     }
+                     if(std::regex_search(item, match2, reg2))
+                     {
+                         std::string to = match2.str();
+                         std::regex vowel_re("(<h2>)|(</h2>)");
+                         to = regex_replace(to, vowel_re, "");
+                         to = ahref1 + query.value(0).toString().toStdString() + class2 + ahref2 + to + ahref3;
+                         toc.append(to.c_str());
+                         next++;
+                         continue;
+                     }
+                     if(std::regex_search(item, match3, reg3))
+                     {
+                         std::string to = match3.str();
+                         std::regex vowel_re("(<h3>)|(</h3>)");
+                         to = regex_replace(to, vowel_re, "");
+                         to = ahref1 + query.value(0).toString().toStdString() + class3 + ahref2 + to + ahref3;
+                         toc.append(to.c_str());
+                         next++;
+                         continue;
+                     }
+
+                     next++;
+                   }
+                   jsonObject["toc"] = toc;
+                   toc = "";
+                 }
+                   catch (std::regex_error& e)
+                   {
+                     //std::cout << "Syntax error in the regular expression" << std::endl;
+                   }
+
+                 jsonArray.append(jsonObject);
+
+             }
+         }
+    }
+    return jsonArray;
+}
+
+QMap<QString, QString> StandardsData::checkObjCatalog(QMap<QString, QString> wwList, QMap<QString, QString> localList)
+{
+    QString msg;
+    QMapIterator<QString,QString> i(localList);
+    while (i.hasNext())
+    {
+        i.next();
+        if(localList.contains(i.key()))
+        {
+            wwList[i.key()] = localList[i.key()];
+        }
+    }
+
+    return wwList;
+}
+
+QMap<QString, QString> StandardsData::sqlObjCatalog(QString name, QString ac, QString pc, QString country, QString lang, QString cat, QString spec_active, QString release)
+{
+    TSqlQuery query;
+
+    QString msg, obj_name, ac_classes, pc_classes;
+    QMap<QString, QString> inList;
+
+    obj_name = "%" + name + "%";
+    ac_classes = "%" + ac + "%";
+    pc_classes = "%" + pc + "%";
+
+    query.prepare("select lfdnr, id from standards_data where obj_sname LIKE ? and ac_classes LIKE ? and pc_classes LIKE ? and lang = ? and country = ? and cat_class = ? AND spec_active = ? and spec_release = ? order by lfdnr");
+    query.addBindValue(obj_name);
+    query.addBindValue(ac_classes);
+    query.addBindValue(pc_classes);
+    query.addBindValue(lang);
+    query.addBindValue(country);
+    query.addBindValue(cat);
+    query.addBindValue(spec_active);
+    query.addBindValue(release);
+
+    if(!query.exec())
+    {
+        msg = query.lastError().text();
+        qWarning("ERROR: " + msg.toUtf8());
+        //tDebug(msg.toUtf8());
+    }
+
+    while (query.next())
+    {
+        /*msg = "sqlObjCatalog: " + query.value(0).toString() + " " + query.value(1).toString();
+        tDebug(msg.toUtf8()); */
+        inList.insert(query.value(0).toString(),query.value(1).toString());
+    }
+
+    return inList;
+}
+
+QJsonArray StandardsData::listObjCatalog(bool doToc, QMap<QString, QString> editMap)
+{
+    QMap<QString, QString> localList, wwList, outList;
+    QJsonArray array, tomerge;
+
+    // Allgemein
+    if(editMap["obj_sname"].compare("Allgemein") == 0)
+    {
+
+        wwList.clear(); localList.clear(); outList.clear();
+        localList= StandardsData::sqlObjCatalog("Allgemein", "0", "0", editMap["country"], editMap["lang"], "Allgemein", editMap["spec_active"], editMap["spec_release"]);
+        wwList = StandardsData::sqlObjCatalog("Allgemein", "0", "0", "WW", editMap["lang"], "Allgemein", editMap["spec_active"], editMap["spec_release"]);
+
+        outList = StandardsData::checkObjCatalog(wwList, localList);
+        return StandardsData::sqlGet_crObjCatalog(doToc, outList);
+    }
+
+    if(editMap["cat_sname_en"].compare("Allgemein") == 0)
+    {
+        wwList.clear(); localList.clear(); outList.clear();
+        localList= StandardsData::sqlObjCatalog(editMap["obj_sname"], "0", "0", editMap["country"], editMap["lang"], "Allgemein", editMap["spec_active"], editMap["spec_release"]);
+        wwList = StandardsData::sqlObjCatalog(editMap["obj_sname"], "0", "0", "WW", editMap["lang"], "Allgemein", editMap["spec_active"], editMap["spec_release"]);
+        outList = StandardsData::checkObjCatalog(wwList, localList);
+        array = StandardsData::sqlGet_crObjCatalog(doToc, outList);
+
+        wwList.clear(); localList.clear(); outList.clear();
+        localList= StandardsData::sqlObjCatalog(editMap["obj_sname"], editMap["ac_class"], editMap["pc_class"], editMap["country"], editMap["lang"], "Allgemein", editMap["spec_active"], editMap["spec_release"]);
+        wwList = StandardsData::sqlObjCatalog(editMap["obj_sname"], editMap["ac_class"], editMap["pc_class"], "WW", editMap["lang"], "Allgemein", editMap["spec_active"], editMap["spec_release"]);
+        outList = StandardsData::checkObjCatalog(wwList, localList);
+        tomerge = StandardsData::sqlGet_crObjCatalog(doToc, outList);
+
+        for(int i = 0; i < tomerge.size(); i++)
+        {
+            array.append(tomerge[i]);
+        }
+        return array;
+    }
+    else
+    {
+        // Cat
+        wwList.clear(); localList.clear(); outList.clear();
+        localList= StandardsData::sqlObjCatalog(editMap["obj_sname"], editMap["ac_class"], editMap["pc_class"], editMap["country"], editMap["lang"], editMap["cat_sname_en"], editMap["spec_active"], editMap["spec_release"]);
+        wwList = StandardsData::sqlObjCatalog(editMap["obj_sname"], editMap["ac_class"], editMap["pc_class"], "WW", editMap["lang"], editMap["cat_sname_en"], editMap["spec_active"], editMap["spec_release"]);
+        outList = StandardsData::checkObjCatalog(wwList, localList);
+        return StandardsData::sqlGet_crObjCatalog(doToc, outList);
+    }
+}
+
+QJsonArray StandardsData::getStdToc(QMap<QString, QString> &stdDataMap)
+{
+    QJsonObject jsonObject, jsonObjContent;
+    QJsonValue jsonObjVal;
+    QJsonArray jsonArr;
+
+    foreach (const QJsonValue & value, CatClasses::getAllJson("1", "category"))
+    {
+        QJsonObject objclass = value.toObject();
+        QJsonValue obj_class_name = objclass.value(QString("cat_sname_en"));
+        if(obj_class_name.toString().compare("") == 1 )
+        {
+            stdDataMap["cat_sname_en"] = obj_class_name.toString();
+            foreach (const QJsonValue & value, StandardsData::listObjCatalog(true, stdDataMap) )
+            {
+                jsonObjContent = value.toObject();
+
+                jsonObjVal = jsonObjContent.value(QString("cat_class"));
+                jsonObject["cat_class"] = jsonObjVal;
+
+                jsonObjVal = jsonObjContent.value(QString("id"));
+                jsonObject["id"] = jsonObjVal;
+
+                jsonObjVal = jsonObjContent.value(QString("spec_title"));
+                jsonObject["spec_title"] = jsonObjVal;
+
+                jsonObjVal = jsonObjContent.value(QString("toc"));
+                jsonObject["toc"] = jsonObjVal;
+
+                jsonArr.append(jsonObject);
+            }
+        }
+    }
+
+    //return StandardsData::listObjCatalog(true, stdDataMap);
+    return jsonArr;
+}
+
+QJsonArray StandardsData::getStdShow(QMap<QString, QString> &stdDataMap)
+{
+    return StandardsData::listObjCatalog(false, stdDataMap);
+}
+
+QJsonArray StandardsData::getStdList(QMap<QString, QString> &stdDataMap)
+{
+    TSqlQuery query;
+    QJsonObject jsonObject;
+    QJsonArray jsonArray;
+    QString msg, obj_sname, ac_class, pc_class, id;
+
+    obj_sname = "%" + stdDataMap["obj_sname"] + "%";
+    ac_class = "%" + stdDataMap["ac_class"] + "%";
+    pc_class = "%" + stdDataMap["pc_class"] + "%";
+
+    query.prepare("SELECT standards_data.id, lfdnr, spec_title, spec_desc, spec_version, spec_release, obj_sname, ac_classes, pc_classes, cat_class, country, lang, spec_active, spec_created, spec_last_modified, spec_valid_start, spec_valid_end, last_editor, g_legacy, responsibility, spec_comment, spec_marker, groups FROM standards_data INNER JOIN standards_meta ON standards_meta.spec_data_id = standards_data.id WHERE obj_sname like ? AND cat_class = ? AND country = ? AND lang = ? AND spec_active = ? AND ac_classes like ? AND pc_classes like ? AND spec_release = ?");
+    query.addBindValue(obj_sname);
+    query.addBindValue(stdDataMap["cat_sname_en"]);
+    query.addBindValue(stdDataMap["country"]);
+    query.addBindValue(stdDataMap["lang"]);
+    query.addBindValue(stdDataMap["spec_active"]);
+    query.addBindValue(ac_class);
+    query.addBindValue(pc_class);
+    query.addBindValue(stdDataMap["spec_release"]);
+
+    if(!query.exec())
+     {
+        msg = query.lastError().text();
+        jsonObject["errMsg"] = msg;
+        jsonObject["ERROR"] = "1";
+        jsonArray.append(jsonObject);
+
+        return jsonArray;
+     }
+
+     while (query.next())
+     {
+        id = query.value(0).toString();
+        jsonObject["id"] = query.value(0).toString();
+        jsonObject["lfdnr"] = query.value(1).toString();
+        jsonObject["spec_title"] = query.value(2).toString();
+        jsonObject["spec_desc"] = query.value(3).toString();
+        jsonObject["spec_version"] = query.value(4).toString();
+        jsonObject["spec_release"] = query.value(5).toString();
+        jsonObject["obj_sname"] = query.value(6).toString();
+        jsonObject["ac_classes"] = query.value(7).toString();
+        jsonObject["pc_classes"] = query.value(8).toString();
+        jsonObject["cat_class"] = query.value(9).toString();
+        jsonObject["country"] = query.value(10).toString();
+        jsonObject["lang"] = query.value(11).toString();
+        jsonObject["spec_active"] = query.value(12).toString();
+        jsonObject["spec_created"] = query.value(13).toString();
+        jsonObject["spec_last_modified"] = query.value(14).toString();
+        jsonObject["spec_valid_start"] = query.value(15).toString();
+        jsonObject["spec_valid_end"] = query.value(16).toString();
+        jsonObject["last_editor"] = query.value(17).toString();
+        jsonObject["g_legacy"] = query.value(18).toString();
+        jsonObject["responsibility"] = query.value(19).toString();
+        jsonObject["spec_comment"] = query.value(20).toString();
+        jsonObject["spec_marker"] = query.value(21).toString();
+        jsonObject["groups"] = query.value(22).toString();
+
+        jsonArray.append(jsonObject);
+     }
+
+     return jsonArray;
+}
+
+// getStdSpecRepl => mit Data-Parameter für findAndReplaceAll
+QJsonArray StandardsData::getStdSpec(int &id)
+{
+    TSqlQuery query;
+    QJsonObject jsonObject;
+    QJsonArray jsonArray;
+    QString msg, lang;
+
+    query.prepare("SELECT standards_data.id, lfdnr, spec_title, spec_desc, spec_version, spec_release, obj_sname, ac_classes, pc_classes, cat_class, country, lang, spec_active, spec_created, spec_last_modified, spec_valid_start, spec_valid_end, last_editor, g_legacy, responsibility, spec_comment, spec_marker, groups, spec_content FROM standards_data INNER JOIN standards_meta ON standards_meta.spec_data_id = standards_data.id WHERE standards_data.id = ?");
+    query.addBindValue(id);
+
+    if(!query.exec())
+     {
+        msg = query.lastError().text();
+        jsonObject["errMsg"] = msg;
+        jsonObject["ERROR"] = "1";
+        jsonArray.append(jsonObject);
+
+        return jsonArray;
+     }
+
+     while (query.next())
+     {
+        jsonObject["id"] = query.value(0).toString();
+        jsonObject["lfdnr"] = query.value(1).toString();
+        jsonObject["spec_title"] = query.value(2).toString();
+        jsonObject["spec_desc"] = query.value(3).toString();
+        jsonObject["spec_version"] = query.value(4).toString();
+        jsonObject["spec_release"] = query.value(5).toString();
+        jsonObject["obj_sname"] = query.value(6).toString();
+        jsonObject["ac_classes"] = query.value(7).toString();
+        jsonObject["pc_classes"] = query.value(8).toString();
+        jsonObject["cat_class"] = query.value(9).toString();
+        jsonObject["country"] = query.value(10).toString();
+        jsonObject["lang"] = query.value(11).toString();
+        lang = query.value(11).toString();
+        jsonObject["spec_active"] = query.value(12).toString();
+        jsonObject["spec_created"] = query.value(13).toString();
+        jsonObject["spec_last_modified"] = query.value(14).toString();
+        jsonObject["spec_valid_start"] = query.value(15).toString();
+        jsonObject["spec_valid_end"] = query.value(16).toString();
+        jsonObject["last_editor"] = query.value(17).toString();
+        jsonObject["g_legacy"] = query.value(18).toString();
+        jsonObject["responsibility"] = query.value(19).toString();
+        jsonObject["spec_comment"] = query.value(20).toString();
+        jsonObject["spec_marker"] = query.value(21).toString();
+        jsonObject["groups"] = query.value(22).toString();
+
+        jsonObject["spec_content"] = query.value(23).toString();
+        //std::string erg = query.value(23).toString().toStdString();
+        //findAndReplaceAll(erg, lang, "standard");
+        //jsonObject["spec_content"] = erg.c_str();
+
+        jsonArray.append(jsonObject);
+     }
+
+     return jsonArray;
+}
+
+void StandardsData::findAndReplaceAll(std::string &data, QString &lang, QString std_type)
+{
+    TSqlQuery query;
+    std::string toSearch, replaceStr;
+
+    if( lang.compare("de_DE") == 0 )
+    {
+        query.prepare("SELECT std_attr, std_val_de FROM public.app_vars WHERE std_type = ? AND active = 1");
+    }
+    else
+    {
+        query.prepare("SELECT std_attr, std_val_en FROM public.app_vars WHERE std_type = ? AND active = 1");
+    }
+    // SELECT id, std_type, std_attr, std_val_de, std_val_en, active FROM public.app_vars;
+    query.addBindValue(std_type);
+
+    query.exec();
+
+     while (query.next())
+     {
+         toSearch = "{{" + query.value(0).toString().toStdString() + "}}";
+         replaceStr = query.value(1).toString().toStdString();
+
+        // Get the first occurrence
+        size_t pos = data.find(toSearch);
+        // Repeat till end is reached
+        while( pos != std::string::npos)
+        {
+            // Replace this occurrence of Sub String
+            data.replace(pos, toSearch.size(), replaceStr);
+            // Get the next occurrence from the current position
+            pos =data.find(toSearch, pos + replaceStr.size());
+        }
+     }
+}
+
+QJsonArray StandardsData::getExistCountries()
+{
+    TSqlQuery query;
+    QJsonObject jsonObject;
+    QJsonArray jsonArray;
+    QString msg;
+
+    query.prepare("SELECT DISTINCT(country) FROM public.standards_data ORDER BY country");
+
+    if(!query.exec())
+     {
+        msg = query.lastError().text();
+        jsonObject["errMsg"] = msg;
+        jsonObject["ERROR"] = "1";
+        jsonArray.append(jsonObject);
+     }
+
+     while (query.next())
+     {
+         jsonObject["country"] = query.value(0).toString();
+         jsonArray.append(jsonObject);
+     }
+     return jsonArray;
+}
+
+int StandardsData::countCheckLfdnrCat()
+{
+    TSqlQuery query;
+    int counter = 0;
+
+    query.prepare("SELECT id, obj_sname, cat_class, lfdnr, country, lang, spec_title FROM public.standards_data a WHERE not Exists ( SELECT lfdnr FROM public.standards_data c WHERE a.lang != c.lang AND a.cat_class = c.cat_class and a.lfdnr = c.lfdnr) order by  (cat_class,lfdnr)");
+
+    query.exec();
+
+    while (query.next())
+    {
+        counter++;
+    }
+
+    return counter;
+}
+
+QJsonArray StandardsData::getCheckLfdnrCat()
+{
+    TSqlQuery query;
+    QJsonObject jsonObject;
+    QJsonArray jsonArray;
+    QString msg;
+
+    query.prepare("SELECT id, obj_sname, cat_class, lfdnr, country, lang, spec_title FROM public.standards_data a WHERE not Exists ( SELECT lfdnr FROM public.standards_data c WHERE a.lang != c.lang AND a.cat_class = c.cat_class and a.lfdnr = c.lfdnr) order by  (cat_class,lfdnr)");
+
+    if(!query.exec())
+     {
+        msg = query.lastError().text();
+        jsonObject["errMsg"] = msg;
+        jsonObject["ERROR"] = "1";
+        jsonArray.append(jsonObject);
+     }
+
+     while (query.next())
+     {
+         jsonObject["id"] = query.value(0).toString();
+         jsonObject["obj_sname"] = query.value(1).toString();
+         jsonObject["cat_class"] = query.value(2).toString();
+         jsonObject["lfdnr"] = query.value(3).toString();
+         jsonObject["country"] = query.value(4).toString();
+         jsonObject["lang"] = query.value(5).toString();
+         jsonObject["spec_title"] = query.value(6).toString();
+         jsonArray.append(jsonObject);
+     }
+
+     return jsonArray;
+}
+
+QJsonArray StandardsData::updStdData(QMap<QString, QString> editMap)
+{
+    TSqlQuery query;
+    QJsonObject jsonObj;
+    QJsonArray array;
+    QString msg;
+
+    editMap["country"] = editMap["country"].toUpper();
+
+    if(editMap["lfdnr"].count() < 2)
+    {
+        editMap["lfdnr"] = "00" + editMap["lfdnr"];
+    }
+    else if(editMap["lfdnr"].count() < 3)
+    {
+        editMap["lfdnr"] = "0" + editMap["lfdnr"];
+    }
+
+    query.prepare("UPDATE public.standards_data	SET id=?, lfdnr=?, spec_title=?, spec_desc=?, spec_version=?, spec_release=?, obj_sname=?, ac_classes=?, pc_classes=?, cat_class=?, country=?, lang=?, spec_content=?, spec_active=? WHERE id = ?");
+
+    query.addBindValue(editMap["id"]);
+    query.addBindValue(editMap["lfdnr"]);
+    query.addBindValue(editMap["spec_title"]);
+    query.addBindValue(editMap["spec_desc"]);
+    query.addBindValue(editMap["spec_version_new"]);
+    query.addBindValue(editMap["spec_release"]);
+    query.addBindValue(editMap["obj_sname"]);
+    query.addBindValue(editMap["ac_classes"]);
+    query.addBindValue(editMap["pc_classes"]);
+    query.addBindValue(editMap["cat_class"]);
+    query.addBindValue(editMap["country"]);
+    query.addBindValue(editMap["lang"]);
+    query.addBindValue(editMap["spec_content"]);
+    query.addBindValue(editMap["spec_active"]);
+    query.addBindValue(editMap["id"]);
+
+    if(!query.exec())
+    {
+        msg = query.lastError().text();
+        jsonObj["ERROR"] = "1";
+        jsonObj["errMsg"] = msg;
+        jsonObj["query"] = query.lastQuery();
+        msg = "setObjSpecs : ";
+        msg.append(msg);
+        msg.append(" : ");
+        msg.append(query.lastQuery());
+        tError(msg.toUtf8());
+
+        array.append(jsonObj);
+        return array;
+    }
+
+    query.prepare("UPDATE public.standards_meta	SET spec_last_modified=?, spec_valid_start=?, spec_valid_end=?, last_editor=?, g_legacy=?, responsibility=?, spec_comment=?, spec_marker=? WHERE spec_data_id = ?");
+
+    query.addBindValue(editMap["spec_valid_start"]);
+    query.addBindValue(editMap["spec_valid_start"]);
+    query.addBindValue(editMap["spec_valid_end"]);
+    query.addBindValue(editMap["last_editor"]);
+    query.addBindValue(editMap["g_legacy"]);
+    query.addBindValue(editMap["resp"]);
+    query.addBindValue(editMap["comment"]);
+    query.addBindValue(editMap["marker"]);
+    query.addBindValue(editMap["id"]);
+
+    if(!query.exec())
+    {
+        msg = query.lastError().text();
+        jsonObj["ERROR"] = "1";
+        jsonObj["errMsg"] = msg;
+        jsonObj["query"] = query.lastQuery();
+        msg = "updStdData : ";
+        msg.append(msg);
+        msg.append(" : ");
+        msg.append(query.lastQuery());
+        tError(msg.toUtf8());
+
+        array.append(jsonObj);
+        return array;
+    }
+    else
+    {
+        jsonObj["ERROR"] = "0";
+        jsonObj["errMsg"] = "Datensatz aktualisiert";
+        jsonObj["data_id"] = editMap["id"];
+    }
+
+    array.append(jsonObj);
+    return array;
+}
+
+QJsonArray StandardsData::setStdData(QMap<QString, QString> editMap)
+{
+    TSqlQuery query;
+    QJsonObject jsonObj;
+    QJsonArray jsonArr;
+    QString msg;
+
+    editMap["country"] = editMap["country"].toUpper();
+
+    if(editMap["lfdnr"].count() < 2)
+    {
+        editMap["lfdnr"] = "00" + editMap["lfdnr"];
+    }
+    else if(editMap["lfdnr"].count() < 3)
+    {
+        editMap["lfdnr"] = "0" + editMap["lfdnr"];
+    }
+
+    query.prepare("INSERT INTO standards_data(lfdnr, spec_title, spec_desc, spec_version, spec_release, obj_sname, ac_classes, pc_classes, cat_class, country, lang, spec_content, spec_active) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+
+    query.addBindValue(editMap["lfdnr"]);
+    query.addBindValue(editMap["spec_title"]);
+    query.addBindValue(editMap["spec_desc"]);
+    query.addBindValue(editMap["spec_version"]);
+    query.addBindValue(editMap["spec_release"]);
+    query.addBindValue(editMap["obj_sname"]);
+    query.addBindValue(editMap["ac_classes"]);
+    query.addBindValue(editMap["pc_classes"]);
+    query.addBindValue(editMap["cat_class"]);
+    query.addBindValue(editMap["country"]);
+    query.addBindValue(editMap["lang"]);
+    query.addBindValue(editMap["spec_content"]);
+    query.addBindValue(editMap["spec_active"]);
+
+    if(!query.exec())
+    {
+        msg = query.lastError().text();
+        jsonObj["ERROR"] = "1";
+        jsonObj["errMsg"] = msg;
+        jsonObj["query"] = query.lastQuery();
+        msg = "setObjSpecs : ";
+        msg.append(msg);
+        msg.append(" : ");
+        msg.append(query.lastQuery());
+        tError(msg.toUtf8());
+
+        jsonArr.append(jsonObj);
+        return jsonArr;
+    }
+
+    int last_id = query.lastInsertId().toInt();
+
+    query.prepare("INSERT INTO standards_meta(spec_data_id, spec_created, spec_last_modified, spec_valid_start, spec_valid_end, last_editor, g_legacy, responsibility, spec_comment, spec_marker, groups) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+
+    query.addBindValue(last_id);
+    query.addBindValue(editMap["spec_valid_start"]);
+    query.addBindValue(editMap["spec_valid_start"]);
+    query.addBindValue(editMap["spec_valid_start"]);
+    query.addBindValue(editMap["spec_valid_start"]);
+    query.addBindValue(editMap["last_editor"]);
+    query.addBindValue(editMap["g_legacy"]);
+    query.addBindValue(editMap["resp"]);
+    query.addBindValue(editMap["comment"]);
+    query.addBindValue(editMap["marker"]);
+
+    query.addBindValue("{ALL}");
+
+    if(!query.exec())
+    {
+        msg = query.lastError().text();
+        jsonObj["ERROR"] = "1";
+        jsonObj["errMsg"] = msg;
+        jsonObj["query"] = query.lastQuery();
+        msg = "setObjSpecs : ";
+        msg.append(msg);
+        msg.append(" : ");
+        msg.append(query.lastQuery());
+        tError(msg.toUtf8());
+
+        jsonArr.append(jsonObj);
+        return jsonArr;
+    }
+    else
+    {
+        jsonObj["ERROR"] = "0";
+        jsonObj["errMsg"] = "Datensatz eingefügt";
+        jsonObj["last_data_id"] = last_id;
+        jsonObj["last_meta_id"] = query.lastInsertId().toInt();
+    }
+
+    jsonArr.append(jsonObj);
+    return jsonArr;
+}
+
+QJsonArray StandardsData::getHighestLfdnr(const QString &category)
+{
+    TSqlQuery query;
+    QJsonObject jsonObject;
+    QJsonArray jsonArray;
+    QString msg;
+
+    query.prepare("SELECT MAX(lfdnr) FROM public.standards_data WHERE cat_class = ?");
+    query.addBindValue(category);
+
+    query.exec();
+    query.next();
+
+    jsonObject["lfdnr"] = query.value(0).toString();
+    jsonObject["cat"] = category;
+    jsonArray.append(jsonObject);
+
+    return jsonArray;
+}
+
+QJsonArray StandardsData::chkLfdnrEditor(QMap<QString, QString> editMap)
+{
+    TSqlQuery query;
+    QJsonObject jsonObject;
+    QJsonArray jsonArray;
+    QString msg;
+
+    query.prepare("SELECT id, lfdnr, spec_title, obj_sname, country, lang FROM public.standards_data WHERE cat_class = ? AND lfdnr = ?");
+    query.addBindValue(editMap["cat_class"]);
+    query.addBindValue(editMap["lfdnr"]);
+
+    if(!query.exec())
+     {
+        msg = query.lastError().text();
+        jsonObject["MSG"] = msg;
+        jsonObject["ERROR"] = "1";
+        jsonArray.append(jsonObject);
+     }
+
+     while (query.next())
+     {
+         jsonObject["id"] = query.value(0).toString();
+         jsonObject["lfdnr"] = query.value(1).toString();
+         jsonObject["spec_title"] = query.value(2).toString();
+         jsonObject["obj_sname"] = query.value(3).toString();
+         jsonObject["country"] = query.value(4).toString();
+         jsonObject["lang"] = query.value(5).toString();
+
+         jsonArray.append(jsonObject);
+     }
+
+     return jsonArray;
+}
+
+QJsonArray StandardsData::getStatistics()
+{
+    TSqlQuery query;
+    QJsonObject jsonObject, jsonObjReleaseTypes;
+    QJsonArray jsonArray, jsonArrReleaseTypes;
+    QString msg;
+    QList<QString> releaseTypes;
+
+    // count
+    query.prepare("SELECT count(id) FROM standards_data");
+    query.exec();
+    query.next();
+    jsonObject["count_id"] = query.value(0).toString();
+
+    // active
+    query.prepare("select count(id) from standards_data where spec_active = 1");
+    query.exec();
+    query.next();
+    jsonObject["count_active"] = query.value(0).toString();
+
+    // countries
+    query.prepare("select count(distinct country) from standards_data");
+    query.exec();
+    query.next();
+    jsonObject["count_countries"] = query.value(0).toString();
+
+    // languages
+    query.prepare("select count(lang) from standards_data where lang = 'de_DE'");
+    query.exec();
+    query.next();
+    jsonObject["count_language_de"] = query.value(0).toString();
+    query.prepare("select count(lang) from standards_data where lang = 'en_GB'");
+    query.exec();
+    query.next();
+    jsonObject["count_language_en"] = query.value(0).toString();
+
+    // releases
+    query.prepare("SELECT std_attr FROM std_system WHERE std_type = 'release_types' ORDER BY sort");
+    query.exec();
+    while (query.next())
+    {
+        releaseTypes.append(query.value(0).toString());
+    }
+
+    QList<QString>::iterator i;
+    for (i = releaseTypes.begin(); i != releaseTypes.end(); ++i)
+    {
+        query.prepare("select count(spec_release) from standards_data where spec_release = ?");
+        query.addBindValue(*i);
+        query.exec();
+        query.next();
+        jsonObjReleaseTypes["release_type"] = *i;
+        jsonObjReleaseTypes["count_release_type"] = query.value(0).toString();
+        jsonArrReleaseTypes.append(jsonObjReleaseTypes);
+    }
+
+    jsonObject["countCheckLfdnrCat"] = QString::number( StandardsData::countCheckLfdnrCat() );
+
+    jsonArray.append(jsonObject);
+    jsonArray.append(jsonArrReleaseTypes);
+
+    return jsonArray;
+}
+
+int StandardsData::id() const
+{
+    return d->id;
+}
+
+QString StandardsData::lfdnr() const
+{
+    return d->lfdnr;
+}
+
+void StandardsData::setLfdnr(const QString &lfdnr)
+{
+    d->lfdnr = lfdnr;
+}
+
+QString StandardsData::specTitle() const
+{
+    return d->spec_title;
+}
+
+void StandardsData::setSpecTitle(const QString &specTitle)
+{
+    d->spec_title = specTitle;
+}
+
+QString StandardsData::specDesc() const
+{
+    return d->spec_desc;
+}
+
+void StandardsData::setSpecDesc(const QString &specDesc)
+{
+    d->spec_desc = specDesc;
+}
+
+QString StandardsData::specVersion() const
+{
+    return d->spec_version;
+}
+
+void StandardsData::setSpecVersion(const QString &specVersion)
+{
+    d->spec_version = specVersion;
+}
+
+QString StandardsData::specRelease() const
+{
+    return d->spec_release;
+}
+
+void StandardsData::setSpecRelease(const QString &specRelease)
+{
+    d->spec_release = specRelease;
+}
+
+QString StandardsData::objSname() const
+{
+    return d->obj_sname;
+}
+
+void StandardsData::setObjSname(const QString &objSname)
+{
+    d->obj_sname = objSname;
+}
+
+QString StandardsData::acClasses() const
+{
+    return d->ac_classes;
+}
+
+void StandardsData::setAcClasses(const QString &acClasses)
+{
+    d->ac_classes = acClasses;
+}
+
+QString StandardsData::pcClasses() const
+{
+    return d->pc_classes;
+}
+
+void StandardsData::setPcClasses(const QString &pcClasses)
+{
+    d->pc_classes = pcClasses;
+}
+
+QString StandardsData::catClass() const
+{
+    return d->cat_class;
+}
+
+void StandardsData::setCatClass(const QString &catClass)
+{
+    d->cat_class = catClass;
+}
+
+QString StandardsData::country() const
+{
+    return d->country;
+}
+
+void StandardsData::setCountry(const QString &country)
+{
+    d->country = country;
+}
+
+QString StandardsData::lang() const
+{
+    return d->lang;
+}
+
+void StandardsData::setLang(const QString &lang)
+{
+    d->lang = lang;
+}
+
+QByteArray StandardsData::specContent() const
+{
+    return d->spec_content;
+}
+
+void StandardsData::setSpecContent(const QByteArray &specContent)
+{
+    d->spec_content = specContent;
+}
+
+int StandardsData::specActive() const
+{
+    return d->spec_active;
+}
+
+void StandardsData::setSpecActive(int specActive)
+{
+    d->spec_active = specActive;
+}
+
+StandardsData &StandardsData::operator=(const StandardsData &other)
+{
+    d = other.d;  // increments the reference count of the data
+    return *this;
+}
+
+StandardsData StandardsData::create(const QString &lfdnr, const QString &specTitle, const QString &specDesc, const QString &specVersion, const QString &specRelease, const QString &objSname, const QString &acClasses, const QString &pcClasses, const QString &catClass, const QString &country, const QString &lang, const QByteArray &specContent, int specActive)
+{
+    StandardsDataObject obj;
+    obj.lfdnr = lfdnr;
+    obj.spec_title = specTitle;
+    obj.spec_desc = specDesc;
+    obj.spec_version = specVersion;
+    obj.spec_release = specRelease;
+    obj.obj_sname = objSname;
+    obj.ac_classes = acClasses;
+    obj.pc_classes = pcClasses;
+    obj.cat_class = catClass;
+    obj.country = country;
+    obj.lang = lang;
+    obj.spec_content = specContent;
+    obj.spec_active = specActive;
+    if (!obj.create()) {
+        return StandardsData();
+    }
+    return StandardsData(obj);
+}
+
+StandardsData StandardsData::create(const QVariantMap &values)
+{
+    StandardsData model;
+    model.setProperties(values);
+    if (!model.d->create()) {
+        model.d->clear();
+    }
+    return model;
+}
+
+StandardsData StandardsData::get(int id)
+{
+    TSqlORMapper<StandardsDataObject> mapper;
+    return StandardsData(mapper.findByPrimaryKey(id));
+}
+
+int StandardsData::count()
+{
+    TSqlORMapper<StandardsDataObject> mapper;
+    return mapper.findCount();
+}
+
+QList<StandardsData> StandardsData::getAll()
+{
+    return tfGetModelListByCriteria<StandardsData, StandardsDataObject>(TCriteria());
+}
+
+QJsonArray StandardsData::getAllJson()
+{
+    QJsonArray array;
+    TSqlORMapper<StandardsDataObject> mapper;
+
+    if (mapper.find() > 0) {
+        for (TSqlORMapperIterator<StandardsDataObject> i(mapper); i.hasNext(); ) {
+            array.append(QJsonValue(QJsonObject::fromVariantMap(StandardsData(i.next()).toVariantMap())));
+        }
+    }
+    return array;
+}
+
+TModelObject *StandardsData::modelData()
+{
+    return d.data();
+}
+
+const TModelObject *StandardsData::modelData() const
+{
+    return d.data();
+}
+
+QDataStream &operator<<(QDataStream &ds, const StandardsData &model)
+{
+    auto varmap = model.toVariantMap();
+    ds << varmap;
+    return ds;
+}
+
+QDataStream &operator>>(QDataStream &ds, StandardsData &model)
+{
+    QVariantMap varmap;
+    ds >> varmap;
+    model.setProperties(varmap);
+    return ds;
+}
+
+// Don't remove below this line
+T_REGISTER_STREAM_OPERATORS(StandardsData)

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<%#include "annexdata.h" %>
+<% tfetch(QVariantMap, annexData); %>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title><%= controller()->name() + ": " + controller()->activeAction() %></title>
+</head>
+<body>
+
+<p id="redmsg" style="color: red"><%==$ red_msg %><%=$ error %></p><p id="greenmsg" style="color: green"><%==$ green_msg %><%=$ notice %></p>
+
+<h1>New Annex Data</h1>
+
+<%== formTag(urla("create"), Tf::Post) %>
+  <p>
+    <label>Lfdnr<br /><input name="annexData[lfdnr]" value="<%= annexData["lfdnr"] %>" /></label>
+  </p>
+  <p>
+    <label>Spec Title<br /><input name="annexData[specTitle]" value="<%= annexData["specTitle"] %>" /></label>
+  </p>
+  <p>
+    <label>Spec Desc<br /><input name="annexData[specDesc]" value="<%= annexData["specDesc"] %>" /></label>
+  </p>
+  <p>
+    <label>Spec Version<br /><input name="annexData[specVersion]" value="<%= annexData["specVersion"] %>" /></label>
+  </p>
+  <p>
+    <label>Spec Release<br /><input name="annexData[specRelease]" value="<%= annexData["specRelease"] %>" /></label>
+  </p>
+  <p>
+    <label>Obj Sname<br /><input name="annexData[objSname]" value="<%= annexData["objSname"] %>" /></label>
+  </p>
+  <p>
+    <label>Ac Classes<br /><input name="annexData[acClasses]" value="<%= annexData["acClasses"] %>" /></label>
+  </p>
+  <p>
+    <label>Pc Classes<br /><input name="annexData[pcClasses]" value="<%= annexData["pcClasses"] %>" /></label>
+  </p>
+  <p>
+    <label>Cat Class<br /><input name="annexData[catClass]" value="<%= annexData["catClass"] %>" /></label>
+  </p>
+  <p>
+    <label>Country<br /><input name="annexData[country]" value="<%= annexData["country"] %>" /></label>
+  </p>
+  <p>
+    <label>Lang<br /><input name="annexData[lang]" value="<%= annexData["lang"] %>" /></label>
+  </p>
+  <p>
+    <label>Spec Content<br /><input name="annexData[specContent]" value="<%= annexData["specContent"] %>" /></label>
+  </p>
+  <p>
+    <label>Spec Active<br /><input name="annexData[specActive]" value="<%= annexData["specActive"] %>" /></label>
+  </p>
+  <p>
+    <input type="submit" value="Create" />
+  </p>
+</form>
+
+<%== linkTo("Back", urla("index")) %>
+
+</body>
+</html>

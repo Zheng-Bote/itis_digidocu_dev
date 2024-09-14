@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<%#include "releasemgmt.h" %>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <html lang="de">
+
+  <title><%= controller()->name() + ": " + controller()->activeAction() %></title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <link rel="icon" href="/favicon.ico">
+
+  <script>
+    function doLocal()
+    {
+        console.log("this is local");
+
+        let l_footer = document.getElementById("itisFooter");
+        l_footer.message = '<a href="/stdsystem/license" title="license">Lizenzen</a>&nbsp;<a href="/stdsystem/imprint" title="Imprint">Impressum</a>';
+
+        //let l_menu = document.getElementById("itisMenu"); 
+        //l_menu.message = "<%= controller()->name() %>";
+    }
+
+	function setLanguage(lang)
+	{
+		if(lang == "0")
+		{lang = "de";}
+		else{lang = "en";}
+		document.cookie = "lang=" + lang + ";" + ";path=/";
+		location.reload();
+	}
+	
+	function open_show(id) 
+	{
+		window.open("/releasemgmt/show/" + id);
+	}
+
+	function open_qedit(id) 
+	{
+		window.open("/releasemgmt/save/" + id);
+	}
+
+	function open_edit(id) 
+	{
+		window.open("/releasemgmt/save/" + id);
+	}
+
+  </script>
+
+  <script type="module" src="/js/itis_init.js" /></script>
+  <link rel="stylesheet" href="/css/w3.css">  
+  <link rel="stylesheet" href="/css/custom.css">
+   
+</head>
+
+<body class="w3-container w3-margin" id="body">
+
+  <itis-menu id="itisMenu" message=""></itis-menu>
+
+  <div class="w3-container w3-light-blue">
+    <h2 id="portaltitle">ITIS-API::Admin-Portal</h2>
+  </div>
+
+  <itis-menusub id="itisMenuSub" message="<%= controller()->name() %>"></itis-menusub>
+
+<h3><page-title id="pagetitle" message=""><%= controller()->name() + ": " + controller()->activeAction() %></page-title></h3>
+<page-desc id="pagedesc" message=""></page-desc>
+
+<span style="color: red">
+	<span  id="redmsg"><%==$ red_msg %></span>&nbsp;<span><%=$ error %></span>
+</span>
+<span style="color: green">
+	<span id="greenmsg"><%==$ green_msg %></span>&nbsp;<span><%=$ notice %></span>
+</span>
+
+<main>
+<page-content id="pagecontent" message="">
+<article>
+	<h4>Lifecycle und Release-Zyklen</h4>
+	<section>
+		<h5>Bausteine- und Dokumenten- Lifecycle</h5>
+		<p>Einzelne Bausteine als auch Vorgabedokumente- und Anhänge haben einen Release-Status</p>
+		<ul>
+			<li><b>draft</b><br>Bausteine im Erstellungs- und Modifizierungsprozess</li>
+			<li><b>pre-release</b><br>Bausteine im fortgeschrittenen Reifegrad werden innerhalb eines Vorgabedokumentes bzw. Anhangs auf den Status pre-released angehoben.</li>
+				<ul>
+					<li><b>pre-release review</b><br>Vorgabedokument bzw. Anhang wurde zum Review vorgelegt</li>
+				</ul>
+			<li><b>released</b><br>Vorgabedokument bzw. Anhang wurde nach der erfolgreichen Review-Abnahme und Freigabe veröffentlicht.</li>
+			<li><b>expired</b><br>das Vorgabedokument bzw. Anhang wurde aus der Veröffentlichung zurückgezogen, ggf. durch eine neuere Version abgelöst.</li>
+		</ul>
+	</section>
+	<section>
+		<h5>Release-Zyklus</h5>
+		<p>Die Abkürzung CI/CD hat unterschiedliche Bedeutungen.</p>
+		<ul>
+			<li><b>„CI“: Continuous Integration</b>
+				<br/>Build-Artefakte werden in einem versionskontrollierten Artefakt-Repository abgelegt.
+				<br>&rArr; hier: Der Automatisierungsprozess für Baustein-Admins. Bei Anhebung eines Bausteins von "draft" auf "pre-release" werden diese gegengeprüft (review) und im Repository "released" zusammengeführt.
+			</li>
+			<li><b>„CD“: Continuous Delivery</b>
+				<br/>Build-Artefakte oder Gesamt-Paket werden ausgeliefert.
+				<br>&rArr; hier: Das Repository "released" wird öffentlich zugänglich (Online-Version HTML sowie PDF download) sowie zur weiteren Verbreitung bereitgestellt.
+			</li>
+			<li><b>„CD (CDD)": Continuous Deployment</b>
+				<br/>Optional, nicht immer erforderlich. Nach dem CD eines Gesamt-Paketes erfolgt die Installation bzw. Austausch der Produktiv-Umgebung. 
+				<br>&rArr; hier: die automatische Verteilung in angeschlossene Systeme wie z.B. Group DMS (Archivierung) sowie halbautomatische Verteilung ins B2B-Partnerportal. Bei BMW derzeit nicht vorgesehen.
+			</li>
+		</ul>
+	</section>
+</article>
+</page-content>
+
+<br />
+
+</main>
+<itis-footer id="itisFooter" message=""></itis-footer>
+  
+</body>
+</html>
+

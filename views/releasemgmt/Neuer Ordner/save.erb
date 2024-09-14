@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<%#include "releasemgmt.h" %>
+<% tfetch(QVariantMap, releaseMgmt); %>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <html lang="de">
+
+  <title><%= controller()->name() + ": " + controller()->activeAction() %></title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="alternate icon" href="/favicon.ico">
+  <link rel="mask-icon" href="/favicon.svg" color="#b2b2b2">
+
+  <script>
+    function doLocal()
+    {
+        console.log("this is local");
+
+        let l_footer = document.getElementById("itisFooter");
+        l_footer.message = '<a href="/stdsystem/license" title="licenses">Lizenzen</a>&nbsp;<a href="/stdsystem/imprint" title="Imprint">Impressum</a>';
+
+        //let l_menu = document.getElementById("itisMenu"); 
+        //l_menu.message = "<%= controller()->name() %>";
+    }
+
+	function setLanguage(lang)
+	{
+		if(lang == "0")
+		{lang = "de";}
+		else{lang = "en";}
+		document.cookie = "lang=" + lang + ";" + ";path=/";
+		location.reload();
+	}
+  </script>
+
+  <script type="module" src="/js/itis_init.js" /></script>
+  <link rel="stylesheet" href="/css/w3.css">  
+  <link rel="stylesheet" href="/css/custom.css">  
+
+</head>
+
+<body class="w3-container w3-margin" id="body">
+
+  <itis-menu id="itisMenu" message=""></itis-menu>
+
+  <div class="w3-container w3-light-blue">
+    <h2 id="portaltitle">ITIS-API::Admin-Portal</h2>
+  </div>
+
+  <itis-menusub id="itisMenuSub" message="<%= controller()->name() %>"></itis-menusub>
+
+<h3 id="pagetitle"><page-title message=""><%= controller()->name() + ": " + controller()->activeAction() %></page-title></h3>
+<div id="pagedesc"><page-desc message=""></page-desc></div>
+
+<span style="color: red">
+	<span  id="redmsg"><%==$ red_msg %></span>&nbsp;<span><%=$ error %></span>
+</span>
+<span style="color: green">
+	<span id="greenmsg"><%==$ green_msg %></span>&nbsp;<span><%=$ notice %></span>
+</span>
+
+<main>
+<div id="pagecontent"><page-content message=""></page-content></div>
+
+<span class="w3-btn w3-red w3-wide" style="border-radius: 0.5em 0px 0px 0px;"><img src="/Icons/trash.svg">&nbsp;<%== linkTo("Remove", urla("remove", releaseMgmt["id"]), Tf::Post, "confirm('Are you sure?')") %></span>
+&nbsp;&nbsp;&nbsp;
+<a href="/releasemgmt/list_all" class="w3-btn w3-light-grey"><img src="/Icons/justify.svg">&nbsp;zur&uuml;ck</a>
+<br/><br>
+
+<%== formTag(urla("save", releaseMgmt["id"]), Tf::Post) %>
+  <p>
+    <label>ID<br /><input class="w3-input" type="text" name="releaseMgmt[id]" value="<%= releaseMgmt["id"] %>" readonly="readonly" /></label>
+  </p>
+  <p>
+    <label>Obj Sname<br /><input class="w3-input" type="text" name="releaseMgmt[objSname]" value="<%= releaseMgmt["objSname"] %>" /></label>
+  </p>
+  <p>
+    <label>Spec Version<br /><input class="w3-input" type="text" name="releaseMgmt[specVersion]" value="<%= releaseMgmt["specVersion"] %>" /></label>
+  </p>
+  <p>
+    <label>Ac Classes<br /><input class="w3-input" type="text" name="releaseMgmt[acClasses]" value="<%= releaseMgmt["acClasses"] %>" /></label>
+  </p>
+  <p>
+    <label>Pc Classes<br /><input class="w3-input" type="text" name="releaseMgmt[pcClasses]" value="<%= releaseMgmt["pcClasses"] %>" /></label>
+  </p>
+  <p>
+    <label>Cat Class<br /><input class="w3-input" type="text" name="releaseMgmt[catClass]" value="<%= releaseMgmt["catClass"] %>" /></label>
+  </p>
+  <p>
+    <label>Country<br /><input class="w3-input" type="text" name="releaseMgmt[country]" value="<%= releaseMgmt["country"] %>" /></label>
+  </p>
+  <p>
+    <label>Lang<br /><input class="w3-input" type="text" name="releaseMgmt[lang]" value="<%= releaseMgmt["lang"] %>" /></label>
+  </p>
+  <p>
+    <label>Doc Type<br /><input class="w3-input" type="text" name="releaseMgmt[docType]" value="<%= releaseMgmt["docType"] %>" /></label>
+  </p>
+  <p>
+    <label>Rel Requester<br /><input class="w3-input" type="text" name="releaseMgmt[relRequester]" value="<%= releaseMgmt["relRequester"] %>" /></label>
+  </p>
+  <p>
+    <label>Relrequest Date<br /><input class="w3-input" type="text" name="releaseMgmt[relrequestDate]" value="<%= releaseMgmt["relrequestDate"] %>" /></label>
+  </p>
+  <p>
+    <label>Rel Creator<br /><input class="w3-input" type="text" name="releaseMgmt[relCreator]" value="<%= releaseMgmt["relCreator"] %>" /></label>
+  </p>
+  <p>
+    <label>Relcreator Decisdate<br /><input class="w3-input" type="text" name="releaseMgmt[relcreatorDecisdate]" value="<%= releaseMgmt["relcreatorDecisdate"] %>" /></label>
+  </p>
+  <p>
+    <label>Rel Inspector<br /><input class="w3-input" type="text" name="releaseMgmt[relInspector]" value="<%= releaseMgmt["relInspector"] %>" /></label>
+  </p>
+  <p>
+    <label>Relinspect Decisdate<br /><input class="w3-input" type="text" name="releaseMgmt[relinspectDecisdate]" value="<%= releaseMgmt["relinspectDecisdate"] %>" /></label>
+  </p>
+  <p>
+    <label>Rel Approver<br /><input class="w3-input" type="text" name="releaseMgmt[relApprover]" value="<%= releaseMgmt["relApprover"] %>" /></label>
+  </p>
+  <p>
+    <label>Relapprov Decisdate<br /><input class="w3-input" type="text" name="releaseMgmt[relapprovDecisdate]" value="<%= releaseMgmt["relapprovDecisdate"] %>" /></label>
+  </p>
+  <p>
+    <label>Ci Date<br /><input class="w3-input" type="text" name="releaseMgmt[ciDate]" value="<%= releaseMgmt["ciDate"] %>" /></label>
+  </p>
+  <p>
+    <label>Cd Date<br /><input class="w3-input" type="text" name="releaseMgmt[cdDate]" value="<%= releaseMgmt["cdDate"] %>" /></label>
+  </p>
+  <p>
+    <label>Cdd Date<br /><input class="w3-input" type="text" name="releaseMgmt[cddDate]" value="<%= releaseMgmt["cddDate"] %>" /></label>
+  </p>
+  <p>
+    <input type="submit" value="speichern &raquo;"/>
+  </p>
+</form>
+
+<br>
+<span class="w3-btn w3-red"><img src="/Icons/trash.svg">&nbsp;<%== linkTo("Remove", urla("remove", releaseMgmt["id"]), Tf::Post, "confirm('Are you sure?')") %></span>
+&nbsp;&nbsp;&nbsp;
+<a href="/releasemgmt/list_all" class="w3-btn w3-light-grey"><img src="/Icons/justify.svg">&nbsp;zur&uuml;ck</a>
+
+
+
+</main>
+<itis-footer id="itisFooter" message=""></itis-footer>
+  
+</body>
+</html>

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<%#include "itisnews.h" %>
+<% tfetch(QVariantMap, itisNews); %>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <html lang="de">
+
+  <title><%= controller()->name() + ": " + controller()->activeAction() %></title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <link rel="icon" href="/favicon.ico">
+
+  <script>
+    function doLocal()
+    {
+        console.log("this is local");
+
+        let l_footer = document.getElementById("itisFooter");
+        l_footer.message = '<a href="/stdsystem/license" title="licenses">Lizenzen</a>&nbsp;<a href="/stdsystem/imprint" title="Imprint">Impressum</a>';
+
+		setNewsDate();
+	}
+
+	function setNewsDate()
+	{
+		var d = new Date();
+		var mm = d.getMonth() + 1;
+		var dd = d.getDate();
+		var yy = d.getFullYear();
+		var hh = d.getHours();
+		var m = d.getMinutes();
+
+		if(mm < 10)
+		{
+			mm = "0" + mm;
+		}
+		if(dd < 10)
+		{
+			dd = "0" + dd;
+		}
+		if(hh < 10)
+		{
+			hh = "0" + hh;
+		}
+		if(m < 10)
+		{
+			m = "0" + m;
+		}
+		let datestr = yy + "-" + mm + "-" + dd + " " + hh + ":" + m;
+		
+		document.getElementById("createDate").value = datestr;
+		document.getElementById("startDate").value = datestr;
+		document.getElementById("endDate").value = datestr;
+	}
+
+	function setLanguage(lang)
+	{
+		if(lang == "0")
+		{lang = "de";}
+		else{lang = "en";}
+		document.cookie = "lang=" + lang + ";" + ";path=/";
+		location.reload();
+	}
+	
+  </script>
+
+  <script type="module" src="/js/itis_init.js" /></script>
+  
+  <link rel="stylesheet" href="/css/w3.css">  
+  <link rel="stylesheet" href="/css/custom.css">  
+
+</head>
+
+<body class="w3-container w3-margin" id="body">
+
+  <itis-menu id="itisMenu" message=""></itis-menu>
+
+  <div class="w3-container w3-light-blue">
+    <h2 id="portaltitle">ITIS-API::Admin-Portal</h2>
+  </div>
+
+  <itis-menusub id="itisMenuSub" message="<%= controller()->name() %>"></itis-menusub>
+
+<h3 id="pagetitle"><page-title message=""><%= controller()->name() + ": " + controller()->activeAction() %></page-title></h3>
+<div id="pagedesc"><page-desc message=""></page-desc></div>
+
+<p id="redmsg" style="color: red"><%==$ red_msg %><%=$ error %></p><p id="greenmsg" style="color: green"><%==$ green_msg %><%=$ notice %></p>
+
+<main>
+    
+<div id="pagecontent"><page-content message=""></page-content></div>	
+
+<%== formTag(urla("create"), Tf::Post) %>
+  <p>
+    <label>News Type <small>(admin, standards, products)</small><br /><input type="text" pattern="^(admin)|(standards)|(products)$" title="admin, standards, products" class="w3-input" name="itisNews[newsType]" value="<%= itisNews["newsType"] %>" required /></label>
+  </p>
+  <p>
+    <label>News Type Sub <small>(new, pending, closed, changed, deprecated, security, patched)</small><br /><input type="text" pattern="^(new)|(pending)|(closed)|(changed)|(deprecated)|(security)|(patched)$" title="new, pending, closed, changed, deprecated, security, patched" class="w3-input" name="itisNews[newsTypeSub]" value="<%= itisNews["newsTypeSub"] %>" required /></label>
+  </p>
+  <p>
+    <label>News Title De<br /><input type="text" minlength="2" maxlength="25" class="w3-input" name="itisNews[newsTitleDe]" value="<%= itisNews["newsTitleDe"] %>" required /></label>
+  </p>
+  <p>
+    <label>News Title En<br /><input type="text" minlength="2" maxlength="25" class="w3-input" name="itisNews[newsTitleEn]" value="<%= itisNews["newsTitleEn"] %>" required /></label>
+  </p>
+  <p>
+    <label>News Desc De<br /><input type="text" minlength="10" maxlength="50" class="w3-input" name="itisNews[newsDescDe]" value="<%= itisNews["newsDescDe"] %>" required /></label>
+  </p>
+  <p>
+    <label>News Desc En<br /><input type="text" minlength="10" maxlength="50" class="w3-input" name="itisNews[newsDescEn]" value="<%= itisNews["newsDescEn"] %>" required /></label>
+  </p>
+  <p>
+    <label>News Text De<br /><input type="text" minlength="10" maxlength="255" class="w3-input" name="itisNews[newsTextDe]" value="<%= itisNews["newsTextDe"] %>" required /></label>
+  </p>
+  <p>
+    <label>News Text En<br /><input type="text" minlength="10" maxlength="255" class="w3-input" name="itisNews[newsTextEn]" value="<%= itisNews["newsTextEn"] %>" required /></label>
+  </p>
+  <p>
+    <label>News Prio <small>(low, medium, high, critical)</small><br /><input type="text" pattern="^(low)|(medium)|(high)|(critical)$" title="low, medium, high, critical" class="w3-input" name="itisNews[newsPrio]" value="<%= itisNews["newsPrio"] %>" required /></label>
+  </p>
+  <p>
+    <label>Author<br /><input class="w3-input" name="itisNews[author]" value="<%=$ usermail %>" readonly /></label>
+  </p>
+  <p>
+    <label>News Created<br /><input class="w3-input" name="itisNews[newsCreated]" id="createDate" value="<%= itisNews["newsCreated"] %>" readonly /></label>
+  </p>
+  <p>
+    <label>News Valid Start<br /><input type="text" pattern="^(20)([0-9]{2})-([0|1]{1})([0-2]{1})-([0-3]{1})([0-9]{1})\s([0-2]{1})([0-9]{1}):([0-5]{1})([0-9]{1})$" title="YYYY-MM-DD hh:mm" class="w3-input" name="itisNews[newsValidStart]" id="startDate" value="<%= itisNews["newsValidStart"] %>" required /></label>
+  </p>
+  <p>
+    <label>News Valid End<br /><input type="text" pattern="^(20)([0-9]{2})-([0|1]{1})([0-2]{1})-([0-3]{1})([0-9]{1})\s([0-2]{1})([0-9]{1}):([0-5]{1})([0-9]{1})$" title="YYYY-MM-DD hh:mm" class="w3-input" name="itisNews[newsValidEnd]" id="endDate" value="<%= itisNews["newsValidEnd"] %>" required /></label>
+  </p>
+  <p>
+  <p>
+    <input type="submit" value="Create &raquo;" />
+  </p>
+</form>
+
+<br/>
+
+<a href="/itisNews/list_all" class="w3-btn w3-light-grey">&laquo;&nbsp;zur&uuml;ck</a>
+
+</main>
+
+<itis-footer id="itisFooter" message=""></itis-footer>
+</body>
+</html>
+

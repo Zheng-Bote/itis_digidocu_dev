@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<%#include "annexmeta.h" %>
+<% tfetch(QVariantMap, annexMeta); %>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title><%= controller()->name() + ": " + controller()->activeAction() %></title>
+</head>
+<body>
+
+<p id="redmsg" style="color: red"><%==$ red_msg %><%=$ error %></p><p id="greenmsg" style="color: green"><%==$ green_msg %><%=$ notice %></p>
+
+<h1>Editing Annex Meta</h1>
+
+<%== formTag(urla("save", annexMeta["id"]), Tf::Post) %>
+  <p>
+    <label>ID<br /><input type="text" name="annexMeta[id]" value="<%= annexMeta["id"] %>" readonly="readonly" /></label>
+  </p>
+  <p>
+    <label>Spec Data ID<br /><input type="text" name="annexMeta[specDataId]" value="<%= annexMeta["specDataId"] %>" /></label>
+  </p>
+  <p>
+    <label>Spec Created<br /><input type="text" name="annexMeta[specCreated]" value="<%= annexMeta["specCreated"] %>" /></label>
+  </p>
+  <p>
+    <label>Spec Last Modified<br /><input type="text" name="annexMeta[specLastModified]" value="<%= annexMeta["specLastModified"] %>" /></label>
+  </p>
+  <p>
+    <label>Spec Valid Start<br /><input type="text" name="annexMeta[specValidStart]" value="<%= annexMeta["specValidStart"] %>" /></label>
+  </p>
+  <p>
+    <label>Spec Valid End<br /><input type="text" name="annexMeta[specValidEnd]" value="<%= annexMeta["specValidEnd"] %>" /></label>
+  </p>
+  <p>
+    <label>Last Editor<br /><input type="text" name="annexMeta[lastEditor]" value="<%= annexMeta["lastEditor"] %>" /></label>
+  </p>
+  <p>
+    <label>G Legacy<br /><input type="text" name="annexMeta[gLegacy]" value="<%= annexMeta["gLegacy"] %>" /></label>
+  </p>
+  <p>
+    <label>Responsibility<br /><input type="text" name="annexMeta[responsibility]" value="<%= annexMeta["responsibility"] %>" /></label>
+  </p>
+  <p>
+    <label>Spec Comment<br /><input type="text" name="annexMeta[specComment]" value="<%= annexMeta["specComment"] %>" /></label>
+  </p>
+  <p>
+    <label>Spec Marker<br /><input type="text" name="annexMeta[specMarker]" value="<%= annexMeta["specMarker"] %>" /></label>
+  </p>
+  <p>
+    <label>Groups<br /><input type="text" name="annexMeta[groups]" value="<%= annexMeta["groups"] %>" /></label>
+  </p>
+  <p>
+    <input type="submit" value="Save" />
+  </p>
+</form>
+
+<%== linkTo("Show", urla("show", annexMeta["id"])) %> |
+<%== linkTo("Back", urla("index")) %>
+</body>
+</html>

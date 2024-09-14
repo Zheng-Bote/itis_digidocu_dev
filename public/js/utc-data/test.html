@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="ZHENG Robert">
+    <title>Aufgabe 1</title>
+    
+    <script src="./UtcData.js"></script>
+  </head>
+<body id="body">
+
+
+<div>
+	<data-utc id="datautc" utctime="1970-01-01 00:00"></data-utc>
+</div>
+
+<button onClick="setUtc()">set utc</button>
+
+<script>
+
+	function setUtc()
+	{
+		console.log("function setUtc");
+		let datautc = document.getElementById("datautc");
+		datautc.setAttribute("utctime", "2021-04-25 16:06");
+	}
+</script>
+
+</body>
+</html>

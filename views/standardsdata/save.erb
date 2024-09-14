@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<%#include "standardsdata.h" %>
+<% tfetch(QVariantMap, standardsData); %>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <html lang="de">
+
+  <title><%= controller()->name() + ": " + controller()->activeAction() %></title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="alternate icon" href="/favicon.ico">
+  <link rel="mask-icon" href="/favicon.svg" color="#b2b2b2">
+
+  <script>
+    function doLocal()
+    {
+        console.log("this is local");
+
+        let l_footer = document.getElementById("itisFooter");
+        l_footer.message = '<a href="/stdsystem/license" title="licenses">Lizenzen</a>&nbsp;<a href="/stdsystem/imprint" title="Imprint">Impressum</a>';
+
+        //let l_menu = document.getElementById("itisMenu"); 
+        //l_menu.message = "<%= controller()->name() %>";
+    }
+
+	function setLanguage(lang)
+	{
+		if(lang == "0")
+		{lang = "de";}
+		else{lang = "en";}
+		document.cookie = "lang=" + lang + ";" + ";path=/";
+		location.reload();
+	}
+  </script>
+
+  <script type="module" src="/js/itis_init.js" /></script>
+  <link rel="stylesheet" href="/css/w3.css">  
+  <link rel="stylesheet" href="/css/custom.css">  
+
+</head>
+
+<body class="w3-container w3-margin" id="body">
+
+  <itis-menu id="itisMenu" message=""></itis-menu>
+
+  <div class="w3-container w3-light-blue">
+    <h2 id="portaltitle">ITIS-API::Admin-Portal</h2>
+  </div>
+
+  <itis-menusub id="itisMenuSub" message="<%= controller()->name() %>"></itis-menusub>
+
+<h3 id="pagetitle"><page-title message=""><%= controller()->name() + ": " + controller()->activeAction() %></page-title></h3>
+<div id="pagedesc"><page-desc message=""></page-desc></div>
+
+<p id="redmsg" style="color: red"><%==$ red_msg %><%=$ error %></p><p id="greenmsg" style="color: green"><%==$ green_msg %><%=$ notice %></p>
+
+<main>
+<div id="pagecontent"><page-content message=""></page-content></div>
+
+<span class="w3-btn w3-red w3-wide" style="border-radius: 0.5em 0px 0px 0px;"><img src="/Icons/trash.svg">&nbsp;<%== linkTo("Remove", urla("remove", standardsData["id"]), Tf::Post, "confirm('Are you sure?')") %></span>
+&nbsp;&nbsp;&nbsp;
+<a href="/standardsdata/editor_upd/<%= standardsData["id"] %>" class="w3-btn w3-light-grey"><img src="/Icons/textarea-t.svg">&nbsp;Editor</a>
+<a href="/standardsdata/list_all" class="w3-btn w3-light-grey"><img src="/Icons/justify.svg">&nbsp;zur&uuml;ck</a>
+<br/><br>
+
+<%== formTag(urla("save", standardsData["id"]), Tf::Post, 'class="w3-container"') %>
+<h4>Attribute</h4>
+  <p>
+    <label>ID<br /><input class="w3-input" type="text" name="standardsData[id]" value="<%= standardsData["id"] %>" readonly="readonly" /></label>
+  </p>
+  <p>
+    <label>Lfdnr<br /><input class="w3-input" type="text" name="standardsData[lfdnr]" value="<%= standardsData["lfdnr"] %>" readonly /></label>
+  </p>
+  <p>
+    <label>Spec Title<br /><input class="w3-input" type="text" name="standardsData[specTitle]" value="<%= standardsData["specTitle"] %>" readonly /></label>
+  </p>
+<!--  
+  <p>
+    <label>Spec Desc<br /><input class="w3-input" type="text" name="standardsData[specDesc]" value="<%= standardsData["specDesc"] %>" /></label>
+  </p>
+  <p>
+    <label>Spec Version<br /><input class="w3-input" type="text" name="standardsData[specVersion]" value="<%= standardsData["specVersion"] %>" /></label>
+  </p>
+  <p>
+    <label>Spec Release<br /><input class="w3-input" type="text" name="standardsData[specRelease]" value="<%= standardsData["specRelease"] %>" /></label>
+  </p>
+  <p>
+    <label>Obj Sname<br /><input class="w3-input" type="text" name="standardsData[objSname]" value="<%= standardsData["objSname"] %>" /></label>
+  </p>
+  <p>
+    <label>Ac Classes<br /><input class="w3-input" type="text" name="standardsData[acClasses]" value="<%= standardsData["acClasses"] %>" /></label>
+  </p>
+  <p>
+    <label>Pc Classes<br /><input class="w3-input" type="text" name="standardsData[pcClasses]" value="<%= standardsData["pcClasses"] %>" /></label>
+  </p>
+  <p>
+    <label>Cat Class<br /><input class="w3-input" type="text" name="standardsData[catClass]" value="<%= standardsData["catClass"] %>" /></label>
+  </p>
+  <p>
+    <label>Country<br /><input class="w3-input" type="text" name="standardsData[country]" value="<%= standardsData["country"] %>" /></label>
+  </p>
+  <p>
+    <label>Lang<br /><input class="w3-input" type="text" name="standardsData[lang]" value="<%= standardsData["lang"] %>" /></label>
+  </p>
+  <p>
+    <label>Spec Active<br /><input class="w3-input" type="text" name="standardsData[specActive]" value="<%= standardsData["specActive"] %>" /></label>
+  </p>
+-->
+  <br/>
+  <h4>Daten Quellcode</h4>
+  <p>
+    <label>Spec Content Source Code</label><br /><article><textarea name="standardsData[specContent]" style="width:100%; height:350px;"><%= standardsData["specContent"] %></textarea></article>
+  </p>
+  <p>
+    <input type="submit" value="speichern &raquo;"/>
+  </p>
+</form>
+
+<br>
+<span class="w3-btn w3-red"><img src="/Icons/trash.svg">&nbsp;<%== linkTo("Remove", urla("remove", standardsData["id"]), Tf::Post, "confirm('Are you sure?')") %></span>
+&nbsp;&nbsp;&nbsp;
+<a href="/standardsdata/editor_upd/<%= standardsData["id"] %>" class="w3-btn w3-light-grey"><img src="/Icons/textarea-t.svg">&nbsp;Editor</a>
+<a href="/standardsdata/list_all" class="w3-btn w3-light-grey"><img src="/Icons/justify.svg">&nbsp;zur&uuml;ck</a>
+
+<br/><br/>
+<h4>Daten Anzeige</h4>
+<p><label>Spec Content View</label><br><article><section><%== standardsData["specContent"] %></section></article></p>
+
+<br>
+<span class="w3-btn w3-red" style="border-radius: 0px 0px 0px 0.5em"><img src="/Icons/trash.svg">&nbsp;<%== linkTo("Remove", urla("remove", standardsData["id"]), Tf::Post, "confirm('Are you sure?')") %></span>
+&nbsp;&nbsp;&nbsp;
+<a href="/standardsdata/editor_upd/<%= standardsData["id"] %>" class="w3-btn w3-light-grey"><img src="/Icons/textarea-t.svg">&nbsp;Editor</a>
+<a href="/standardsdata/list_all" class="w3-btn w3-light-grey"><img src="/Icons/justify.svg">&nbsp;zur&uuml;ck</a>
+
+
+</main>
+<itis-footer id="itisFooter" message=""></itis-footer>
+  
+</body>
+</html>

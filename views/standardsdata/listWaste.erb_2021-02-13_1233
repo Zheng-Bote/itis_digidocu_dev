@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<%#include "standardsdata.h" %>
+<%#include "standardsdatawaste.h" %>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <html lang="de">
+
+  <title><%= controller()->name() + ": " + controller()->activeAction() %></title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <link rel="icon" href="/favicon.ico">
+
+  <script>
+    function doLocal()
+    {
+        console.log("this is local");
+
+        let l_footer = document.getElementById("itisFooter");
+        l_footer.message = '<a href="/stdsystem/license" title="license">Lizenzen</a>&nbsp;<a href="/stdsystem/imprint" title="Imprint">Impressum</a>';
+
+        //let l_menu = document.getElementById("itisMenu"); 
+        //l_menu.message = "<%= controller()->name() %>";
+        
+        let counter = "<%=$ counter %>";
+        if(counter > 50)
+        {
+			document.getElementById("redmsg").innerHTML = `${counter} Bausteine gefunden`; 
+		}
+		else
+		{
+			document.getElementById("greenmsg").innerHTML = `${counter} Bausteine gefunden`; 
+		}
+		
+		crTable();
+    }
+
+	function crTable()
+	{
+		const jsondata = "<%=$ standardsDataWasteList %>";
+		const obj = JSON.stringify(jsondata);
+		//document.getElementById("pagecontent").innerHTML = data;
+		const table = document.getElementById("myTable");
+		
+		// id, changed_on, id_old, lfdnr, spec_title, spec_desc, spec_version, spec_release, obj_sname, ac_classes, pc_classes, cat_class, country, lang, spec_content, spec_active
+		for (i in obj) 
+        {
+			let tr =  document.createElement("tr");
+			let td = document.createElement("td");
+			
+			td.setAttribute('id', obj[i].id);
+			td.innerHTML = "nix"; 
+			tr.appendChild(td);
+			table.appendChild(tr);
+			
+			td = document.createElement("td");
+			td.innerHTML = obj[i].lfdnr;
+			tr.appendChild(td);
+			table.appendChild(tr);
+			
+			td = document.createElement("td");
+			td.innerHTML = obj[i].spec_title;
+			tr.appendChild(td);
+			table.appendChild(tr);
+			
+			td = document.createElement("td");
+			td.innerHTML = obj[i].spec_desc;
+			tr.appendChild(td);
+			table.appendChild(tr);
+			
+			td = document.createElement("td");
+			td.innerHTML = obj[i].spec_version;
+			tr.appendChild(td);
+			table.appendChild(tr);
+			
+			td = document.createElement("td");
+			td.innerHTML = obj[i].spec_release;
+			tr.appendChild(td);
+			table.appendChild(tr);
+			
+			td = document.createElement("td");
+			td.innerHTML = obj[i].obj_sname;
+			tr.appendChild(td);
+			table.appendChild(tr);
+			
+			td = document.createElement("td");
+			td.innerHTML = obj[i].ac_classes;
+			tr.appendChild(td);
+			table.appendChild(tr);
+			
+			td = document.createElement("td");
+			td.innerHTML = obj[i].pc_classes;
+			tr.appendChild(td);
+			table.appendChild(tr);
+			
+			td = document.createElement("td");
+			td.innerHTML = obj[i].cat_class;
+			tr.appendChild(td);
+			table.appendChild(tr);
+
+			td = document.createElement("td");
+			td.innerHTML = obj[i].country;
+			tr.appendChild(td);
+			table.appendChild(tr);
+			
+			td = document.createElement("td");
+			td.innerHTML = obj[i].lang;
+			tr.appendChild(td);
+			table.appendChild(tr);
+
+		}
+	}
+	
+	function setLanguage(lang)
+	{
+		if(lang == "0")
+		{lang = "de";}
+		else{lang = "en";}
+		document.cookie = "lang=" + lang + ";" + ";path=/";
+		location.reload();
+	}
+	
+	function open_show(id) 
+	{
+		window.open("/standardsdata/showWaste/" + id);
+	}
+
+	function open_qedit(id) 
+	{
+		window.open("/standardsdata/save/" + id);
+	}
+
+	function open_edit(id) 
+	{
+		window.open("/standardsdata/editor_upd/" + id);
+	}
+
+	function convertUTCDateToLocalDate(date, id) 
+	{
+		//var d = convertUTCDateToLocalDate(new Date("2020-09-13T10:49:02.174"));
+		var newDate = new Date(date.getTime()+date.getTimezoneOffset()*60*1000);
+
+		var offset = date.getTimezoneOffset() / 60;
+		var hours = date.getHours();
+
+		newDate.setHours(hours - offset);
+		
+		var mm = newDate.getMonth() + 1;
+		var dd = newDate.getDate();
+		var yy = newDate.getFullYear();
+		var hh = newDate.getHours();
+		var m = newDate.getMinutes();
+
+		if(mm < 10)
+		{
+			mm = "0" + mm;
+		}
+		if(dd < 10)
+		{
+			dd = "0" + dd;
+		}
+		if(hh < 10)
+		{
+			hh = "0" + hh;
+		}
+		if(m < 10)
+		{
+			m = "0" + m;
+		}
+		let datestr = yy + "-" + mm + "-" + dd + " " + hh + ":" + m;
+	
+		document.getElementById(id).innerHTML = datestr;   
+	}
+	
+	function doRecover(id)
+	{
+		fetch("/StandardsData/doRecover/" + id)
+		  .then(data => data.json())
+		  .then((json) => 
+		  {
+			if(json[0].ERROR === "0")
+			{
+				document.getElementById("greenmsg").innerHTML = `<b>Baustein wieder hergestellt.</b><br/>Data-ID:<a href="/standardsdata/show/${json[0].last_data_id}" title="show">${json[0].last_data_id}</a><br/>Meta-ID: ${json[0].last_meta_id}`;
+				doPopUp(`<p style="color: green"><b>Baustein wieder hergestellt.</b><br/>Data-ID: ${json[0].last_data_id}<br/>Meta-ID: ${json[0].last_meta_id}</p>`);
+			}
+			else
+			{
+				document.getElementById("redmsg").innerHTML = "<b>Baustein <u>nicht</u> wieder hergestellt.</b><br/>" + json[0].ERROR + " " + json[0].errMsg ;
+				doPopUp(`<p style="color: red"><b>Baustein <u>nicht</u> wieder hergestellt.</b><br/>${json[0].ERROR}<br/>${json[0].errMsg}</p>`);
+			}
+		  })
+		  .catch((error) => { document.getElementById("redmsg").innerHTML = "Fehler: " + error + data; });
+	}
+	
+	function doPopUp(msg)
+	{
+		const mgsTxt = document.getElementById("msg");
+		mgsTxt.innerHTML = msg;		
+		const test = document.getElementById("test");
+		test.setAttribute("style", "display: block;");
+		
+		window.location.href='#body';
+	}
+  </script>
+
+  <script type="module" src="/js/itis_init.js" /></script>
+  <link rel="stylesheet" href="/css/w3.css">  
+  
+  <link href="/css/tabulator/tabulator.min.css" rel="stylesheet">
+  <script type="text/javascript" src="/js/tabulator/tabulator.min.js"></script>
+		<script src="/js/tabulator/tblsort.js"></script>
+		<style>
+			table.sortable th:not(.sorttable_sorted):not(.sorttable_sorted_reverse):not(.sorttable_nosort):after { content: " \25B4\25BE" }
+			table, th, td { border: 1px solid #bbb; text-align: left; }
+			th { background-color: #ddd; }
+		</style>
+</head>
+
+<body class="w3-container w3-margin" id="body">
+
+  <itis-menu id="itisMenu" message=""></itis-menu>
+
+  <div class="w3-container w3-light-blue">
+    <h2 id="portaltitle">ITIS-API::Admin-Portal</h2>
+  </div>
+
+  <itis-menusub id="itisMenuSub" message="<%= controller()->name() %>"></itis-menusub>
+
+<h3 id="pagetitle"><page-title message=""><%= controller()->name() + ": " + controller()->activeAction() %></page-title></h3>
+<div id="pagedesc"><page-desc message="">Ungefilterte Auflistung <u>aller</u> gel&ouml;schten Vorgaben Bausteine.</u></page-desc></div>
+
+<p style="color: red"><span id="redmsg"><%==$ red_msg %> <%=$ error %></span></p><p style="color: green"><span id="greenmsg"><%==$ green_msg %> <%=$ notice %></span></p>
+
+<div id="test" style="display: none;" class="w3-modal">
+    <div class="w3-modal-content">
+      <div class="w3-container">
+        <span onclick="document.getElementById('test').style.display='none'" class="w3-button w3-display-topright">&times;</span>
+        <span id="msg"></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<main>
+<div id="pagecontent"><page-content message=""></page-content></div>
+
+<table class="w3-table-all w3-hoverable sortable" id="myTable">
+  <tr class="w3-text-grey">
+    <th>gel&ouml;scht am</th>
+    <th>Lfdnr</th>
+    <th>Spec Title</th>
+    <th>Spec Desc</th>
+    <th>Spec Version</th>
+    <th>Spec Release</th>
+    <th>Obj Sname</th>
+    <th>Ac Classes</th>
+    <th>Pc Classes</th>
+    <th>Cat Class</th>
+    <th>Country</th>
+    <th>Lang</th>
+    <th style="width:150px;">Wiederherstellung</th>
+  </tr>
+</table>
+
+</main>
+<itis-footer id="itisFooter" message=""></itis-footer>
+  
+</body>
+</html>
