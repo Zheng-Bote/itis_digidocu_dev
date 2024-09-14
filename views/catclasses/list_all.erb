@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<%#include "catclasses.h" %>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <html lang="de">
+
+  <title><%= controller()->name() + ": " + controller()->activeAction() %></title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <link rel="icon" href="/favicon.ico">
+
+  <script>
+    function doLocal()
+    {
+        console.log("this is local");
+
+        let l_footer = document.getElementById("itisFooter");
+        l_footer.message = '<a href="/stdsystem/license" title="license">Lizenzen</a>&nbsp;<a href="/stdsystem/imprint" title="Imprint">Impressum</a>';
+
+        //let l_menu = document.getElementById("itisMenu"); 
+        //l_menu.message = "<%= controller()->name() %>";
+    }
+
+	function setLanguage(lang)
+	{
+		if(lang == "0")
+		{lang = "de";}
+		else{lang = "en";}
+		document.cookie = "lang=" + lang + ";" + ";path=/";
+		location.reload();
+	}
+	
+	function open_show(id) 
+	{
+		window.open("/catclasses/show/" + id);
+	}
+
+	function open_qedit(id) 
+	{
+		window.open("/catclasses/save/" + id);
+	}
+
+	function open_edit(id) 
+	{
+		window.open("/catclasses/save/" + id);
+	}
+
+  </script>
+
+  <script type="module" src="/js/itis_init.js" /></script>
+  <link rel="stylesheet" href="/css/w3.css">  
+  <link rel="stylesheet" href="/css/custom.css">
+    
+  <link href="/css/tabulator/tabulator.min.css" rel="stylesheet">
+  <script type="text/javascript" src="/js/tabulator/tabulator.min.js"></script>
+		<script src="/js/tabulator/tblsort.js"></script>
+		<style>
+			table.sortable th:not(.sorttable_sorted):not(.sorttable_sorted_reverse):not(.sorttable_nosort):after { content: " \25B4\25BE" }
+			table, th, td { border: 1px solid #bbb; text-align: left; }
+			th { background-color: #ddd; }
+		</style>
+</head>
+
+<body class="w3-container w3-margin" id="body">
+
+  <itis-menu id="itisMenu" message=""></itis-menu>
+
+  <div class="w3-container w3-light-blue">
+    <h2 id="portaltitle">ITIS-API::Admin-Portal</h2>
+  </div>
+
+  <itis-menusub id="itisMenuSub" message="<%= controller()->name() %>"></itis-menusub>
+
+<h3 id="pagetitle"><page-title message=""><%= controller()->name() + ": " + controller()->activeAction() %></page-title></h3>
+<div id="pagedesc"><page-desc message=""></page-desc></div>
+
+<p style="color: red"><span id="redmsg"><%==$ red_msg %></span> <%=$ error %></p><p style="color: green"><span id="greenmsg"><%==$ green_msg %></span> <%=$ notice %></p>
+
+<main>
+<div id="pagecontent"><page-content message=""></page-content></div>
+
+<br />
+<table class="w3-table-all w3-hoverable sortable" id="myTable">
+  <tr>
+    <th>ID</th>
+    <th>Cat Lname De</th>
+    <th>Cat Sname De</th>
+    <th>Desc De</th>
+    <th>Cat Lname En</th>
+    <th>Cat Sname En</th>
+    <th>Desc En</th>
+    <th>Class Type</th>
+    <th>Groups</th>
+    <th>Sort</th>
+    <th>Active</th>
+    <th style="width:120px;">Baustein</th>
+  </tr>
+<% tfetch(QList<CatClasses>, catClassesList); %>
+<% for (const auto &i : catClassesList) { %>
+  <tr>
+    <td><%= i.id() %></td>
+    <td><%= i.catLnameDe() %></td>
+    <td><%= i.catSnameDe() %></td>
+    <td><%= i.descDe() %></td>
+    <td><%= i.catLnameEn() %></td>
+    <td><%= i.catSnameEn() %></td>
+    <td><%= i.descEn() %></td>
+    <td><%= i.classType() %></td>
+    <td><%= i.groups() %></td>
+    <td><%= i.sort() %></td>
+    <td><%= i.active() %></td>
+    <td>
+      <a href="javascript:void(0)" onclick="open_show('<%= i.id() %>')" title="Show Details"><img src="/Icons/eyeglasses.svg"></a>&nbsp;&nbsp;&nbsp;
+	  <a href="javascript:void(0)" onclick="open_qedit('<%= i.id() %>')" title="Q-Edit"><img src="/Icons/pencil.svg"></a>&nbsp;&nbsp;&nbsp;
+	  <a href="javascript:void(0)" onclick="open_show('<%= i.id() %>')" title="Remove"><img src="/Icons/trash.svg"></a>
+    </td>
+  </tr>
+<% } %>
+</table>
+
+</main>
+
+<itis-footer id="itisFooter" message=""></itis-footer>
+</body>
+</html>

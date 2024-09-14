@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<%#include "lenkinfo.h" %>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <html lang="de">
+
+  <title><%= controller()->name() + ": " + controller()->activeAction() %></title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <link rel="icon" href="/favicon.ico">
+  
+  <link rel="preload" href="/fonts/Inter-Regular.woff2" as="font" type="font/woff2" crossorigin />
+
+  <script>
+    function doLocal()
+    {
+        console.log("this is local");
+
+        let l_footer = document.getElementById("itisFooter");
+        l_footer.message = '<a href="/stdsystem/license" title="license">Lizenzen</a>&nbsp;<a href="/stdsystem/imprint" title="Imprint">Impressum</a>';
+
+        //let l_menu = document.getElementById("itisMenu"); 
+        //l_menu.message = "<%= controller()->name() %>";
+    }
+
+	function setLanguage(lang)
+	{
+		if(lang == "0")
+		{lang = "de";}
+		else{lang = "en";}
+		document.cookie = "lang=" + lang + ";" + ";path=/";
+		location.reload();
+	}
+	
+	function open_show(id) 
+	{
+		window.open("/lenkinfo/show/" + id);
+	}
+
+	function open_qedit(id) 
+	{
+		window.open("/lenkinfo/save/" + id);
+	}
+
+	function open_edit(id) 
+	{
+		window.open("/lenkinfo/editor_upd/" + id);
+	}
+
+
+  </script>
+
+  <script type="module" src="/js/itis_init.js" /></script>
+  <script src="/js/utc-data/UtcData.js"></script>
+  <script src="/js/kommabr-data/KommaBrData.js"></script>
+  
+  <link rel="stylesheet" href="/css/w3.css">  
+  <link rel="stylesheet" href="/css/custom.css">
+    
+  <link href="/css/tabulator/tabulator.min.css" rel="stylesheet">
+  <script type="text/javascript" src="/js/tabulator/tabulator.min.js"></script>
+		<script src="/js/tabulator/tblsort.js"></script>
+		<style>
+			table.sortable th:not(.sorttable_sorted):not(.sorttable_sorted_reverse):not(.sorttable_nosort):after { content: " \25B4\25BE" }
+			table, th, td { border: 1px solid #bbb; text-align: left; }
+			th { background-color: #ddd; }
+		</style>
+</head>
+
+<body class="w3-container w3-margin" id="body">
+
+  <itis-menu id="itisMenu" message=""></itis-menu>
+
+  <div class="w3-container w3-light-blue">
+    <h2 id="portaltitle">ITIS-API::Admin-Portal</h2>
+  </div>
+
+  <itis-menusub id="itisMenuSub" message="<%= controller()->name() %>"></itis-menusub>
+
+<h3 id="pagetitle"><page-title message=""><%= controller()->name() + ": " + controller()->activeAction() %></page-title></h3>
+<div id="pagedesc"><page-desc message="">Ungefilterte Auflistung <u>aller</u> Bausteine.</u></page-desc></div>
+
+<span style="color: red;">
+	<span  id="redmsg"><%==$ red_msg %></span>&nbsp;<span><%=$ error %></span>
+</span>
+<span style="color: green;">
+	<span id="greenmsg"><%==$ green_msg %></span>&nbsp;<span><%=$ notice %></span>
+</span>
+
+<main>
+<div id="pagecontent"><page-content message=""></page-content></div>
+
+<br />
+<table class="w3-table-all w3-hoverable sortable" id="myTable">
+  <tr class="w3-text-grey">
+    <th>ID</th>
+    <th>Spec Obj</th>
+    <th style="width:100px;">Spec Title</th>
+    <th>Ac Class</th>
+    <th>Pc Class</th>
+    <th>Country</th>
+    <th>Lang</th>
+    <th>Lenk Version</th>
+    <th>Lenk Status</th>
+    <th>Lenk Valid Startdate</th>
+    <!-- <th>Lenk Departments</th> -->
+    <th style="width:180px;">Lenk Content</th>
+    <!-- <th>Lenk Creator</th> -->
+    <!-- <th>Lenk Creator Date</th> -->
+    <!-- <th>Lenk Auditor</th> -->
+    <!-- <th>Lenk Auditor Date</th> -->
+    <!-- <th>Lenk Approver</th> -->
+    <!-- <th>Lenk Approver Date</th> -->
+    <th style="width:160px;">Baustein</th>
+  </tr>
+<% tfetch(QList<Lenkinfo>, lenkinfoList); %>
+<% for (const auto &i : lenkinfoList) { %>
+  <tr>
+    <td><%= i.id() %></td>
+    <td><%= i.specObj() %></td>
+    <td><%= i.specTitle() %></td>
+    <td><%= i.acClass() %></td>
+    <td><%= i.pcClass() %></td>
+    <td><%= i.country() %></td>
+    <td><%= i.lang() %></td>
+    <td><%= i.lenkVersion() %></td>
+    <td><%= i.lenkStatus() %></td>
+    <td><data-utc id="datautc" utctime="<%= i.lenkValidStartdate() %>"></data-utc></td>
+    <!-- <td><%= i.lenkDepartments() %></td> -->
+    <td><data-kommabr txtdata="<%= i.lenkContent() %>"></data-kommabr></td>
+    <!-- <td><data-kommabr txtdata="<%= i.lenkCreator() %>"></data-kommabr></td> -->
+    <!-- <td><data-utc id="datautc" utctime="<%= i.lenkCreatorDate() %>"></data-utc></td> -->
+    <!-- <td><data-kommabr txtdata="<%= i.lenkAuditor() %>"></data-kommabr></td> -->
+    <!-- <td><data-utc id="datautc" utctime="<%= i.lenkAuditorDate() %>"></data-utc></td> -->
+    <!-- <td><data-kommabr txtdata="<%= i.lenkApprover() %>"></data-kommabr></td> -->
+    <!-- <td><data-utc id="datautc" utctime="<%= i.lenkApproverDate() %>"></data-utc></td> -->
+    <td>
+      <a style="background: none;" href="javascript:void(0)" onclick="open_show('<%= i.id() %>')" title="Show Details"><img src="/Icons/eyeglasses.svg"></a>
+	  <a style="background: none;" href="javascript:void(0)" onclick="open_qedit('<%= i.id() %>')" title="Q-Edit"><img src="/Icons/pencil.svg"></a>
+      <a style="background: none;" href="javascript:void(0)" onclick="open_edit('<%= i.id() %>')" title="Edit"><img src="/Icons/textarea-t.svg"></a>  
+	  <a style="background: none;" href="javascript:void(0)" onclick="open_show('<%= i.id() %>')" title="Remove"><img src="/Icons/trash.svg"></a>
+    </td>
+  </tr>
+<% } %>
+</table>
+
+</main>
+<itis-footer id="itisFooter" message=""></itis-footer>
+  
+</body>
+</html>
+

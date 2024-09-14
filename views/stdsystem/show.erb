@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<%#include "stdsystem.h" %>
+<% tfetch(StdSystem, stdSystem); %>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title><%= controller()->name() + ": " + controller()->activeAction() %></title>
+</head>
+<body>
+
+<p id="redmsg" style="color: red"><%==$ red_msg %><%=$ error %></p><p id="greenmsg" style="color: green"><%==$ green_msg %><%=$ notice %></p>
+
+<h1>Showing Std System</h1>
+<dt>ID</dt><dd><%= stdSystem.id() %></dd><br />
+<dt>Std Type</dt><dd><%= stdSystem.stdType() %></dd><br />
+<dt>Std Attr</dt><dd><%= stdSystem.stdAttr() %></dd><br />
+<dt>Std Val</dt><dd><%= stdSystem.stdVal() %></dd><br />
+<dt>Std Flag</dt><dd><%= stdSystem.stdFlag() %></dd><br />
+<dt>Sort</dt><dd><%= stdSystem.sort() %></dd><br />
+<dt>Active</dt><dd><%= stdSystem.active() %></dd><br />
+
+<%== linkTo("Edit", urla("save", stdSystem.id())) %> |
+<%== linkTo("Back", urla("index")) %>
+
+</body>
+</html>

@@ -1,0 +1,198 @@
+
+const STYLE_CLASS = 'w3-bar w3-light-grey w3-round-large w3-border';
+
+const STYLE_RULES = `
+#itisFooter {
+	padding: 10px;
+}
+`;
+
+const STYLE_LINE = `
+border-radius: 0.5em 0.5em 0px 0px;
+`;
+
+
+function existDB(dbname, callback) 
+{
+    var req = indexedDB.open(dbname);
+    var existed = true;
+    req.onsuccess = function () 
+    {
+        req.result.close();
+        if (!existed)
+        {
+            indexedDB.deleteDatabase(dbname);
+        }
+        callback(existed);
+    }
+    req.onupgradeneeded = function () 
+    {
+        existed = false;
+    }
+}
+
+
+class ItisMenu extends HTMLElement 
+{
+	constructor() 
+	{
+		super();
+		this._message = "This website use Cookies to ensure you get the best";
+		const dbName = "itis_db";
+		existDB(dbName, function (yesno) 
+		{ 
+			alert (dbName + " exists? " + yesno); 
+			if(! yesno)
+			{
+				this.createDB();
+			}
+		});
+	}
+	
+	connectedCallback() 
+	{
+		//this.createComponent();
+		this.getMnu();
+	}
+	
+	disconnectedCallback()
+	{
+		this.getElementById("itisMenu").removeEventListener("click", this.handleClick);
+	}
+
+	attributeChangedCallback(name, oldValue, newValue)
+	{
+		if(oldValue !== newValue)
+		{
+			if(name === "message")
+			{
+				this._message = newValue;
+				this.updateMessage();
+			}
+		}
+	}
+		
+	static get observedAttributes()
+	{
+		return ["message"];
+	}
+	
+	getMnu() 
+	{
+	  return new Promise((res, rej) => {
+		fetch('/Webmenu/getMnu')
+		  .then(data => data.json())
+		  .then((json) => {
+			this.renderMnu(json);
+			res();
+		  })
+		  .catch((error) => {this.annonymous(error);});
+	  })
+	}
+	
+	annonymous(error)
+	{
+		const div = document.createElement("div");
+		div.setAttribute("class", STYLE_CLASS);
+		div.setAttribute("style", STYLE_LINE);
+		div.innerHTML = '<a href="/Webmenu/" class="w3-bar-item w3-button" title="HOME"><img src="/Icons/house.svg"></a>';
+		div.innerHTML += '<a href="/account/form" class="w3-bar-item w3-button w3-right">Login</a>';
+		const span = document.createElement("span");
+		div.appendChild(span);
+
+		this.appendChild(div);		
+	}
+	
+	renderMnu(data) 
+	{
+		
+		if(data.length >= 1)
+		{
+			const div = document.createElement("div");
+			div.setAttribute("class", STYLE_CLASS);
+			div.setAttribute("style", STYLE_LINE);
+			div.innerHTML = '<a href="/Webmenu/" class="w3-bar-item w3-button" title="HOME"><img src="/Icons/house-door.svg"></a>';
+		
+			var i;
+			for(i in data)
+			{
+				div.innerHTML += '<a href="' + data[i].mnu_uri + '" class="w3-bar-item w3-button" title="' + data[i].mnu_item + '">' + data[i].name_de + '</a>';
+			}
+			
+			const span = document.createElement("span");
+			div.appendChild(span);
+
+			this.appendChild(div);		
+				
+			//this.updateMessage();
+		}
+	}
+	
+	get message()
+	{
+		return this._message;
+	}
+	
+	set message(value)
+	{
+		this._message = value;
+		this.setAttribute("message", value);
+		//this.updateMessage();
+	}
+	
+	updateMessage()
+	{
+		try
+		{
+			//this.querySelector("span").innerHTML = this._message;
+		}
+		catch(e){}
+	}
+	
+	createComponent() 
+	{
+		/*
+		var d = new Date();
+		var yy = d.getFullYear();
+		
+		//const style = document.createElement("style");
+		//style.appendChild(document.createTextNode(STYLE_RULES));
+		//this.appendChild(style);
+		
+		const div = document.createElement("div");
+		div.setAttribute("class", STYLE_CLASS);
+		div.setAttribute("style", STYLE_LINE);
+		div.innerHTML = '<a href="/Webmenu/" title="HOME">Home</a>';
+					
+		//const span = document.createElement("span");
+		//div.appendChild(span);
+
+		this.appendChild(div);		
+				
+		//this._message = 'Hello World!';
+		//this.updateMessage();
+		*/
+	}
+	
+	createDB()
+	{
+		// 01
+		const dbconnect = window.indexedDB.open('itis_db', 1);
+		
+		dbconnect.onupgradeneeded = function(event) 
+		{
+			var db = event.target.result;
+			
+			var objectStore = db.createObjectStore("mnu", { keyPath: "id", autoIncrement: true });
+			objectStore.createIndex("sort", "sort", { unique: false });
+			objectStore.createIndex("name_de", "name_de", { unique: false });        
+			objectStore.createIndex("name_en", "name_en", { unique: false });
+			objectStore.createIndex("mnu_item", "menu_item", { unique: false });
+			objectStore.createIndex("mnu_uri", "mnu_uri", { unique: false });
+			console.log("Admin: createDB: " + objectStore);
+		}
+	}
+}
+customElements.define("itis-menu", ItisMenu);
+ 
+ 

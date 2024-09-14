@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<%#include "annexmeta.h" %>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title><%= controller()->name() + ": " + controller()->activeAction() %></title>
+</head>
+<body>
+
+<h1>Listing Annex Meta</h1>
+
+<p id="redmsg" style="color: red"><%==$ red_msg %><%=$ error %></p><p id="greenmsg" style="color: green"><%==$ green_msg %><%=$ notice %></p>
+
+<%== linkTo("Create a new Annex Meta", urla("create")) %><br />
+<br />
+<table border="1" cellpadding="5" style="border: 1px #d0d0d0 solid; border-collapse: collapse;">
+  <tr>
+    <th>ID</th>
+    <th>Spec Data ID</th>
+    <th>Spec Created</th>
+    <th>Spec Last Modified</th>
+    <th>Spec Valid Start</th>
+    <th>Spec Valid End</th>
+    <th>Last Editor</th>
+    <th>G Legacy</th>
+    <th>Responsibility</th>
+    <th>Spec Comment</th>
+    <th>Spec Marker</th>
+    <th>Groups</th>
+  </tr>
+<% tfetch(QList<AnnexMeta>, annexMetaList); %>
+<% for (const auto &i : annexMetaList) { %>
+  <tr>
+    <td><%= i.id() %></td>
+    <td><%= i.specDataId() %></td>
+    <td><%= i.specCreated() %></td>
+    <td><%= i.specLastModified() %></td>
+    <td><%= i.specValidStart() %></td>
+    <td><%= i.specValidEnd() %></td>
+    <td><%= i.lastEditor() %></td>
+    <td><%= i.gLegacy() %></td>
+    <td><%= i.responsibility() %></td>
+    <td><%= i.specComment() %></td>
+    <td><%= i.specMarker() %></td>
+    <td><%= i.groups() %></td>
+    <td>
+      <%== linkTo("Show", urla("show", i.id())) %>
+      <%== linkTo("Edit", urla("save", i.id())) %>
+      <%== linkTo("Remove", urla("remove", i.id()), Tf::Post, "confirm('Are you sure?')") %>
+    </td>
+  </tr>
+<% } %>
+</table>
+
+</body>
+</html>

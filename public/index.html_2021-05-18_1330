@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+        <meta charset="utf-8">
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+        
+        <title>ReST API Methoden</title>
+        <meta name="description" content="ReST-API Dokumentation">
+        <meta name="version" content="v00.00.21">
+        <meta name="author" content="ZHENG Robert" />
+        <meta name="date" content="2019-06-28T11:49:37+02:00">
+        <meta name="language" content="DE" />
+        <meta name="lang" content="de" />
+        
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+		<link rel="alternate icon" href="/favicon.ico">
+		<link rel="mask-icon" href="/favicon.svg" color="#b2b2b2">
+		
+		<link rel="preload" href="/fonts/Inter-Regular.woff2" as="font" type="font/woff2" crossorigin />
+  
+        <script src="/js/cookie-alert/CookieAlert.js"></script>
+        <script type="module" src="/js/itis_init.js" /></script>
+        <script src="/js/glossar-data/GlossarData.js" /></script>
+                
+        <link rel="stylesheet" href="/css/w3.css">
+        <link rel="stylesheet" href="/css/custom.css">
+
+  <script>
+    function doLocal()
+    {
+        console.log("this is local");
+
+        let l_footer = document.getElementById("itisFooter");
+        l_footer.message = '<a href="/stdsystem/license" title="license">License</a>&nbsp;<a href="/stdsystem/imprint" title="Impressum">Imprint</a>';
+
+        //let l_menu = document.getElementById("itisMenu"); 
+        //l_menu.message = "<%= controller()->name() %>";
+    }
+
+  function setLanguage(lang)
+	{
+		if(lang == "0")
+		{lang = "de";}
+		else{lang = "en";}
+		document.cookie = "lang=" + lang + ";" + ";path=/";
+		location.reload();
+	}    
+
+  </script>   
+  
+</script>
+
+</head>
+
+<body id="body" class="w3-container w3-margin">
+
+  <itis-menu id="itisMenu" message=""></itis-menu>
+<span id="menue"></span>
+
+<div class="w3-container w3-light-blue" style="border-radius: 0px 0px 0.5em 0.5em;margin-bottom: 10px;">
+    <h2>IaaS::IT-IS ReST API</h2>
+</div>
+<span> 
+    <p><mark><span style="color: red;">Die ReST-API steht <u>nicht</u> durchgehend zur Verf&uuml;gung (ins besondere an verregneten Wochenden und Feiertagen).</span>
+    </mark></p>
+
+<cookie-alert id="cookieAlert" message='Auch diese Webseite mag Cookies...<small><a href="/stdsystem/imprint#cookies" title="Impressum" style="color:rgb(255, 255, 255);">Details siehe: Impressum</a></small>'></cookie-alert>
+
+<p id="redmsg" style="color: red"></p><p id="greenmsg" style="color: green"></p>
+
+<main>
+	
+    <h3>API Methoden</h3>
+<p>aus Entwicklungsgr&uuml;nden bis auf weiteres gesperrt (derzeit ausschliesslich interne Verwendung).</p>
+
+<section>
+<div align="center">
+  <img src="/images/it-rooms_dc__big_v0.2.2.png" alt="IT-Rooms and Datacenter" style="max-width: 100%; height: auto; border-radius: 5px; opacity: 0.6;" loading="lazy" decoding="async">  
+</div>
+</section>
+
+</main>
+
+<itis-footer id="itisFooter" message=""></itis-footer>
+</body>
+</html>

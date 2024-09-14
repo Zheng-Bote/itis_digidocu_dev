@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<%#include "standardsdatacomments.h" %>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <html lang="de">
+
+  <title><%= controller()->name() + ": " + controller()->activeAction() %></title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <link rel="icon" href="/favicon.ico">
+
+  <script>
+    function doLocal()
+    {
+        console.log("this is local");
+
+        let l_footer = document.getElementById("itisFooter");
+        l_footer.message = '<a href="/stdsystem/license" title="license">Lizenzen</a>&nbsp;<a href="/stdsystem/imprint" title="Imprint">Impressum</a>';
+
+        //let l_menu = document.getElementById("itisMenu"); 
+        //l_menu.message = "<%= controller()->name() %>";
+    }
+
+	function setLanguage(lang)
+	{
+		if(lang == "0")
+		{lang = "de";}
+		else{lang = "en";}
+		document.cookie = "lang=" + lang + ";" + ";path=/";
+		location.reload();
+	}
+	
+	function open_show(id) 
+	{
+		window.open("/standardsDataComments/show/" + id);
+	}
+
+	function open_qedit(id) 
+	{
+		window.open("/standardsDataComments/save/" + id);
+	}
+
+	function open_edit(id) 
+	{
+		window.open("/standardsdata/editor_upd/" + id);
+	}
+
+	function convertUTCDateToLocalDate(date, id) 
+	{
+		//var d = convertUTCDateToLocalDate(new Date("2020-09-13T10:49:02.174"));
+		var newDate = new Date(date.getTime()+date.getTimezoneOffset()*60*1000);
+
+		var offset = date.getTimezoneOffset() / 60;
+		var hours = date.getHours();
+
+		newDate.setHours(hours - offset);
+		
+		var mm = newDate.getMonth() + 1;
+		var dd = newDate.getDate();
+		var yy = newDate.getFullYear();
+		var hh = newDate.getHours();
+		var m = newDate.getMinutes();
+
+		if(mm < 10)
+		{
+			mm = "0" + mm;
+		}
+		if(dd < 10)
+		{
+			dd = "0" + dd;
+		}
+		if(hh < 10)
+		{
+			hh = "0" + hh;
+		}
+		if(m < 10)
+		{
+			m = "0" + m;
+		}
+		let datestr = yy + "-" + mm + "-" + dd + " " + hh + ":" + m;
+	
+		document.getElementById(id).innerHTML = datestr;   
+	}
+  </script>
+
+  <script type="module" src="/js/itis_init.js" /></script>
+  <link rel="stylesheet" href="/css/w3.css">  
+  <link rel="stylesheet" href="/css/custom.css">
+    
+  <link href="/css/tabulator/tabulator.min.css" rel="stylesheet">
+  <script type="text/javascript" src="/js/tabulator/tabulator.min.js"></script>
+		<script src="/js/tabulator/tblsort.js"></script>
+		<style>
+			table.sortable th:not(.sorttable_sorted):not(.sorttable_sorted_reverse):not(.sorttable_nosort):after { content: " \25B4\25BE" }
+			table, th, td { border: 1px solid #bbb; text-align: left; }
+			th { background-color: #ddd; }
+		</style>
+</head>
+
+<body class="w3-container w3-margin" id="body">
+
+  <itis-menu id="itisMenu" message=""></itis-menu>
+
+  <div class="w3-container w3-light-blue">
+    <h2 id="portaltitle">ITIS-API::Admin-Portal</h2>
+  </div>
+
+  <itis-menusub id="itisMenuSub" message="<%= controller()->name() %>"></itis-menusub>
+
+<h3 id="pagetitle"><page-title message=""><%= controller()->name() + ": " + controller()->activeAction() %></page-title></h3>
+<div id="pagedesc"><page-desc message=""></page-desc></div>
+
+<p style="color: red"><span id="redmsg"><%==$ red_msg %></span> <%=$ error %></p><p style="color: green"><span id="greenmsg"><%==$ green_msg %></span> <%=$ notice %></p>
+
+<main>
+<div id="pagecontent"><page-content message=""></page-content></div>
+
+<br />
+<table class="w3-table-all w3-hoverable sortable" id="myTable">
+  <tr class="w3-text-grey">
+  <tr>
+    <th>ID</th>
+    <th>Comment Created</th>
+    <th>Spec ID</th>
+    <th>Spec Title</th>
+    <th>Spec Version</th>
+    <th>Username</th>
+    <th>User Comment</th>
+    <th style="width:160px;">Baustein</th>
+  </tr>
+<% tfetch(QList<StandardsDataComments>, standardsDataCommentsList); %>
+<% for (const auto &i : standardsDataCommentsList) { %>
+  <tr>
+    <td><%= i.id() %></td>
+    <td id="<%= i.id() %>"><script>convertUTCDateToLocalDate(new Date("<%= i.commentCreated() %>"), "<%= i.id() %>")</script></td>
+    <td><%= i.specId() %></td>
+    <td><%= i.specTitle() %></td>
+    <td><%= i.specVersion() %></td>
+    <td><%= i.username() %></td>
+    <td><%= i.userComment() %></td>
+    <td>
+      <a href="javascript:void(0)" onclick="open_show('<%= i.id() %>')" title="Show Details" style="background: none;" ><img src="/Icons/eyeglasses.svg"></a>
+	  <a href="javascript:void(0)" onclick="open_qedit('<%= i.id() %>')" title="Q-Edit" style="background: none;" ><img src="/Icons/pencil.svg"></a>
+	  <a href="javascript:void(0)" onclick="open_edit('<%= i.specId() %>')" title="Edit" style="background: none;" ><img src="/Icons/textarea-t.svg"></a>
+	  <a href="javascript:void(0)" onclick="open_show('<%= i.id() %>')" title="Remove" style="background: none;" ><img src="/Icons/trash.svg"></a>
+    </td>
+  </tr>
+<% } %>
+</table>
+
+</main>
+<itis-footer id="itisFooter" message=""></itis-footer>
+  
+</body>
+</html>

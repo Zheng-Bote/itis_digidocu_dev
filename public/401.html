@@ -1,0 +1,84 @@
+<!DOCTYPE html> 
+<html>
+<head>
+<head>
+        <meta charset="utf-8">
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Unauthorized</title>
+          <meta name="language" content="DE" />
+        <meta name="lang" content="de" />
+        
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+		<link rel="alternate icon" href="/favicon.ico">
+		<link rel="mask-icon" href="/favicon.svg" color="#b2b2b2">
+  
+        <script src="/js/cookie-alert/CookieAlert.js"></script>
+        <script type="module" src="/js/itis_init.js" /></script>
+        
+        <link rel="stylesheet" href="/css/w3.css">
+        <link rel="stylesheet" href="/css/custom.css">
+        
+    <style type="text/css">
+	div.dialog {
+		width: 50%;
+		height: 150px;
+		padding: 0 4em;
+		margin: 4em auto 0 auto;
+		border: 1px solid #eee;
+		border-right-color: #444;
+		border-bottom-color: #444;
+		background-color: #eee;
+		text-align: center;
+	}
+	h3 { color: #f00; line-height: 2em; }
+    </style>
+
+  <script>
+    function doLocal()
+    {
+        console.log("this is local");
+
+        let l_footer = document.getElementById("itisFooter");
+        l_footer.message = '<a href="/stdsystem/license" title="license">License</a>&nbsp;<a href="/stdsystem/imprint" title="Impressum">Imprint</a>';
+
+        //let l_menu = document.getElementById("itisMenu"); 
+        //l_menu.message = "<%= controller()->name() %>";
+    }
+
+  function setLanguage(lang)
+	{
+		if(lang == "0")
+		{lang = "de";}
+		else{lang = "en";}
+		document.cookie = "lang=" + lang + ";" + ";path=/";
+		location.reload();
+	}    
+  </script>  
+</head>
+
+<body class="w3-container w3-margin" id="body">
+
+  <itis-menu id="itisMenu" message=""></itis-menu>
+<span id="menue"></span>
+
+<div class="w3-container w3-light-blue" style="border-radius: 0px 0px 0.5em 0.5em;margin-bottom: 10px;">
+    <h2>IaaS::IT-IS ReST API</h2>
+</div>
+
+
+<h3 id="pagetitle"><page-title message=""></page-title></h3>
+<div id="pagedesc"><page-desc message=""></page-desc></div>
+
+<p id="redmsg" style="color: red"></p><p id="greenmsg" style="color: green"></p>
+
+  <div class="dialog">
+    <h3>Unauthorized</h3>
+    <p>Not authorized to access the page or resource you were trying to reach.</p>
+  </div>
+
+<itis-footer id="itisFooter" message=""></itis-footer>
+  
+</body>
+</html>
+

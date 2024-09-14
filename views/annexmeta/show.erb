@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<%#include "annexmeta.h" %>
+<% tfetch(AnnexMeta, annexMeta); %>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title><%= controller()->name() + ": " + controller()->activeAction() %></title>
+</head>
+<body>
+	
+<p id="redmsg" style="color: red"><%==$ red_msg %><%=$ error %></p><p id="greenmsg" style="color: green"><%==$ green_msg %><%=$ notice %></p>
+
+<h1>Showing Annex Meta</h1>
+<dt>ID</dt><dd><%= annexMeta.id() %></dd><br />
+<dt>Spec Data ID</dt><dd><%= annexMeta.specDataId() %></dd><br />
+<dt>Spec Created</dt><dd><%= annexMeta.specCreated() %></dd><br />
+<dt>Spec Last Modified</dt><dd><%= annexMeta.specLastModified() %></dd><br />
+<dt>Spec Valid Start</dt><dd><%= annexMeta.specValidStart() %></dd><br />
+<dt>Spec Valid End</dt><dd><%= annexMeta.specValidEnd() %></dd><br />
+<dt>Last Editor</dt><dd><%= annexMeta.lastEditor() %></dd><br />
+<dt>G Legacy</dt><dd><%= annexMeta.gLegacy() %></dd><br />
+<dt>Responsibility</dt><dd><%= annexMeta.responsibility() %></dd><br />
+<dt>Spec Comment</dt><dd><%= annexMeta.specComment() %></dd><br />
+<dt>Spec Marker</dt><dd><%= annexMeta.specMarker() %></dd><br />
+<dt>Groups</dt><dd><%= annexMeta.groups() %></dd><br />
+
+<%== linkTo("Edit", urla("save", annexMeta.id())) %> |
+<%== linkTo("Back", urla("index")) %>
+
+</body>
+</html>

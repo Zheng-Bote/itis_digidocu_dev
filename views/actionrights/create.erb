@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<%#include "actionrights.h" %>
+<%#include "itisgroups.h" %>
+<% tfetch(QVariantMap, actionRights); %>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <html lang="de">
+
+  <title><%= controller()->name() + ": " + controller()->activeAction() %></title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <link rel="icon" href="/favicon.ico">
+
+  <script>
+    function doLocal()
+    {
+        console.log("this is local");
+
+        let l_footer = document.getElementById("itisFooter");
+        l_footer.message = '<a href="/stdsystem/license" title="licenses">Lizenzen</a>&nbsp;<a href="/stdsystem/imprint" title="Imprint">Impressum</a>';
+
+        //let l_menu = document.getElementById("itisMenu"); 
+        //l_menu.message = "<%= controller()->name() %>";
+    }
+
+	function setLanguage(lang)
+	{
+		if(lang == "0")
+		{lang = "de";}
+		else{lang = "en";}
+		document.cookie = "lang=" + lang + ";" + ";path=/";
+		location.reload();
+	}
+	
+  </script>
+
+  <script type="module" src="/js/itis_init.js" /></script>
+  
+  <link rel="stylesheet" href="/css/w3.css">  
+  <link rel="stylesheet" href="/css/custom.css">  
+
+</head>
+
+<body class="w3-container w3-margin" id="body">
+
+  <itis-menu id="itisMenu" message=""></itis-menu>
+
+  <div class="w3-container w3-light-blue">
+    <h2 id="portaltitle">ITIS-API::Admin-Portal</h2>
+  </div>
+
+  <itis-menusub id="itisMenuSub" message="<%= controller()->name() %>"></itis-menusub>
+
+<h3 id="pagetitle"><page-title message=""><%= controller()->name() + ": " + controller()->activeAction() %></page-title></h3>
+<div id="pagedesc"><page-desc message=""></page-desc></div>
+
+<p id="redmsg" style="color: red"><%==$ red_msg %><%=$ error %></p><p id="greenmsg" style="color: green"><%==$ green_msg %><%=$ notice %></p>
+
+	<span id="ingroups" hidden><% tfetch(QList<ItisGroups>, itisGroupsList); %>
+		<% for (const auto &i : itisGroupsList) { %><%= i.groupname() %>,<% } %>
+	</span>
+
+<main>
+	<section>
+		<div class="w3-cell-row">
+		  <div class="w3-container w3-cell" onclick="myFunction('allgroups')">
+			  <h4>available Groups &nbsp; <img id="icongrp" src="/Icons/chevron-double-down.svg"/></h4>
+			<p id="allgroups" class="w3-hide"></p>
+		  </div>
+		  <div class="w3-container w3-cell" onclick="myFunction('rights')">
+			  <h4>rights &nbsp; <img id="iconcrud" src="/Icons/chevron-double-down.svg"/></h4>
+			<p id="rights" class="w3-hide"><b>c</b>reate <b>r</b>ead <b>u</b>pdate <b>d</b>elete<br/>{crud}</p>
+		  </div>
+		</div>
+	</section>
+</main>
+
+<main>
+    
+<div id="pagecontent"><page-content message=""></page-content></div>	
+
+<%== formTag(urla("create"), Tf::Post) %>
+  <p>
+    <label>Uri<br /><input class="w3-input" name="actionRights[uri]" value="<%= actionRights["uri"] %>" /></label>
+  </p>
+  <p>
+    <label>Groups<br /><input class="w3-input" name="actionRights[groups]" value="<%= actionRights["groups"] %>" title="{GROUP:RIGHTS,GROUP:RIGHTS} where RIGHTS = crud (CreateReadUpdateDelete)" placeholder="{Portal-Admin:c}" /></label>
+  </p>
+  <p>
+    <label>Rights<br /><input class="w3-input" name="actionRights[rights]" value="<%= actionRights["rights"] %>" title="{crud}" placeholder="{c}" /></label>
+  </p>
+  <p>
+    <label>Active<br /><input class="w3-input" name="actionRights[active]" value="<%= actionRights["active"] %>" title="0 = not active, 1 = active" placeholder="0" /></label>
+  </p>
+  <p>
+    <input type="submit" value="Create &raquo;" />
+  </p>
+  </div>
+</form>
+
+<br/>
+<a href="/actionrights/show/<%= actionRights["id"] %>" class="w3-btn w3-light-grey"><img src="/Icons/eyeglasses.svg">&nbsp;Anzeige</a>
+<a href="/actionrights/list_all" class="w3-btn w3-light-grey">&laquo;&nbsp;zur&uuml;ck</a>
+
+</main>
+
+<itis-footer id="itisFooter" message=""></itis-footer>
+
+<script>
+	const ingroups = document.getElementById('ingroups').innerHTML;
+	const allgroups = document.getElementById('allgroups');
+	let erg = ingroups.trim();
+	erg = erg.replace(/,$/, "");
+	allgroups.innerHTML = `{${erg}}`;
+</script>
+<script>
+function myFunction(id) 
+{
+  const x = document.getElementById(id);
+  const icongrp = document.getElementById('icongrp');
+  const iconcrud = document.getElementById('iconcrud');
+  
+  if (x.className.indexOf("w3-show") == -1) 
+  {
+    x.className += " w3-show";
+    if(id == 'allgroups')
+    {
+		icongrp.setAttribute("src", "/Icons/chevron-double-up.svg");
+	}
+	else if(id == 'rights')
+	{
+		iconcrud.setAttribute("src", "/Icons/chevron-double-up.svg");
+	}
+  } 
+  else 
+  {
+    x.className = x.className.replace(" w3-show", "");
+    if(id == 'allgroups')
+    {
+		icongrp.setAttribute("src", "/Icons/chevron-double-down.svg");
+	}
+	else if(id == 'rights')
+	{
+		iconcrud.setAttribute("src", "/Icons/chevron-double-down.svg");
+	}
+  }
+}
+</script>
+</body>
+</html>

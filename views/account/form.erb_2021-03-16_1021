@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<html lang="de"> 
+
+	<title><%= controller()->name() %> IT-IS</title>
+
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+	<link rel="icon" href="/favicon.ico">
+
+	<meta name="description" content="login form for ITIS API">
+	<meta name="author" content="ZHENG Bote" /> 
+        
+	<script>
+		function doLocal()
+		{
+			console.log("this is local");
+			
+			if (location.protocol !== 'https:') 
+			{
+				let msg = "<img class=\"w3-yellow\" src=\"/Icons/exclamation-square.svg\">&nbsp; Dies ist keine SSL-gesicherte Verbindung.";
+				document.getElementById("redmsg").innerHTML = msg;
+			}
+
+			let l_footer = document.getElementById("itisFooter");
+			l_footer.message = '<a href="/stdsystem/license" title="license">Lizenzen</a>&nbsp;<a href="/stdsystem/imprint" title="Imprint">Impressum</a>';
+        
+			document.getElementById("formReg").addEventListener("submit", function(event) 
+			{
+				event.target.checkValidity();
+				event.preventDefault();
+				event.stopPropagation();
+				sendPwdChange();
+			}, false);
+			
+			var txtPassword = document.getElementById("txtPassword");
+			var txtConfirmPassword = document.getElementById("txtConfirmPassword");
+			var boolForm = false;
+			txtPassword.onchange = ConfirmPassword;
+			txtConfirmPassword.onkeyup = ConfirmPassword;
+		}
+
+        function ConfirmPassword() 
+        {
+            txtPassword.setCustomValidity("");
+            txtConfirmPassword.setCustomValidity("");
+            
+            const imgone = document.getElementById('pwdimg');
+            const imgtwo = document.getElementById('confirmimg');
+            const pwdform = document.getElementById('form1');
+            
+            if(txtPassword.validity.patternMismatch)
+            {
+				txtPassword.setCustomValidity("Passwort-Anforderung: Minimum 8 Zeichen mit mind. 1 Buchstaben und mind. 1 Nummer");
+				imgone.setAttribute("src", "/Icons/nok.svg");
+				document.getElementById("redmsg").innerHTML = txtPassword.validationMessage;
+				return;
+			}
+			else
+			{
+				imgone.setAttribute("src", "/Icons/ok.svg");
+				document.getElementById("redmsg").innerHTML = "";
+			}
+			
+            if (txtPassword.value != txtConfirmPassword.value) 
+            {
+                txtConfirmPassword.setCustomValidity("Passwörter nicht identisch.");
+                imgone.setAttribute("src", "/Icons/nok.svg");
+                imgtwo.setAttribute("src", "/Icons/nok.svg");
+                document.getElementById("redmsg").innerHTML = txtConfirmPassword.validationMessage;
+                return;
+            }
+            else
+            {
+				imgone.setAttribute("src", "/Icons/ok.svg");
+                imgtwo.setAttribute("src", "/Icons/ok.svg");
+                document.getElementById("redmsg").innerHTML = "";
+			}	
+
+			boolForm = true;
+        }	
+    
+		function sendPwdChange()
+		{
+			if(! boolForm) {return;}
+			document.getElementById("spinner").setAttribute("style", "display: block; margin: auto; font-size: 48px; color: Dodgerblue;");
+
+			document.getElementById('pwdimg').setAttribute("src", "");
+			document.getElementById('confirmimg').setAttribute("src", "");
+			
+			var username, firstname, surname, email, company, userTimezone, groupname, groups, password, pwdChangeForce, active, newsletter;
+			var x = document.getElementById("formReg");
+			var i;
+			for (i = 0; i < x.length ;i++) 
+			{
+				if(x.elements[i].name != "content" || x.elements[i].id !== '' || x.elements[i].id !== null || x.elements[i].name !== '')
+				{
+					if(x.elements[i].name == "username")
+					{
+						username = x.elements[i].value;  
+					}
+					if(x.elements[i].name == "firstname")
+					{
+						firstname = x.elements[i].value;  
+					}
+					if(x.elements[i].name == "surname")
+					{
+						surname = x.elements[i].value;  
+					}
+					if(x.elements[i].name == "email")
+					{
+						 email = x.elements[i].value;  
+					}
+					if(x.elements[i].name == "company")
+					{
+						company = x.elements[i].value;  
+					}
+					if(x.elements[i].name == "userTimezone")
+					{
+						userTimezone = x.elements[i].value;  
+					}
+					if(x.elements[i].name == "groupname")
+					{
+						groupname = x.elements[i].value;  
+					}
+					if(x.elements[i].name == "groups")
+					{
+						groups = x.elements[i].value;  
+					}
+					if(x.elements[i].name == "password")
+					{
+						password = x.elements[i].value;  
+					}
+					if(x.elements[i].name == "pwd_change_force")
+					{
+						pwdChangeForce = x.elements[i].value;  
+					}
+					if(x.elements[i].name == "active")
+					{
+						active = x.elements[i].value;  
+					}
+					if(x.elements[i].name == "news" && x.elements[i].checked)
+					{
+						newsletter = x.elements[i].value;  
+					}
+				}
+			}
+			
+			
+			var data = new URLSearchParams([["username", username], ["firstname", firstname], ["surname", surname], ["email", email], ["company", company], ["userTimezone", userTimezone], ["groupname", groupname], ["groups", groups], ["password", password], ["pwdChangeForce", pwdChangeForce], ["active", active], ["newsletter", newsletter]]);
+			console.log("data " + data.length + " " + data);
+
+			//data = new URLSearchParams([["pwd", txtPassword.value]]);
+			fetch("/account/userRegisterElectron", { body: data, method: "post" })
+				.then(data => data.json())
+				.then((json) => 
+				{
+					if(json[0].ERROR === "0")
+					{
+						let msg = '<b>Vielen Dank für Ihre Registrierung.</b></br>Sie erhalten in Kürze eine eMail mit dem Betreff "IT-IS Account", bitte überprüfen Sie ggf. Ihren SPAM-Ordner.'
+						document.getElementById("greenmsg").innerHTML = msg;
+						doPopUp(`<p style="color: green">${msg}</p>`);
+					}
+					else
+					{
+						let msg = `<b>Bei der Registrierung ist ein Fehler aufgetreten.</b></br>Bitte versuchen Sie es in Kürze erneut oder wenden Sie sich an Ihren Admin.<br/>${json[0].ERROR} ${json[0].errMsg}`;
+						document.getElementById("redmsg").innerHTML = msg;
+						doPopUp(`<p style="color: red">${msg}</p>`);
+					}
+					document.getElementById("spinner").setAttribute("style", "display: none; margin: auto; font-size: 48px; color: Dodgerblue;");
+				})
+				.catch((error) => 
+				{
+					let msg = `<b>Bei der Registrierung ist ein Fehler aufgetreten.</b></br>Bitte versuchen Sie es in Kürze erneut oder wenden Sie sich an Ihren Admin.<br/>${error}`;
+					document.getElementById("redmsg").innerHTML = msg; 
+					doPopUp(`<p style="color: red">${msg}</p>`); 
+					document.getElementById("spinner").setAttribute("style", "display: none; margin: auto; font-size: 48px; color: Dodgerblue;");
+				});	
+			window.location.href='#body';
+		}
+
+			function doPopUp(msg)
+			{
+				const mgsTxt = document.getElementById("msg");
+				mgsTxt.innerHTML = msg;		
+				const test = document.getElementById("pup");
+				test.setAttribute("style", "display: block;");
+				
+				window.location.href='#body';
+			}
+
+		function setLanguage(lang)
+		{
+			if(lang == "0")
+			{lang = "de";}
+			else{lang = "en";}
+			document.cookie = "lang=" + lang + ";" + ";path=/";
+			location.reload();
+		}
+	</script>
+	
+	<script type="module" src="/js/itis_init.js" /></script>
+
+	<link rel="stylesheet" href="/css/w3.css">  
+	<link rel="stylesheet" href="/css/custom.css">  
+
+	<style>
+	.loader {
+	  border: 16px solid #f3f3f3;
+	  border-radius: 50%;
+	  border-top: 16px solid #3498db;
+	  width: 80px;
+	  height: 80px;
+	  -webkit-animation: spin 2s linear infinite; /* Safari */
+	  animation: spin 2s linear infinite;
+	}
+
+	/* Safari */
+	@-webkit-keyframes spin {
+	  0% { -webkit-transform: rotate(0deg); }
+	  100% { -webkit-transform: rotate(360deg); }
+	}
+
+	@keyframes spin {
+	  0% { transform: rotate(0deg); }
+	  100% { transform: rotate(360deg); }
+	}
+	</style>
+</head>
+
+<body class="w3-container w3-margin" id="body">
+
+  <itis-menu id="itisMenu" message=""></itis-menu>
+
+  <div class="w3-container w3-light-blue">
+    <h2 id="portaltitle">ITIS-API::Admin-Portal</h2>
+  </div>
+
+  <itis-menusub id="itisMenuSub" message="<%= controller()->name() %>"></itis-menusub>
+
+<h3 id="pagetitle"><page-title message="">Admin Login</page-title></h3>
+<div id="pagedesc"><page-desc message=""></page-desc></div>
+
+<p style="color: red"><span id="redmsg"><%==$ red_msg %></span><%=$ error %></p><p style="color: green"><span id="greenmsg"><%==$ green_msg %></span><%=$ notice %></p>
+
+<cookie-alert id="cookieAlert" message='Auch diese Webseite mag Cookies...<small><a href="/stdsystem/imprint#cookies" title="Impressum" style="color:rgb(255, 255, 255);">Details siehe: Impressum</a></small>'></cookie-alert>
+  
+<div id="pup" style="display: none;" class="w3-modal">
+    <div class="w3-modal-content">
+      <div class="w3-container">
+        <span onclick="document.getElementById('pup').style.display='none'" class="w3-button w3-display-topright">&times;</span>
+        <span id="msg"></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<span id="spinner" class="loader" style="display: none; margin: auto; color: Dodgerblue;" align="center"></span>
+
+<main>
+
+<div class="w3-container">
+
+  <div class="w3-row">
+    <a href="javascript:void(0)" onclick="openTab(event, 'loginform');">
+      <div class="w3-third tablink w3-bottombar w3-hover-light-grey w3-padding w3-border-light-blue">Login</div>
+    </a>
+    <a href="javascript:void(0)" onclick="openTab(event, 'registration');">
+      <div class="w3-third tablink w3-bottombar w3-hover-light-grey w3-padding">Registration</div>
+    </a>
+  </div>
+
+  <div id="loginform" class="w3-container tabby" style="display:block">
+    <h3>Anmeldung</h3>
+    <p>
+		<form action="/account/login" method="post">
+			<label for="username">Login Name: </label><input type="email" id="username" class="w3-input" name="username" placeholder="arthur.dent@hotmail.com" value="" required />
+			<label for="password">Passwort: </label><input type="password" id="password" class="w3-input" name="password" value="" required />
+			<p><input type="submit" value="login &raquo;" title="submit" />&nbsp;<popup-info data-text="die &Uuml;bertragung sollte &uuml;ber eine gesicherte SSL-Verbindung erfolgen."></popup-info></p>
+		</form>
+    </p>
+  </div>
+
+  <div id="registration" class="w3-container tabby" style="display:none">
+    <h3>Registrierung</h3>
+    <p>
+		 <form id="formReg">
+		  <p>
+			<label>login name / Anmelde-Name&nbsp;<popup-info data-text="mit dieser eMail-Adresse werden Sie sich sp&auml;ter am System anmelden."></popup-info><br /><input class="w3-input" type="email" name="username" placeholder="will.smith@hotmail.com" value="" required /></label>
+		  </p>
+		  <p>
+			<label>firstname / Vorname<br /><input class="w3-input" name="firstname" pattern="[A-Za-z]{2,128}" placeholder="Arthur" value="" required /></label>
+		  </p>
+		  <p>
+			<label>surname / Familienname<br /><input class="w3-input" name="surname" pattern="[A-Za-z]{2,128}" placeholder="Dent" value="" required /></label>
+		  </p>
+		  <p>
+			<label>email&nbsp;<popup-info data-text="an diese eMail-Adresse wird die Registrierungs-Best&auml;tigung versendet."></popup-info><br /><input class="w3-input" name="email" type="email" value="" placeholder="will.smith@hotmail.com" required /></label>
+		  </p>
+		  <p>
+			<label>company / Firma&nbsp;<popup-info data-text="Unternehmen f&uuml;r das Sie t&auml;tig sind."></popup-info><br /><input class="w3-input" name="company" value="" placeholder="best Company Ltd." required /></label>
+		  </p>
+		  <p>
+			<label>user timezone / Zeitzone&nbsp;<popup-info data-text="die Zeitzone in der Sie sich &uuml;berwiegend aufhalten."></popup-info><br /><input class="w3-input" name="userTimezone" value="" placeholder="Europe/Berlin" /></label>
+		  </p>
+		  <p>
+			<input class="w3-input" name="groupname" type="hidden" pattern="[A-Za-z]{3,128}" value="{ALL}" readonly />
+			<input class="w3-input" name="groups" type="hidden" pattern="[A-Za-z]{3,128}" value="{ALL}" readonly />
+		  </p>
+		  <p>
+		  <label for="txtPassword">Password&nbsp;<popup-info data-text="das Passwort wird SHA2-256 verschl&uuml;sselt."></popup-info>&nbsp;<img src="" id="pwdimg" width="10px" /></label><br/>
+				<input name="password" type="password" id="txtPassword" title="Password must contain: Minimum 8 characters and at least 1 Alphabet and 1 Number"
+					 class="w3-input" placeholder="Enter Password" required pattern="^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$" />
+				<br />
+				<label for="txtConfirmPassword">Confirm Password&nbsp;<img src="" id="confirmimg" width="10px" /></label>
+				<input name="txtConfirmPassword" type="password" id="txtConfirmPassword" class="w3-input" placeholder="Confirm Password" />
+		  </p>
+		  <p>
+				  <p><b><u>Newsletter:</u></b>&nbsp;<popup-info data-text="Benachrichtigungen &uuml;ber Produkt-&Auml;nderungen sowie Aktualisierungen der Vorgaben."></popup-info></p>
+				  <input type="radio" id="news_de" name="news" value="de">
+				  <label for="news_de">deutsch</label><br>
+				  <input type="radio" id="news_en" name="news" value="en" checked>
+				  <label for="news_en">englisch</label><br>
+				  <input type="radio" id="news_no" name="news" value="no">
+				  <label for="news_no">keinen</label>
+				</p>
+          <p>
+			<label>Active&nbsp;<popup-info data-text="das Benutzer-Konto wird w&auml;hrend des Registrierungs-Prozesses freigeschaltet."></popup-info><br /><input type="text" class="w3-input" title="will be activated during confirmation process." type="number" pattern="[0-1]{1}" name="active" value="0" readonly /></label>
+		  </p>
+		  <p>
+			<p><input type="submit" id="submitpwd" value="absenden &raquo;" title="submit" onclick="sendPwdChange" />&nbsp;<popup-info data-text="die &Uuml;bertragung sollte &uuml;ber eine gesicherte SSL-Verbindung erfolgen."></popup-info></p>
+		  </p>
+	</form>
+    </p> 
+  </div>
+
+</div>
+
+<script>
+	function openTab(evt, tabName) 
+	{
+		document.getElementById("redmsg").innerHTML = "";
+		document.getElementById("greenmsg").innerHTML = "";
+
+		var i, x, tablinks;
+		x = document.getElementsByClassName("tabby");
+		for (i = 0; i < x.length; i++) 
+		{
+			x[i].style.display = "none";
+		}
+		tablinks = document.getElementsByClassName("tablink");
+		for (i = 0; i < x.length; i++) 
+		{
+			tablinks[i].className = tablinks[i].className.replace(" w3-border-light-blue", "");
+		}
+		document.getElementById(tabName).style.display = "block";
+		evt.currentTarget.firstElementChild.className += " w3-border-light-blue";
+	}
+</script>
+
+</main>
+<itis-footer id="itisFooter" message=""></itis-footer>
+</body>
+</html>

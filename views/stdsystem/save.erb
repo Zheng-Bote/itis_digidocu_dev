@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<%#include "stdsystem.h" %>
+<% tfetch(QVariantMap, stdSystem); %>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title><%= controller()->name() + ": " + controller()->activeAction() %></title>
+</head>
+<body>
+
+<p id="redmsg" style="color: red"><%==$ red_msg %><%=$ error %></p><p id="greenmsg" style="color: green"><%==$ green_msg %><%=$ notice %></p>
+
+<h1>Editing Std System</h1>
+
+<%== formTag(urla("save", stdSystem["id"]), Tf::Post) %>
+  <p>
+    <label>ID<br /><input type="text" name="stdSystem[id]" value="<%= stdSystem["id"] %>" readonly="readonly" /></label>
+  </p>
+  <p>
+    <label>Std Type<br /><input type="text" name="stdSystem[stdType]" value="<%= stdSystem["stdType"] %>" /></label>
+  </p>
+  <p>
+    <label>Std Attr<br /><input type="text" name="stdSystem[stdAttr]" value="<%= stdSystem["stdAttr"] %>" /></label>
+  </p>
+  <p>
+    <label>Std Val<br /><input type="text" name="stdSystem[stdVal]" value="<%= stdSystem["stdVal"] %>" /></label>
+  </p>
+  <p>
+    <label>Std Flag<br /><input type="text" name="stdSystem[stdFlag]" value="<%= stdSystem["stdFlag"] %>" /></label>
+  </p>
+  <p>
+    <label>Sort<br /><input type="text" name="stdSystem[sort]" value="<%= stdSystem["sort"] %>" /></label>
+  </p>
+  <p>
+    <label>Active<br /><input type="text" name="stdSystem[active]" value="<%= stdSystem["active"] %>" /></label>
+  </p>
+  <p>
+    <input type="submit" value="Save" />
+  </p>
+</form>
+
+<%== linkTo("Show", urla("show", stdSystem["id"])) %> |
+<%== linkTo("Back", urla("index")) %>
+</body>
+</html>

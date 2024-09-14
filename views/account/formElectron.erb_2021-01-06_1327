@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<html lang="de"> 
+
+	<title><%= controller()->name() + ": " + controller()->activeAction() %></title>
+
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+	<link rel="icon" href="/favicon.ico">
+
+	<meta name="description" content="login form for ITIS API">
+	<meta name="author" content="ZHENG Bote" /> 
+        
+	<script>
+		function doLocal()
+		{
+        }
+	</script>
+	
+	<script type="module" src="/js/itis_init.js" /></script>
+
+	<link rel="stylesheet" href="/css/w3.css">  
+	<link rel="stylesheet" href="/css/custom.css">  
+</head>
+
+<body class="w3-container w3-margin" id="body">
+
+<h3 id="pagetitle"><page-title message=""><%= controller()->name() + ": " + controller()->activeAction() %></page-title></h3>
+<div id="pagedesc"><page-desc message=""></page-desc></div>
+
+<p id="redmsg" style="color: red"><%=$ red_msg %><%=$ error %></p><p id="greenmsg" style="color: green"><%=$ green_msg %><%=$ notice %></p>
+
+<div id="pup" style="display: none;" class="w3-modal">
+    <div class="w3-modal-content">
+      <div class="w3-container">
+        <span onclick="document.getElementById('pup').style.display='none'" class="w3-button w3-display-topright">&times;</span>
+        <span id="msg"></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<main>
+
+<div class="w3-container">
+
+  <div class="w3-row">
+    <a href="javascript:void(0)" onclick="openCity(event, 'loginform');">
+      <div class="w3-third tablink w3-bottombar w3-hover-light-grey w3-padding w3-border-red">Login</div>
+    </a>
+    <a href="javascript:void(0)" onclick="openCity(event, 'registration');">
+      <div class="w3-third tablink w3-bottombar w3-hover-light-grey w3-padding">Registration</div>
+    </a>
+  </div>
+
+  <div id="loginform" class="w3-container city" style="display:block">
+    <h3>Anmeldung</h3>
+    <p>
+		<form action="/account/loginElectron" method="post">
+			<label for="username">Login Name: </label><input type="email" id="username" class="w3-input" name="username" value="" />
+			<label for="password">Passwort: </label><input type="password" id="password" class="w3-input" name="password" value="" />
+			<p><input type="submit" value="login &raquo;"/></p>
+		</form>
+    </p>
+  </div>
+
+  <div id="registration" class="w3-container city" style="display:none">
+    <h3>Registrierung</h3>
+    <p>
+		 <form action="/account/registrationElectron" method="post">
+		  <p>
+			<label>username<br /><input class="w3-input" type="email" name="user[username]" value="" /></label>
+		  </p>
+		  <p>
+			<label>firstname<br /><input class="w3-input" name="user[firstname]" pattern="[A-Za-z]{3,128}" value="" /></label>
+		  </p>
+		  <p>
+			<label>surname<br /><input class="w3-input" name="user[surname]" pattern="[A-Za-z]{3,128}" value="" /></label>
+		  </p>
+		  <p>
+			<label>email<br /><input class="w3-input" name="user[email]" type="email" value="" /></label>
+		  </p>
+		  <p>
+			<label>company<br /><input class="w3-input" name="user[company]" value="" /></label>
+		  </p>
+		  <p>
+			<label>user_timezone<br /><input class="w3-input" name="user[userTimezone]" value="" /></label>
+		  </p>
+		  <p>
+			<label>groupname<br /><input class="w3-input" name="user[groupname]" pattern="[A-Za-z]{3,128}" value="{ALL}" readonly /></label>
+		  </p>
+		  <p>
+			<label>password<br /><input class="w3-input" name="user[password]" type="password" value="" /></label>
+		  </p>
+			<p>
+			<label>force change Pwd<br /><input type="text" class="w3-input" type="number" pattern="[0-1]{1}" name="user[pwdChangeForce]" value="1" readonly /></label>
+		  </p>
+			<p>
+			<label>Active<br /><input type="text" class="w3-input" type="number" pattern="[0-1]{1}" name="user[active]" value="0" readonly /></label>
+		  </p>
+		  <p>
+			<input type="submit" value="send &raquo;" />
+		  </p>
+	</form>
+    </p> 
+  </div>
+
+</div>
+
+<script>
+function openCity(evt, cityName) {
+  var i, x, tablinks;
+  x = document.getElementsByClassName("city");
+  for (i = 0; i < x.length; i++) {
+    x[i].style.display = "none";
+  }
+  tablinks = document.getElementsByClassName("tablink");
+  for (i = 0; i < x.length; i++) {
+    tablinks[i].className = tablinks[i].className.replace(" w3-border-red", "");
+  }
+  document.getElementById(cityName).style.display = "block";
+  evt.currentTarget.firstElementChild.className += " w3-border-red";
+}
+</script>
+
+  
+</main>
+
+</body>
+</html>

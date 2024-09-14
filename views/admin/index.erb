@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <meta charset="UTF-8">
+  <html lang="de">
+
+  <title><%= controller()->name() + ": " + controller()->activeAction() %></title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="alternate icon" href="/favicon.ico">
+  <link rel="mask-icon" href="/favicon.svg" color="#b2b2b2">
+
+  <script>
+    function doLocal()
+    {
+        console.log("this is local");
+
+        let l_footer = document.getElementById("itisFooter");
+        l_footer.message = '<a href="/stdsystem/license" title="licenses">Lizenzen</a>&nbsp;<a href="/stdsystem/imprint" title="Impressum">Imprint</a>';
+        
+        document.getElementById("lastLogin").innerHTML = convertUTCDateToLocalDate(new Date("<%==$ lastLogin %>"));
+        document.getElementById("lastLogout").innerHTML = convertUTCDateToLocalDate(new Date("<%==$ lastLogout %>"));
+        document.getElementById("lastPwdChangeTime").innerHTML = convertUTCDateToLocalDate(new Date("<%==$ lastPwdChangeTime %>"));
+        
+        getLastLogin("<%==$ lastLogin %>");      
+        getlastLogout("<%==$ lastLogout %>");
+        getlastPwdChangeTime("<%==$ lastPwdChangeTime %>");  
+        
+    }
+
+	function setLanguage(lang)
+	{
+		if(lang == "0")
+		{lang = "de";}
+		else{lang = "en";}
+		document.cookie = "lang=" + lang + ";" + ";path=/";
+		location.reload();
+	}
+
+	function convertUTCDateToLocalDate(date) 
+	{
+		//var d = convertUTCDateToLocalDate(new Date("2020-09-13T10:49:02.174"));
+		var newDate = new Date(date.getTime()+date.getTimezoneOffset()*60*1000);
+
+		var offset = date.getTimezoneOffset() / 60;
+		var hours = date.getHours();
+
+		newDate.setHours(hours - offset);
+		
+		var mm = newDate.getMonth() + 1;
+		var dd = newDate.getDate();
+		var yy = newDate.getFullYear();
+		var hh = newDate.getHours();
+		var m = newDate.getMinutes();
+
+		if(mm < 10)
+		{
+			mm = "0" + mm;
+		}
+		if(dd < 10)
+		{
+			dd = "0" + dd;
+		}
+		if(hh < 10)
+		{
+			hh = "0" + hh;
+		}
+		if(m < 10)
+		{
+			m = "0" + m;
+		}
+		let datestr = yy + "-" + mm + "-" + dd + " " + hh + ":" + m;
+		return datestr;
+		
+		//return newDate;   
+	}
+
+	function formatUtcDate(date)
+	{
+		var newDate = new Date(date);
+		var mm = newDate.getMonth() + 1;
+		var dd = newDate.getDate();
+		var yy = newDate.getFullYear();
+		var hh = newDate.getHours();
+		var m = newDate.getMinutes();
+
+		if(mm < 10)
+		{
+			mm = "0" + mm;
+		}
+		if(dd < 10)
+		{
+			dd = "0" + dd;
+		}
+		if(hh < 10)
+		{
+			hh = "0" + hh;
+		}
+		if(m < 10)
+		{
+			m = "0" + m;
+		}
+		let datestr = yy + "-" + mm + "-" + dd + " " + hh + ":" + m;
+		return datestr;	
+	}	
+  </script>
+
+  <script type="module" src="/js/itis_init.js" /></script>
+  <script src="/js/admin.js" /></script>
+  <link rel="stylesheet" href="/css/w3.css">  
+  <link rel="stylesheet" href="/css/custom.css">  
+
+</head>
+
+<body class="w3-container w3-margin" id="body">
+
+  <itis-menu id="itisMenu" message=""></itis-menu>
+
+  <div class="w3-container w3-light-blue">
+    <h2 id="portaltitle">ITIS-API::Admin-Portal</h2>
+  </div>
+
+  <itis-menusub id="itisMenuSub" message="<%= controller()->name() %>"></itis-menusub>
+
+<h3 id="pagetitle"><page-title message=""><%= controller()->name() + ": " + controller()->activeAction() %></page-title></h3>
+<div id="pagedesc"><page-desc message=""></page-desc></div>
+
+<p><img class="w3-yellow" src="/Icons/exclamation-square.svg">&nbsp; Admin-&Auml;nderungen &uuml;ber Formular-Eingaben werden mit Benutzername und Datum im System gespeichert.</p>
+
+<p id="redmsg" style="color: red"><%==$ red_msg %><%=$ error %></p><p id="greenmsg" style="color: green"><%==$ green_msg %><%=$ notice %></p>
+
+<main>
+	
+<article>
+	<section id ="userSalut">
+		<h4>Hallo <span id="firstname"><%==$uFname %></span></h4>
+		<p>&rArr; der letzte Log-In erfolgte am <span id="lastLogin"></span> Uhr <small>(<span id="lastLoginUtc"><%==$ lastLogin %></span> UTC)</small></p>
+		<p>&rArr; der letzte Log-Out erfolgte am <span id="lastLogout"></span> Uhr <small>(<span id="lastLogoutUtc"><%==$ lastLogout %></span> UTC)</small></p>
+		<p>&rArr; die letzte Passwort-&Auml;nderung erfolgte am <span id="lastPwdChangeTime"></span> Uhr <small>(<span id="lastPwdChangeTimeUtc"><%==$ lastPwdChangeTime %></span> UTC)</small></p>
+	</section>
+<div id="pagecontent"><page-content message=""></page-content></div>	
+</article> 
+
+</main>
+<itis-footer id="itisFooter" message=""></itis-footer>
+  
+</body>
+</html>

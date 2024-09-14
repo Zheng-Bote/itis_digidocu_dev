@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<%#include "standardsmeta.h" %>
+<% tfetch(StandardsMeta, standardsMeta); %>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title><%= controller()->name() + ": " + controller()->activeAction() %></title>
+</head>
+<body>
+
+<p id="redmsg" style="color: red"><%==$ red_msg %><%=$ error %></p><p id="greenmsg" style="color: green"><%==$ green_msg %><%=$ notice %></p>
+
+<h1>Showing Standards Meta</h1>
+<dt>ID</dt><dd><%= standardsMeta.id() %></dd><br />
+<dt>Spec Data ID</dt><dd><%= standardsMeta.specDataId() %></dd><br />
+<dt>Spec Created</dt><dd><%= standardsMeta.specCreated() %></dd><br />
+<dt>Spec Last Modified</dt><dd><%= standardsMeta.specLastModified() %></dd><br />
+<dt>Spec Valid Start</dt><dd><%= standardsMeta.specValidStart() %></dd><br />
+<dt>Spec Valid End</dt><dd><%= standardsMeta.specValidEnd() %></dd><br />
+<dt>Last Editor</dt><dd><%= standardsMeta.lastEditor() %></dd><br />
+<dt>G Legacy</dt><dd><%= standardsMeta.gLegacy() %></dd><br />
+<dt>Responsibility</dt><dd><%= standardsMeta.responsibility() %></dd><br />
+<dt>Spec Comment</dt><dd><%= standardsMeta.specComment() %></dd><br />
+<dt>Spec Marker</dt><dd><%= standardsMeta.specMarker() %></dd><br />
+<dt>Groups</dt><dd><%= standardsMeta.groups() %></dd><br />
+
+<%== linkTo("Edit", urla("save", standardsMeta.id())) %> |
+<%== linkTo("Back", urla("index")) %>
+
+</body>
+</html>

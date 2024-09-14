@@ -1,0 +1,150 @@
+var lang = 'de';
+try
+{
+	lang = checkLangCookie();
+}
+catch(err)
+{
+	lang = 'de';
+}	
+
+class StandardsToc extends HTMLElement 
+{
+	constructor() 
+	{
+		super();
+		this._lang = 'de';
+	}
+	
+	connectedCallback() 
+	{
+		this.getGlossar();
+	}
+
+	attributeChangedCallback(name, oldValue, newValue)
+	{
+		if(oldValue !== newValue)
+		{
+			if(name === "lang")
+			{
+				this._lang = newValue;
+				this.updateMessage();
+			}
+		}
+	}
+	
+	static get observedAttributes()
+	{
+		return ["lang"];
+	}
+	
+	get message()
+	{
+		return this._lang;
+	}
+	
+	set message(value)
+	{
+		this._lang = value;
+		this.updateMessage();
+	}
+	
+	updateMessage()
+	{
+		try
+		{
+			lang = this._lang;
+		}
+		catch(e){}
+	}
+	
+	getGlossar() 
+	{
+		//data = new URLSearchParams([["getStdType", "show"], ["obj_sname", "ND"], ["cat_sname_en", "Planning"], ["country", "WW"], ["lang", "de_DE"], ["spec_active", "1"], ["ac_class", "3"], ["pc_class", "3"], ["spec_release", "draft"]]);
+	
+	  return new Promise((res, rej) => {
+		fetch('/standardsdata/getStdToc',
+		{
+			body: data,
+			method: "post"
+		})
+		  .then(data => data.json())
+		  .then((json) => {
+			this.renderGlossar(json);
+			res();
+		  })
+		  .catch((error) => {this.annonymous(error);});
+	  })
+	}
+	
+	annonymous(error)
+	{
+		const div = document.createElement("div");
+		div.innerHTML = error;
+
+		this.appendChild(div);		
+	}
+	
+	renderGlossar(data) 
+	{
+		var obj = data;
+		
+			var item_class =  document.createElement("span");
+
+		if(obj.length < 1)
+		{
+			console.log("getToc no items: "); // + stdObj.obj_sname);
+			return;
+		} 
+		else if(obj.length == 1)
+		{
+			try
+			{
+				if(obj[0].hasOwnProperty('ERROR') && obj[0].ERROR == "1") {console.log("getToc ERROR: " + stdObj.obj_sname);}
+			}
+			catch(err) 
+			{
+				//ignore
+			}			
+		}
+		var cat_class = "";
+		var catBool = true;
+		
+		for (i in obj) 
+        {
+			let item_cat_title = "";
+			let item_cat = obj[i].cat_class;
+
+            if(obj[i].cat_class === "General" && obj[i].obj_sname !== "General" && catBool === true)
+            {
+				item_cat_title = obj[i].obj_sname + " " + translate(obj[i].cat_class);
+				catBool = false
+				
+			}
+			else
+			{
+				item_cat_title = obj[i].cat_class;
+			}
+			
+			if(cat_class != item_cat)
+			{
+				cat_class = item_cat;
+				item_class =  document.createElement("span");
+				//item_class.setAttribute('id', item_cat);
+				item_class.innerHTML = `<li><a href="#${item_cat}"><b>${translate(item_cat_title)}</b></a></li>`;
+			}
+
+			let item =  document.createElement("span");
+			item.innerHTML = obj[i].toc;
+			item_class.appendChild(item);
+			
+
+            this.appendChild(item_class);
+        }
+		//this.updateMessage();
+	}
+
+}
+customElements.define("standards-toc", StandardsToc);
+ 
+ 

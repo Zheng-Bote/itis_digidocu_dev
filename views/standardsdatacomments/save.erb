@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<%#include "standardsdatacomments.h" %>
+<% tfetch(QVariantMap, standardsDataComments); %>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <html lang="de">
+
+  <title><%= controller()->name() + ": " + controller()->activeAction() %></title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <link rel="icon" href="/favicon.ico">
+
+  <script>
+    function doLocal()
+    {
+        console.log("this is local");
+
+        let l_footer = document.getElementById("itisFooter");
+        l_footer.message = '<a href="/stdsystem/license" title="licenses">Lizenzen</a>&nbsp;<a href="/stdsystem/imprint" title="Imprint">Impressum</a>';
+
+        //let l_menu = document.getElementById("itisMenu"); 
+        //l_menu.message = "<%= controller()->name() %>";
+    }
+
+	function setLanguage(lang)
+	{
+		if(lang == "0")
+		{lang = "de";}
+		else{lang = "en";}
+		document.cookie = "lang=" + lang + ";" + ";path=/";
+		location.reload();
+	}
+	
+  </script>
+
+  <script type="module" src="/js/itis_init.js" /></script>
+  
+  <link rel="stylesheet" href="/css/w3.css">  
+  <link rel="stylesheet" href="/css/custom.css">  
+
+</head>
+
+<body class="w3-container w3-margin" id="body">
+
+  <itis-menu id="itisMenu" message=""></itis-menu>
+
+  <div class="w3-container w3-light-blue">
+    <h2 id="portaltitle">ITIS-API::Admin-Portal</h2>
+  </div>
+
+  <itis-menusub id="itisMenuSub" message="<%= controller()->name() %>"></itis-menusub>
+
+<h3 id="pagetitle"><page-title message=""><%= controller()->name() + ": " + controller()->activeAction() %></page-title></h3>
+<div id="pagedesc"><page-desc message=""></page-desc></div>
+
+<p style="color: red"><span id="redmsg"><%==$ red_msg %></span> <%=$ error %></p><p style="color: green"><span id="greenmsg"><%==$ green_msg %></span> <%=$ notice %></p>
+
+<main>
+    
+<div id="pagecontent"><page-content message=""></page-content></div>	
+
+
+<a href="/standardsDataComments/show/<%= standardsDataComments["id"] %>" class="w3-btn w3-light-grey"><img src="/Icons/eyeglasses.svg">&nbsp;Anzeige</a>
+<a href="/standardsDataComments/list_all" class="w3-btn w3-light-grey">&laquo;&nbsp;zur&uuml;ck</a>
+
+<%== formTag(urla("save", standardsDataComments["id"]), Tf::Post) %>
+<div class="w3-container" style="max-width: 50%;">
+  <p>
+    <label>ID<br /><input type="text" class="w3-input" name="standardsDataComments[id]" value="<%= standardsDataComments["id"] %>" readonly="readonly" /></label>
+  </p>
+  <p>
+    <label>Comment Created<br /><input type="text" class="w3-input" name="standardsDataComments[commentCreated]" value="<%= standardsDataComments["commentCreated"] %>" /></label>
+  </p>
+  <p>
+    <label>Spec ID<br /><input type="text" class="w3-input" name="standardsDataComments[specId]" value="<%= standardsDataComments["specId"] %>" /></label>
+  </p>
+  <p>
+    <label>Spec Title<br /><input type="text" class="w3-input" name="standardsDataComments[specTitle]" value="<%= standardsDataComments["specTitle"] %>" /></label>
+  </p>
+  <p>
+    <label>Spec Version<br /><input type="text" class="w3-input" name="standardsDataComments[specVersion]" value="<%= standardsDataComments["specVersion"] %>" /></label>
+  </p>
+  <p>
+    <label>User Comment<br /><input type="text" class="w3-input" name="standardsDataComments[userComment]" value="<%= standardsDataComments["userComment"] %>" /></label>
+  </p>
+  <p>
+    <label>Username<br /><input type="text" class="w3-input" name="standardsDataComments[username]" value="<%= standardsDataComments["username"] %>" /></label>
+  </p>
+  <p>
+    <input type="submit" value="speichern &raquo;" />
+  </p>
+</div>
+</form>
+
+<br>
+
+<a href="/standardsDataComments/show/<%= standardsDataComments["id"] %>" class="w3-btn w3-light-grey"><img src="/Icons/eyeglasses.svg">&nbsp;Anzeige</a>
+<a href="/standardsDataComments/list_all" class="w3-btn w3-light-grey">&laquo;&nbsp;zur&uuml;ck</a>
+
+</main>
+
+<itis-footer id="itisFooter" message=""></itis-footer>
+</body>
+</html>
+

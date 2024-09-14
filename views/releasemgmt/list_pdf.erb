@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<%#include "releasemgmt.h" %>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <html lang="de">
+
+  <title><%= controller()->name() + ": " + controller()->activeAction() %></title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <link rel="icon" href="/favicon.ico">
+
+  <script>
+    function doLocal()
+    {
+        console.log("this is local");
+
+        let l_footer = document.getElementById("itisFooter");
+        l_footer.message = '<a href="/stdsystem/license" title="license">Lizenzen</a>&nbsp;<a href="/stdsystem/imprint" title="Imprint">Impressum</a>';
+
+		var ageMutator = function(value, data, type, params, component)
+		{
+			//change age value into boolean, true if over the provided legal age
+			//var erg = "<a href=\"/ObjSpecs/show/" + value + "\"><span class=\"w3-text-blue\">Bearbeitung</span></a>";   
+			var erg = '<a href="javascript:void(0)" onclick="open_objlist()" class="w3-btn w3-light-grey" title="Obj Spec-Liste" style="background: none;" ><img src="/Icons/justify.svg"></a>&nbsp;&nbsp;&nbsp;'; 
+			erg += '<a href="javascript:void(0)" onclick="open_win(' + value + ')" title="Show" style="background: none;" ><img src="/Icons/eyeglasses.svg"></a>&nbsp;&nbsp;&nbsp;';   
+			erg += "<a href=\"/standardsdata/save/" + value + "\" title=\"Q-Edit\" style=\"background: none;\" ><img src=\"/Icons/pencil.svg\"></a>&nbsp;&nbsp;&nbsp;";
+			erg += "<a href=\"/standardsdata/editor_upd/" + value + "\" title=\"Edit\" style=\"background: none;\" ><img src=\"/Icons/textarea-t.svg\"></a>&nbsp;&nbsp;&nbsp;";   
+			erg += "<a href=\"/standardsdata/show/" + value + "\" title=\"Remove\" style=\"background: none;\" ><img src=\"/Icons/trash.svg\"></a>";
+
+			return erg;
+		}
+								
+		var anneTable = new Tabulator("#annex-table", 
+		{
+			layout:"fitColumns",
+			responsiveLayout:"collapse",
+			placeholder:"keine Daten",
+			columns:[
+				{title:"uri", field:"uri", sorter:"string", width:300},
+				{title:"name", field:"sname", sorter:"string"},
+				{title:"size", field:"size", sorter:"number"},
+				{title:"Baustein", field:"name", formatter:"html", mutatorData:ageMutator, mutatorDataParams:{legalAge:18}},
+			],
+			htmlOutputConfig:{
+				formatCells:false, 
+			},
+		});
+
+		anneTable.setData("/releasemgmt/getAnnexCdPDFs");
+
+    }
+
+	function setLanguage(lang)
+	{
+		if(lang == "0")
+		{lang = "de";}
+		else{lang = "en";}
+		document.cookie = "lang=" + lang + ";" + ";path=/";
+		location.reload();
+	}
+
+  </script>
+
+  <script type="module" src="/js/itis_init.js" /></script>
+  <link rel="stylesheet" href="/css/w3.css">  
+  <link rel="stylesheet" href="/css/custom.css">
+  
+	<link href="/css/tabulator/tabulator.min.css" rel="stylesheet">
+    <script type="text/javascript" src="/js/tabulator/tabulator.min.js"></script>
+		
+	<script type="text/javascript" src="/js/releasemgmt/list_pdf.js"></script>
+</head>
+
+<body class="w3-container w3-margin" id="body">
+
+  <itis-menu id="itisMenu" message=""></itis-menu>
+
+  <div class="w3-container w3-light-blue">
+    <h2 id="portaltitle">ITIS-API::Admin-Portal</h2>
+  </div>
+
+  <itis-menusub id="itisMenuSub" message="<%= controller()->name() %>"></itis-menusub>
+
+<h3 id="pagetitle"><page-title message=""><%= controller()->name() + ": " + controller()->activeAction() %></page-title></h3>
+<div id="pagedesc"><page-desc message="">Auflistung der veröffentlichten Vorgaben (pdf, docx, odt).</u></page-desc></div>
+
+<span style="color: red;">
+	<span  id="redmsg"><%==$ red_msg %></span>&nbsp;<span><%=$ error %></span>
+</span>
+<span style="color: green;">
+	<span id="greenmsg"><%==$ green_msg %></span>&nbsp;<span><%=$ notice %></span>
+</span>
+
+<main>
+<div id="pagecontent"><page-content message=""></page-content></div>
+
+<br />
+<section>
+	<h3>Vorgaben</h3>
+		<div id="std-table"></div>
+</section>
+<section>
+	<h3>Anhänge</h3>
+		<div id="annex-table"></div>
+
+</main>
+
+<script>
+	getStdCdPDFs();
+	getAnnexCdPDFs();
+</script>
+
+<itis-footer id="itisFooter" message=""></itis-footer>
+  
+</body>
+</html>

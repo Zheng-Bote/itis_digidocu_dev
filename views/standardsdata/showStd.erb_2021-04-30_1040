@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<%#include "standardsdata.h" %>
+<%#include "standardsmeta.h" %>
+
+<% tfetch(StandardsData, standardsData); %>
+<% tfetch(StandardsMeta, standardsMeta); %>
+
+<html>
+<head>
+  <meta charset="UTF-8">
+  <html lang="de">
+
+  <title><%= controller()->name() + ": " + controller()->activeAction() %></title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="alternate icon" href="/favicon.ico">
+  <link rel="mask-icon" href="/favicon.svg" color="#b2b2b2">
+  
+  <link rel="preload" href="/fonts/Inter-Regular.woff2" as="font" type="font/woff2" crossorigin />
+
+  <script>
+	let nav = document.createElement("nav");
+    let inhaltv = document.createElement("ol");
+	nav.appendChild(inhaltv);
+            
+    function doLocal()
+    {
+        console.log("this is local");
+
+        let l_footer = document.getElementById("itisFooter");
+        l_footer.message = '<a href="/stdsystem/license" title="licenses">Lizenzen</a>&nbsp;<a href="/stdsystem/imprint" title="Impressum">Imprint</a>';
+
+		// load defaults
+        getObjects(<%==$ jsonObjects %>);
+        getCategories(<%==$ jsonCategories %>);
+        getjsonExistCountries(<%==$ jsonExistCountries %>);
+        getLanguages(<%==$ jsonLanguages %>);
+        getReleaseTypes(<%==$ jsonReleaseTypes %>);
+        
+        document.getElementById("releases").selectedIndex = "0";
+        document.getElementById("releases").options[2].disabled = true;
+        document.getElementById("releases").options[3].disabled = true;
+	}
+
+	function setLanguage(lang)
+	{
+		if(lang == "0")	{lang = "de";}
+		else {lang = "en";}
+		document.cookie = "lang=" + lang + ";" + ";path=/";
+		location.reload();
+	}
+	
+  </script>
+
+  <script type="module" src="/js/itis_init.js" /></script>
+  <link rel="stylesheet" href="/css/w3.css" media="screen">  
+  <link rel="stylesheet" href="/css/custom.css" media="screen">  
+ 
+  <script src="/js/standards/showstd.js" /></script>
+  <script src="/js/objects-data/ObjectsData.js" /></script>
+  <script src="/js/glossar-data/GlossarData.js" /></script>
+  <script src="/js/standards-toc/StandardsToc.js" /></script>
+  <script src="/js/struct-data/StructData.js" /></script>
+  <script src="/js/i18n.min.js" /></script>
+
+<style>
+img {
+	max-width: 100%;
+    height: auto;
+}
+</style>
+</head>
+
+<body class="w3-container w3-margin" id="body">
+
+<div class="noprint">
+  <itis-menu id="itisMenu" message=""></itis-menu>
+
+  <div class="w3-container w3-light-blue">
+    <h2 id="portaltitle">ITIS-API::Admin-Portal</h2>
+  </div>
+
+  <itis-menusub id="itisMenuSub" message="<%= controller()->name() %>"></itis-menusub>
+
+<h3 id="pagetitle"><page-title message=""><%= controller()->name() + ": " + controller()->activeAction() %></page-title></h3>
+	<div id="pagedesc"><page-desc message=""><p>Semi-Finale Anzeige einer Vorgabe.</p></page-desc></div>
+
+<span style="color: red">
+	<span  id="redmsg"><%==$ red_msg %></span>&nbsp;<span id="rederror"><%=$ error %></span>
+</span>
+<span style="color: green">
+	<span id="greenmsg"><%==$ green_msg %></span>&nbsp;<span id="greennotice"><%=$ notice %></span>
+</span>
+<span id="prerel" style="visibility: hidden">
+	<span id="prelMsg"></span>&nbsp;<span id="prelCount">0</span>
+</span>
+
+<div id="test" style="display: none;" class="w3-modal">
+    <div class="w3-modal-content">
+      <div class="w3-container">
+        <span onclick="document.getElementById('test').style.display='none'" class="w3-button w3-display-topright">&times;</span>
+        <span id="msg"></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<dialog id="dialog">
+	<form>
+		Kommentar zu "<label id="spec_title"></label>&nbsp;<label id="spec_version"></label>"</br>
+		<input type="hidden" id="spec_id" value=""/>
+		
+		<textarea id="user_comment" class="editor" rows="8" cols="50"></textarea>
+	</form>
+    <button id="savecomment">speichern &raquo;</button>&nbsp;&nbsp;<button id="close-dialog">abbrechen</button>
+</dialog>
+
+<main>
+<div id="pagecontent"><page-content message=""></page-content></div>
+
+    <form id="searchform">
+        <section>
+            <div class="w3-cell-row">
+                <fieldset><legend>Objekt-Attribute</legend>
+                    <div class="w3-container w3-cell">
+                        <label for="obj_name">Objekt:&nbsp;</label><br><select name="obj_name" id="obj_name"><option value="0" selected>Objekt-Auswahl</option></select>
+                        <br>
+                    </div>
+                    <div class="w3-container w3-cell">
+                        <label for="obj_name">Availability Class:&nbsp;</label><br>
+                            <select name="ac_classes" id="ac_classes"></select>
+                        <br>
+                    </div>
+                    <div class="w3-container w3-cell">
+                        <label for="lang">Protection Class:&nbsp;</label><br>
+                            <select name="pc_classes" id="pc_classes"></select>
+                        <br>
+                    </div>
+                    <div class="w3-container w3-cell">
+                        <label for="cat">Kategorie:&nbsp;</label><br><select name="cat" id="cat"></select>
+                        <br>
+                    </div>
+                    <div class="w3-container w3-cell">
+                        <span class="w3-tooltip">
+                            <label for="countries">Land:&nbsp;</label><br><select id="countries" name="countries"></select>
+                        <span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag">WW = World Wide</span>
+                        <br>
+                    </div>
+                    <div class="w3-container w3-cell">
+                        <label for="lang">Sprache:&nbsp;</label><br><select name="lang" id="lang"></select>
+                        <br>
+                    </div>
+                </fieldset>
+            </div>
+            <div class="w3-cell-row">
+                <fieldset><legend>Release</legend>
+                    <div class="w3-container w3-cell">
+                        <label for="releases">Release:&nbsp;</label><br><select name="releases" id="releases"></select>
+                        <br>
+                    </div>
+                    <div class="w3-container w3-cell">
+                        <br>
+                        <span class="w3-tooltip">
+                            <label for="spec_active"><input type="checkbox" name="spec_active" id="spec_active" checked />&nbsp;aktive Bausteine</label>
+                        <span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag">nur de-/aktive Bausteine</span>
+                        <br>
+                    </div>
+                    <div class="w3-container w3-cell">
+                        <br>
+                        <span class="w3-tooltip">
+                            <label for="spec_complete"><input type="checkbox" name="spec_complete" id="spec_complete">&nbsp;komplette Vorgaben</label>
+                        <span style="position:absolute;left:0;bottom:18px" class="w3-text w3-tag">alle Objekt-spezifische Bausteine</span>
+                        <br>
+                    </div>
+                </fieldset>
+            </div>
+
+        </section>
+    </form>
+   
+    <p>
+		<input class="noprint w3-btn w3-light-grey" type="submit" value="suche &raquo;" onClick="getlLstStds()" style="margin-left: 10px;">
+		<a id="btnprint" style="margin-right: 10px; display: none;" href="javascript:doPrint()" class="noprint w3-btn w3-light-grey w3-right"><img class="noprint" src="/Icons/printer.svg"> &nbsp;Vorgabe drucken</a>
+		<button id="prelDoBtn" style="visibility: hidden; margin-right: 2px;" class="noprint w3-btn w3-light-grey w3-right" onClick="doprelDoBtn()"> &uarr; Pre-Release</button>
+	</p>
+
+</div>
+    <div class="printarea" id="listErg"></div>
+
+<br>
+
+</main>
+
+<dialog id="list_txtcomments" style="border-color: grey;">
+	<label>Kommentare zum Baustein</label></br>
+	<data-content id="content_list_txtcomments"></data-content>
+    <button id="close_list_txtcomments">schließen</button>
+</dialog>
+
+<script>
+	// document.getElementById("show-modal-dialog").addEventListener("click", () => { document.getElementById("dialog").showModal(); });
+	document.getElementById("close-dialog").addEventListener("click", () => { document.getElementById("user_comment").value = ""; document.getElementById("dialog").close(); document.getElementById("greenmsg").innerHTML = "";});
+	document.getElementById("savecomment").addEventListener("click", () => { sendComment(); });
+	document.getElementById("close_list_txtcomments").addEventListener("click", () => { document.getElementById("list_txtcomments").close(); });
+		
+	function doPrint()
+	{
+		document.getElementById('btnprint').style.display = 'none';  
+/*
+		let sel = document.createElement("div");
+		sel.setAttribute('class', 'divHeader');
+		sel.innerHTML = '<span><img src="/bmw-mini_logo.png" alt="BMW Logo"></span>';
+		document.getElementById('listErg').appendChild(sel);
+*/		
+		const d = new Date();
+		const yyyy = d.getFullYear();
+
+		let el = document.createElement("div");
+		el.setAttribute('class', 'divFooter');
+		el.innerHTML = 'Copyright ' + yyyy + '. ' + translate("footer_copyright");
+		document.getElementById('listErg').appendChild(el);
+		
+		window.print();	
+	}
+</script>
+<link rel="stylesheet" href="/css/print.css" type="text/css" media="print" />
+
+<itis-footer class="noprint" id="itisFooter" message=""></itis-footer>
+  
+</body>
+</html>

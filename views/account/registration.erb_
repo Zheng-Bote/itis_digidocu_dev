@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <html lang="de"> 
+
+  <title><%= controller()->name() + ": " + controller()->activeAction() %></title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <link rel="icon" href="/favicon.ico">
+
+  <meta name="description" content="Imprint of ITIS-API.">
+  <meta name="author" content="ZHENG Bote" /> 
+        
+  <script>
+    function doLocal()
+    {
+        console.log("this is local");
+
+        let l_footer = document.getElementById("itisFooter");
+        l_footer.message = '<a href="/stdsystem/license" title="licenses">Lizenzen</a>&nbsp;<a href="/stdsystem/imprint" title="Imprint">Impressum</a>';
+
+    }
+
+function pwd()
+{
+        var txtPassword = document.getElementById("txtPassword");
+        var txtConfirmPassword = document.getElementById("txtConfirmPassword");
+        txtPassword.onchange = ConfirmPassword;
+        txtConfirmPassword.onkeyup = ConfirmPassword;
+        function ConfirmPassword() 
+        {
+            txtConfirmPassword.setCustomValidity("");
+            if (txtPassword.value != txtConfirmPassword.value) 
+            {
+                txtConfirmPassword.setCustomValidity("Passwords do not match.");
+            }
+        }	
+} 
+function setLanguage(lang)
+{
+    if(lang == "0")
+    {lang = "de";}
+    else{lang = "en";}
+    document.cookie = "lang=" + lang + ";" + ";path=/";
+	location.reload();
+}
+    
+  </script>
+
+  <script type="module" src="/js/itis_init.js" /></script>
+   
+  <link rel="stylesheet" href="/css/w3.css">  
+  <link rel="stylesheet" href="/css/custom.css">  
+
+</head>
+
+<body class="w3-container w3-margin" id="body">
+
+  <itis-menu id="itisMenu" message=""></itis-menu>
+
+  <div class="w3-container w3-light-blue">
+    <h2 id="portaltitle">ITIS-API::Admin-Portal</h2>
+  </div>
+
+  <itis-menusub id="itisMenuSub" message="<%= controller()->name() %>"></itis-menusub>
+
+<h3 id="pagetitle"><page-title message=""><%= controller()->name() + ": " + controller()->activeAction() %></page-title></h3>
+<div id="pagedesc"><page-desc message=""></page-desc></div>
+
+<main>
+	
+<article>
+	<section id ="userPwd">
+<form method="post" action="Default.aspx" id="form1">
+<div style="max-width: 400px;">
+    <h2 class="form-signin-heading">
+        Registration</h2>
+    <label for="txtUsername">
+        Username</label>
+    <input name="txtUsername" type="text" id="txtUsername" class="form-control" placeholder="Enter Username"
+        required />
+    <br />
+    <label for="txtPassword">
+        Password</label>
+    <input name="txtPassword" type="password" id="txtPassword" title="Password must contain: Minimum 8 characters atleast 1 Alphabet and 1 Number"
+        class="form-control" placeholder="Enter Password" required pattern="^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$" />
+    <br />
+    <label for="txtConfirmPassword">
+        Confirm Password</label>
+    <input name="txtConfirmPassword" type="password" id="txtConfirmPassword" class="form-control"
+        placeholder="Confirm Password" />
+    <br />
+    <label for="txtEmail">
+        Email</label>
+    <input name="txtEmail" id="txtEmail" class="form-control" placeholder="Enter Email"
+        required type="email" />
+    <hr />
+    <input type="submit" name="btnSignup" value="Sign up" id="btnSignup" class="btn btn-primary" />
+</div>
+</form>
+	</section>
+<div id="pagecontent"><page-content message=""></page-content></div>	
+</article> 
+
+</main>
+<itis-footer id="itisFooter" message=""></itis-footer>
+
+</body>
+</html>

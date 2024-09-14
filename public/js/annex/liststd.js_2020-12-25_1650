@@ -1,0 +1,372 @@
+// 2020-12-22 10:47
+
+function getObjects(Obj)
+{
+    const selectbox = document.getElementById("obj_name");
+    const newOption = new Option("Allgemein", "Allgemein");
+    selectbox.add(newOption, undefined);
+
+	//Obj.reverse();
+	for (i in Obj) 
+	{
+		if(!Obj[i].hasOwnProperty('ERROR'))
+		{
+			 if(!Obj[i].hasOwnProperty('ERROR'))
+			{
+				let newOption = new Option(Obj[i].obj_lname_en, Obj[i].obj_sname);
+				selectbox.add(newOption, undefined);
+			}
+		}
+	}
+	document.getElementById("obj_name").addEventListener("click", getAcPc);
+}  
+
+function getCategories(Obj)
+{
+    const selectbox = document.getElementById("cat");
+    
+	for (i in Obj) 
+	{
+		if(!Obj[i].hasOwnProperty('ERROR'))
+		{
+			let newOption = new Option(Obj[i].cat_sname_en, Obj[i].cat_sname_en);
+			selectbox.add(newOption, undefined);
+		}
+	}
+	selectbox.selectedIndex = "0";
+	document.getElementById("spec_complete").addEventListener("click", catSelection);
+}
+
+function getLanguages(Obj)
+{
+    const selectbox = document.getElementById("lang");
+
+	for (i in Obj) 
+	{
+		if(!Obj[i].hasOwnProperty('ERROR'))
+		{
+			let newOption = new Option(Obj[i].std_attr, Obj[i].std_val);
+			selectbox.add(newOption, undefined);
+		}
+	}
+}
+
+function getReleaseTypes(Obj)
+{
+    let selectbox = document.getElementById("releases");
+	
+	for (i in Obj) 
+	{
+		if(!Obj[i].hasOwnProperty('ERROR'))
+		{
+			let newOption = new Option(Obj[i].std_attr, Obj[i].std_attr);
+			selectbox.add(newOption, undefined);
+		}
+	} 
+}
+
+function getjsonExistCountries(Obj)
+{
+    const selectbox = document.getElementById("countries");
+    
+	for (i in Obj) 
+	{
+		if(!Obj[i].hasOwnProperty('ERROR'))
+		{
+			let newOption = new Option(Obj[i].country, Obj[i].country);
+			selectbox.add(newOption, undefined);
+		}
+	}
+}
+
+// #####
+function getAcPc()
+{
+    let ac_selectbox = document.getElementById("ac_classes");
+    ac_selectbox.innerHTML = "";
+    let pc_selectbox = document.getElementById("pc_classes");
+    pc_selectbox.innerHTML = "";
+    
+    let iObj = document.getElementById("obj_name").selectedIndex;
+    let oObj = document.getElementById("obj_name").options;
+    let obj = oObj[iObj].value;
+
+    if(obj === "Allgemein")
+    {
+        let newOption = new Option("AC-0", "0");
+        ac_selectbox.add(newOption, undefined);
+        newOption = new Option("PC-0", "0");
+        pc_selectbox.add(newOption, undefined);
+        document.getElementById("cat").selectedIndex = 0;
+        document.getElementById("cat").disabled=true;
+        return;
+    }
+    else
+    {
+        document.getElementById("cat").disabled=false;
+    }
+   
+	if(document.getElementById("spec_complete").checked)
+	{
+		console.log("Allg = on");
+		let cats = document.getElementById('cat');
+		cats.selectedIndex = 0;
+		for (i = 1; i < cats.length; i++) 
+		{
+			cats.options[i].disabled = true;
+		}
+	}
+	else
+	{
+		document.getElementById("cat").disabled=false;
+		let cats = document.getElementById('cat');
+		for (i = 1; i < cats.length; i++) 
+		{
+			cats.options[i].disabled = false;
+		}
+	}
+	
+    fetch("/acclasses/getObjAcJson?obj=" + obj + "&active=1").then(function (response) 
+    {
+        return response.json();
+    }).then(function (json) 
+    {
+        var Obj = json;
+        for (i in Obj) 
+        {
+            if(!Obj[i].hasOwnProperty('ERROR'))
+            {
+                let ac = "AC-" + Obj[i].ac_class;
+                let newOption = new Option(ac, Obj[i].ac_class);
+                ac_selectbox.add(newOption, undefined);
+            }
+        }
+    });
+        
+    fetch("/pcclasses/getObjPcJson?obj=" + obj + "&active=1").then(function (response) 
+    {
+        return response.json();
+    }).then(function (json) 
+    {
+        var Obj = json;
+        for (i in Obj) 
+        {
+            if(!Obj[i].hasOwnProperty('ERROR'))
+            {
+                let pc = "PC-" + Obj[i].pc_class;
+                let newOption = new Option(pc, Obj[i].pc_class);
+                pc_selectbox.add(newOption, undefined);
+            }
+        }
+    });
+}
+
+function catSelection()
+{
+    if(document.getElementById("spec_complete").checked)
+    {
+        document.getElementById("cat").disabled=true;
+    }
+    else
+    {
+        document.getElementById("cat").disabled=false;
+		let cats = document.getElementById('cat');
+		for (i = 1; i < cats.length; i++) 
+		{
+			cats.options[i].disabled = false;
+		}
+    }
+}
+
+function getlLstStds()
+{   
+    document.getElementById("redmsg").innerHTML = "";
+    document.getElementById("greenmsg").innerHTML = "";
+    const listPlace = document.getElementById("listErg");
+    listPlace.innerHTML = "";
+    
+    let stdObj = new Object();
+    stdObj.obj_sname = document.getElementById("obj_name").value;
+    if(stdObj.obj_sname == "0")
+    {
+		document.getElementById("redmsg").innerHTML = "Bitte ein Objekt auswählen";
+		return;
+	}
+    stdObj.cat_class = document.getElementById("cat").value;
+    stdObj.country = document.getElementById("countries").value;
+    stdObj.lang = document.getElementById("lang").value;
+    stdObj.active = document.getElementById("spec_active").checked;
+    stdObj.spec_compl = document.getElementById("spec_complete").checked;
+    stdObj.ac = document.getElementById("ac_classes").value;
+    stdObj.pc = document.getElementById("pc_classes").value;
+    stdObj.release = document.getElementById("releases").value;
+
+	stdObj.active = (stdObj.active == true) ? 1 : 0;
+
+    switch(stdObj.release)
+    {
+        case '0': stdObj.release = "draft"; break;
+        case '1': stdObj.release = "pre-release"; break;
+        case '2': stdObj.release = "released"; break;
+        case '3': stdObj.release = "expired"; break; 
+    }
+
+	if(stdObj.spec_compl == true)
+	{
+		// stupid
+		let catPlace = document.createElement("article");
+		catPlace.setAttribute('id', "top_" + 'Allgemein');
+		let title = document.createElement("h4");
+		title.innerText = x[i].value;
+		catPlace.appendChild(title);
+		listPlace.appendChild(catPlace);
+        
+		setListStds(stdObj, 'Allgemein', 'Allgemein');
+		
+		const x = document.getElementById('cat');
+		for (let i = 0; i < x.length; i++) 
+		{
+			let catPlace = document.createElement("article");
+			catPlace.setAttribute('id', x[i].value);
+			let title = document.createElement("h4");
+			title.innerText = x[i].value;
+			catPlace.appendChild(title);
+			listPlace.appendChild(catPlace);
+			
+			setListStds(stdObj, x[i].value)
+		}
+	}
+	else
+	{
+		let catPlace = document.createElement("article");
+		catPlace.setAttribute('id', stdObj.cat_class);
+		let title = document.createElement("h4");
+		title.innerText = stdObj.cat_class;
+		catPlace.appendChild(title);
+		listPlace.appendChild(catPlace);
+			
+		setListStds(stdObj, stdObj.cat_class)
+	}
+}
+
+function setListStds(obj, cat, obj_name))
+{
+	data = new URLSearchParams([["getStdType", "list"], ["obj_sname", obj.obj_sname], ["cat_sname_en", cat], ["country", obj.country], ["lang", obj.lang], ["spec_active", obj.active], ["ac_class", obj.ac], ["pc_class", obj.pc], ["spec_release", obj.release]]);
+	
+    fetch("/standardsdata/getStdList", 
+    {
+		body: data,
+		method: "post"
+	}).then(function (response) 
+    {
+        return response.json();
+    }).then(function (json) 
+    {
+		var obj = json;
+
+        let table = document.createElement("table");
+        table.classList.add("w3-table-all");
+        table.setAttribute('id', 'listable');
+        
+        let header = document.createElement("thead");
+        header.insertRow(0);
+        header.rows[0].insertCell(0);
+        header.rows[0].cells[0].appendChild(document.createTextNode('id'));
+        header.rows[0].cells[0].setAttribute('style', 'font-weight: bold;');
+        header.rows[0].insertCell(1);
+        header.rows[0].cells[1].appendChild(document.createTextNode('Object'));
+        header.rows[0].cells[1].setAttribute('style', 'font-weight: bold;');
+        header.rows[0].insertCell(2);
+        header.rows[0].cells[2].appendChild(document.createTextNode("Title"));
+        header.rows[0].cells[2].setAttribute('style', 'font-weight: bold;');
+        header.rows[0].insertCell(3);
+        header.rows[0].cells[3].appendChild(document.createTextNode("Desc"));
+        header.rows[0].cells[3].setAttribute('style', 'font-weight: bold;');
+        header.rows[0].insertCell(4);
+        header.rows[0].cells[4].appendChild(document.createTextNode("active"));
+        header.rows[0].cells[4].setAttribute('style', 'font-weight: bold;');
+        header.rows[0].insertCell(5);
+        header.rows[0].cells[5].appendChild(document.createTextNode("version"));
+        header.rows[0].cells[5].setAttribute('style', 'font-weight: bold;');
+        header.rows[0].insertCell(6);
+        header.rows[0].cells[6].appendChild(document.createTextNode("country"));
+        header.rows[0].cells[6].setAttribute('style', 'font-weight: bold;');
+        header.rows[0].insertCell(7);
+        header.rows[0].cells[7].appendChild(document.createTextNode("lfdnr"));
+        header.rows[0].cells[7].setAttribute('style', 'font-weight: bold;');
+        header.rows[0].insertCell(8);
+        header.rows[0].cells[8].appendChild(document.createTextNode("cat"));
+        header.rows[0].cells[8].setAttribute('style', 'font-weight: bold;');
+        header.rows[0].insertCell(9);
+        header.rows[0].cells[9].appendChild(document.createTextNode("Baustein"));
+        header.rows[0].cells[9].setAttribute('class', 'w3-red w3-center');
+        header.rows[0].cells[9].setAttribute('style', 'font-weight: bold; width:150px;');
+        table.appendChild(header);
+        
+        let tbody = document.createElement("tbody");
+        table.appendChild(tbody);
+        
+        var count = document.getElementById("greenmsg").innerHTML;
+        document.getElementById("greenmsg").innerHTML = Number(count) + obj.length;
+        
+        for (i in obj) 
+        {
+            if(!obj[i].hasOwnProperty('ERROR'))
+            {
+                tbody.insertRow(i);
+                tbody.rows[i].insertCell(0);
+                tbody.rows[i].cells[0].appendChild(document.createTextNode(obj[i].id));
+                tbody.rows[i].insertCell(1);
+                tbody.rows[i].cells[1].appendChild(document.createTextNode(obj[i].obj_sname));
+                tbody.rows[i].insertCell(2);
+                tbody.rows[i].cells[2].appendChild(document.createTextNode(obj[i].spec_title));
+                tbody.rows[i].insertCell(3);
+                tbody.rows[i].cells[3].appendChild(document.createTextNode(obj[i].spec_desc));
+                tbody.rows[i].insertCell(4);
+                tbody.rows[i].cells[4].appendChild(document.createTextNode(obj[i].spec_active));
+                tbody.rows[i].insertCell(5);
+                tbody.rows[i].cells[5].appendChild(document.createTextNode(obj[i].spec_version));
+                tbody.rows[i].insertCell(6);
+                tbody.rows[i].cells[6].appendChild(document.createTextNode(obj[i].country));
+                tbody.rows[i].insertCell(7);
+                tbody.rows[i].cells[7].appendChild(document.createTextNode(obj[i].lfdnr));
+                tbody.rows[i].insertCell(8);
+                tbody.rows[i].cells[8].appendChild(document.createTextNode(obj[i].cat_class));
+                tbody.rows[i].insertCell(9);
+                a = document.createElement('a');
+                a.href =  '/standardsdata/show/' + obj[i].id;
+                a.title= 'Show';
+                a.style = 'text-decoration: none';
+                a.innerHTML = '<img src="/Icons/eyeglasses.svg" title="show" />&nbsp;&nbsp;&nbsp;&nbsp;';
+                tbody.rows[i].cells[9].appendChild(a);
+                a = document.createElement('a');
+                a.href =  '/standardsdata/save/' + obj[i].id;
+                a.title = 'Q-Edit';
+                a.style = 'text-decoration: none';
+                a.innerHTML = '<img src="/Icons/pencil.svg" />&nbsp;&nbsp;&nbsp;&nbsp;';
+                tbody.rows[i].cells[9].appendChild(a);
+                a = document.createElement('a');
+                a.href =  '/standardsdata/editor_upd/' + obj[i].id;
+                a.title = 'Editor';
+                a.style = 'text-decoration: none';
+                a.innerHTML = '<img src="/Icons/textarea-t.svg" />&nbsp;&nbsp;&nbsp;&nbsp;';
+                tbody.rows[i].cells[9].appendChild(a);
+                a = document.createElement('a');
+                a.href =  '/standardsdata/show/' + obj[i].id;
+                a.title = 'delete';
+                a.style = 'text-decoration: none';
+                a.innerHTML = '<img src="/Icons/trash.svg" />';
+                tbody.rows[i].cells[9].appendChild(a);
+            }
+            else
+            {
+                document.getElementById("redmsg").innerHTML = "Fehler passiert: " + obj[i].errMsg;
+            }
+            
+            document.getElementById(cat).appendChild(table);
+            //document.getElementById("listErg").appendChild(table);
+            
+        }
+        
+    });    
+}

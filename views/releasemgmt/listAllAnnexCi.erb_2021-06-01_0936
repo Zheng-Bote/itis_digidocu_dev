@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<%#include "releasemgmt.h" %>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <html lang="de">
+
+  <title><%= controller()->name() + ": " + controller()->activeAction() %></title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <link rel="icon" href="/favicon.ico">
+  
+    <link rel="preload" href="/fonts/Inter-Regular.woff2" as="font" type="font/woff2" crossorigin />
+
+  <script>
+    function doLocal()
+    {
+        console.log("this is local");
+
+        let l_footer = document.getElementById("itisFooter");
+        l_footer.message = '<a href="/stdsystem/license" title="license">Lizenzen</a>&nbsp;<a href="/stdsystem/imprint" title="Imprint">Impressum</a>';
+        
+        var ageMutator = function(value, data, type, params, component)
+		{
+			//change age value into boolean, true if over the provided legal age
+			//var erg = "<a href=\"/ObjSpecs/show/" + value + "\"><span class=\"w3-text-blue\">Bearbeitung</span></a>";   
+			var erg = '<a href="/ReleaseMgmt/show/' + value + '" title="Show" style="background: none;" ><img src="/Icons/eyeglasses.svg"></a>&nbsp;&nbsp;&nbsp;';   
+			erg += "<a href=\"/ReleaseMgmt/save/" + value + "\" title=\"Q-Edit\" style=\"background: none;\" ><img src=\"/Icons/pencil.svg\"></a>";
+			
+			return erg;
+		}
+								
+		var table = new Tabulator("#example-table", 
+		{
+			layout:"fitColumns",
+			responsiveLayout:"collapse",
+			placeholder:"keine Daten",
+			columns:[
+				{title:"Object", field:"obj_sname", sorter:"string", width:300},
+				{title:"Country", field:"country", sorter:"string"},
+				{title:"Lang", field:"lang", sorter:"string"},
+				{title:"AC", field:"ac_classes", sorter:"string"},
+				{title:"PC", field:"pc_classes", sorter:"string"},
+				{title:"Version", field:"spec_version", sorter:"string"},
+				{title:"CI Date", field:"ci_date", sorter:"string"},
+				{title:"Baustein", field:"id", formatter:"html", width:100, mutatorData:ageMutator, mutatorDataParams:{legalAge:18}},
+			],
+			htmlOutputConfig:{
+				formatCells:false, 
+			},
+		});
+
+		table.setData("/ReleaseMgmt/list_allAnnexCi");
+		
+		getAnnexCiPDFs();
+    }
+
+	function setLanguage(lang)
+	{
+		if(lang == "0")
+		{lang = "de";}
+		else{lang = "en";}
+		document.cookie = "lang=" + lang + ";" + ";path=/";
+		location.reload();
+	}
+	
+	function open_show(id) 
+	{
+		window.open("/releasemgmt/show/" + id);
+	}
+
+	function open_qedit(id) 
+	{
+		window.open("/releasemgmt/save/" + id);
+	}
+
+function getAnnexCiPDFs()
+{
+	let place = document.getElementById('annex');
+			
+	fetch("/releasemgmt/getAnnexCiPDFs").then(function (response) 
+    {
+        return response.json();
+    }).then(function (json) 
+    {
+        var Obj = json;	
+        if(Obj.length < 1)
+        {
+			return;
+		}
+		let table = document.createElement("table");
+		table.setAttribute("class", "w3-table-all w3-hoverable sortable");
+		
+		let tr = document.createElement("tr");
+		tr.setAttribute("class", "w3-text-grey");
+
+		let th = document.createElement("th");
+		th.innerHTML = "Name";
+		tr.appendChild(th);
+		th = document.createElement("th");
+		th.innerHTML = "zuletzt aktualisiert";
+		tr.appendChild(th);
+		th = document.createElement("th");
+		th.innerHTML = "download";
+		tr.appendChild(th);
+		table.appendChild(tr);
+        for (i in Obj) 
+        {
+			let tr = document.createElement('tr');
+			
+			let name = document.createElement('td');
+			name.innerHTML = Obj[i].name;
+			tr.appendChild(name);
+			
+			let modified = document.createElement('td');
+			modified.innerHTML = Obj[i].last_modified;
+			tr.appendChild(modified);
+			
+			let download = document.createElement('td');
+			download.innerHTML = `<a href="${Obj[i].uri}" alt="" download>${Obj[i].name} (${Obj[i].size}kB)</a>`;
+			tr.appendChild(download);
+
+			table.appendChild(tr);
+        }
+        place.appendChild(table);
+    });
+} 	
+  </script>
+
+  <script type="module" src="/js/itis_init.js" /></script>
+  <link rel="stylesheet" href="/css/w3.css">  
+  <link rel="stylesheet" href="/css/custom.css">
+  
+  <link href="/css/tabulator/tabulator.min.css" rel="stylesheet">
+  <script type="text/javascript" src="/js/tabulator/tabulator.min.js"></script>
+		<script src="/js/tabulator/tblsort.js"></script>
+		<style>
+			table.sortable th:not(.sorttable_sorted):not(.sorttable_sorted_reverse):not(.sorttable_nosort):after { content: " \25B4\25BE" }
+			table, th, td { border: 1px solid #bbb; text-align: left; }
+			th { background-color: #ddd; }
+		</style>
+		
+	<script src="/js/utc-data/UtcData.js"></script>
+</head>
+
+<body class="w3-container w3-margin" id="body">
+
+  <itis-menu id="itisMenu" message=""></itis-menu>
+
+  <div class="w3-container w3-light-blue">
+    <h2 id="portaltitle">ITIS-API::Admin-Portal</h2>
+  </div>
+
+  <itis-menusub id="itisMenuSub" message="<%= controller()->name() %>"></itis-menusub>
+
+<h3 id="pagetitle"><page-title message=""><%= controller()->name() + ": " + controller()->activeAction() %></page-title></h3>
+<div id="pagedesc"><page-desc message="">Auflistung <u>aller</u> Annex Pre-Releases (CI).</u></page-desc></div>
+
+<span style="color: red">
+	<span  id="redmsg"><%==$ red_msg %></span>&nbsp;<span><%=$ error %></span>
+</span>
+<span style="color: green">
+	<span id="greenmsg"><%==$ green_msg %></span>&nbsp;<span><%=$ notice %></span>
+</span>
+
+<main>
+<div id="pagecontent"><page-content message=""></page-content></div>
+
+<br />
+
+<section>
+	<h4>Anhänge CI</h4>
+	<div id="example-table"></div>
+</section>
+
+<section>
+	<h4>Anhänge CI PDF's</h4>
+		<span id="annex"></span>
+</section>
+
+</main>
+<itis-footer id="itisFooter" message=""></itis-footer>
+  
+</body>
+</html>

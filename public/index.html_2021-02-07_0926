@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+        <meta charset="utf-8">
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+        
+        <title>ReST API Methoden</title>
+        <meta name="description" content="ReST-API Dokumentation">
+        <meta name="version" content="v00.00.21">
+        <meta name="author" content="ZHENG Robert" />
+        <meta name="date" content="2019-06-28T11:49:37+02:00">
+        <meta name="language" content="DE" />
+        <meta name="lang" content="de" />
+        
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+		<link rel="alternate icon" href="/favicon.ico">
+		<link rel="mask-icon" href="/favicon.svg" color="#b2b2b2">
+  
+        <script src="/js/cookie-alert/CookieAlert.js"></script>
+        <script type="module" src="/js/itis_init.js" /></script>
+        
+        <link rel="stylesheet" href="/css/w3.css">
+        <link rel="stylesheet" href="/css/custom.css">
+
+  <script>
+    function doLocal()
+    {
+        console.log("this is local");
+
+        let l_footer = document.getElementById("itisFooter");
+        l_footer.message = '<a href="/stdsystem/license" title="license">License</a>&nbsp;<a href="/stdsystem/imprint" title="Impressum">Imprint</a>';
+
+        //let l_menu = document.getElementById("itisMenu"); 
+        //l_menu.message = "<%= controller()->name() %>";
+    }
+
+  function setLanguage(lang)
+	{
+		if(lang == "0")
+		{lang = "de";}
+		else{lang = "en";}
+		document.cookie = "lang=" + lang + ";" + ";path=/";
+		location.reload();
+	}    
+  </script>        
+</head>
+
+<body id="body" class="w3-container w3-margin">
+
+  <itis-menu id="itisMenu" message=""></itis-menu>
+<span id="menue"></span>
+
+<div class="w3-container w3-light-blue" style="border-radius: 0px 0px 0.5em 0.5em;margin-bottom: 10px;">
+    <h2>IaaS::IT-IS ReST API</h2>
+</div>
+<span> 
+    <p><mark><span style="color: red;">Die ReST-API der INT-Umgebung steht <u>nicht</u> durchgehend zur Verf&uuml;gung (ins besondere an verregneten Wochenden und Feiertagen).</span>
+    </mark></p>
+<!--
+    <nav>
+        <ul>
+            <li><a href="#Objekte">Objekte</a></li>
+            <li><a href="#obj_specs">Objekt Spezifikationen</a></li>
+            <li><a href="#acpc_class">AC-/PC-Klassen</a></li>
+            <li><a href="#sonstiges">sonstiges</a></li>
+            <li><a href="#glossar">Glossar - Abk&uuml;rzungen</a></li>
+            <li><a href="#usecase">Use-Case Beispiel</a></li>
+        </ul>
+    </nav>
+-->
+
+<cookie-alert id="cookieAlert" message='Auch diese Webseite mag Cookies...<small><a href="/stdsystem/imprint#cookies" title="Impressum" style="color:rgb(255, 255, 255);">Details siehe: Impressum</a></small>'></cookie-alert>
+
+<p id="redmsg" style="color: red"></p><p id="greenmsg" style="color: green"></p>
+
+<main>
+	
+    <h3>API Methoden</h3>
+
+<b>aus Entwicklungsgr&uuml;nden bis auf weiteres gesperrt (derzeit ausschliesslich interne Verwendung).</b>
+
+<article>
+  <h2>(ReST) API Methoden</h2>
+	<section>
+ 	<p><b>temporary closed</b></p>
+	</section>
+</article>
+
+<article> 
+  <h2 id="glossar">Glossar - Abk&uuml;rzungen</h2>
+	<section> 
+        <h3>Glossar</h3>
+
+        <table id="tables" class="w3-table-all" align="center">
+            <tr>
+                <th>Deutscher Begriff</th><th>Englischer Begriff</th><th>Abkürzung</th></tr>
+            <tr>
+                <td>Etagenverteiler (EVT)</td><td>Floor Distribution</td><td>FD</td>
+            </tr>
+            <tr>
+                <td>Gebäudeverteiler (GVT)</td><td>Building Distribution</td><td>BD</td>
+            </tr>
+            <tr>
+                <td>Netzwerkverteiler</td><td>Network Distribution</td><td>ND</td>
+            </tr>
+            <tr>
+                <td>Gebäudeverteiler-Raum</td><td>Building Distributor Room</td><td>BD_Room</td>
+            </tr>
+            <tr>
+                <td>Etagenverteiler-Raum</td><td>Floor Distributor Room</td><td>FD_Room</td>
+            </tr>
+            <tr>
+                <td>Etagenverteiler-Rack</td><td>Floor Distributor Rack</td><td>FD_Rack</td>
+            </tr>
+            <tr>
+                <td>Netzbetreiberraum</td><td>Carrier Room</td><td>&nbsp;</td>
+            </tr>
+            <tr>
+                <td>Netzwerk Kommunikationszentrum</td><td>Network Communication Center</td><td>NCC</td>
+            </tr>
+            <tr>
+                <td>Server Raum</td><td>Server / Storage Room</td><td>SRV</td>
+            </tr>
+            <tr>
+                <td>Rechenzentrum</td><td>Datacenter</td><td>DC</td>
+            </tr>
+            <tr>
+                <td>Datensicherungsraum</td><td>Data Backup and Archive</td><td>DBA</td>
+            </tr>
+            <tr>
+                <td>Verfügbarkeitsklasse</td><td>Availability Class</td><td>AC [1-4]</td>
+            </tr>
+            <tr>
+                <td>Schutzklasse</td><td>Protection Class</td><td>PC [1-4]</td>
+            </tr>
+        </table>
+	</section>
+</article>
+
+<article>
+  <h2 id="usecase">Use-Case Beispiel</h2>
+
+  <mark>Ist zu einem weltweiten (internationen) Text-Baustein ("WW" = world wide) in der abgefragten Landes- und Sprachversion ("de_DE" oder "en_GB") ein gleicher nationaler Text-Bausteine (Bsp.: "US", "JP") vorhanden so ersetzt der nationale den internationalen.</mark>
+
+<!--  <br>siehe auch <a style="color: blue;text-decoration: underline;" href="/cataloger_info.html#progverarb" title="Cataloger">Programm: Verarbeitung</a>
+  <br>
+  <h3>beispielhafter Use-Case</h3>
+  <p>Es empfiehlt sich eine Schleife &uuml;ber die Objekt-Klassen (Kategorien) (<a style="color: blue;text-decoration: underline;" href="/objclasses/getAllJson">/objclasses/getAllJson</a>) mit der Abfrage ob diese aktiv ("active: 1)" oder de-aktiv (active: 0) ist.</p>
+	<section> 
+		<h3>1. Abfrage der allgemeinen Text-Bausteine</h3>
+        <p>Ermittlung der allgemeinen Text-Bausteine, wie z.B. Titelseite, Lenkungs-Information, Glossar, generelle Informationen.</p>
+        Bsp.:<br>
+        <a style="color: blue;text-decoration: underline;" href="/objspecs/getObjSpecsJson?obj_name=Allgemein&ac=0&pc=0&country=US&lang=de_DE&cat=Allgemein&spec_active=1" title="/objspecs/getObjSpecsJson?obj_name=&lt;name&gt;&amp;ac=&lt;ac&gt;&amp;pc=&lt;pc&gt;&amp;country=&lt;country&gt;&amp;lang=&lt;language&gt;&amp;cat=&lt;category&gt;&amp;spec_active=1">/objspecs/getObjSpecsJson?obj_name=Allgemein&ac=0&pc=0&country=US&lang=de_DE&cat=Allgemein&spec_active=1</a>
+    </section>
+	<section> 
+		<h3>2. Abfrage der allgemeinen Text-Bausteine zu einem Objekt</h3>
+        <p>Ermittlung der allgemeinen Text-Bausteine zu einem Objekt (Bsp. "ND").<br>Hierzu werden jeweils die allgemeinen wie auch die spezifischen der jeweiligen AC-Class und PC-Class ermittelt.</p>
+        Bsp.:<br>
+        <a style="color: blue;text-decoration: underline;" href="/objspecs/getObjSpecsJson?obj_name=ND&ac=3&pc=4&country=US&lang=de_DE&cat=Allgemein&spec_active=1" title="/objspecs/getObjSpecsJson?obj_name=&lt;name&gt;&amp;ac=&lt;ac&gt;&amp;pc=&lt;pc&gt;&amp;country=&lt;country&gt;&amp;lang=&lt;language&gt;&amp;cat=&lt;category&gt;&amp;spec_active=1">/objspecs/getObjSpecsJson?obj_name=ND&ac=3&pc=4&country=US&lang=de_DE&cat=Allgemein&spec_active=1</a>
+    </section>
+    <section> 
+		<h3>3. Abfrage der Text-Bausteine eines Objektes und einer Objekt-Klasse (Kategorie)</h3>
+        <p>Ermittlung der Text-Bausteine eines Objektes (Bsp.: "ND") und einer Kategorie (Bsp.: "Construction") auf Basis der abgefragten AC-Class und PC-Class.</p>
+        Bsp.:<br>
+        <a style="color: blue;text-decoration: underline;" href="/objspecs/getObjSpecsJson?obj_name=ND&ac=3&pc=4&country=US&lang=de_DE&cat=Construction&spec_active=1" title="/objspecs/getObjSpecsJson?obj_name=&lt;name&gt;&amp;ac=&lt;ac&gt;&amp;pc=&lt;pc&gt;&amp;country=&lt;country&gt;&amp;lang=&lt;language&gt;&amp;cat=&lt;category&gt;&amp;spec_active=1">/objspecs/getObjSpecsJson?obj_name=ND&ac=3&pc=4&country=US&lang=de_DE&cat=Construction&spec_active=1</a>
+    </section>
+    <section> 
+		<h3>4. Erstellung eines Inhalts-Verzeichnisses</h3>
+        <p>Auf Basis der Ergebnisse von 1-3 kann der jeweilige Abschnitt eines Inhalts-Verzeichnisses erstellt werden (es empfielt sich den jeweiliegen Abschnitt unmittelbar nach der Ermittlung zu erstellen).</p>
+    </section>
+    <section> 
+		<h3>5. Abfrage der jeweiligen Spezifikationen</h3>
+        <p>Auf Basis der Ergebnisse von 1-3 kann der jeweilige Content-Abschnitt mit den jeweiliegen Spezifikationen erstellt werden (es empfielt sich den jeweiliegen Content unmittelbar nach der Ermittlung zu erstellen).</p>
+        Bsp.:<br>
+        <a style="color: blue;text-decoration: underline;" href="/objspecs/getObjSpecJson?id=2&spec_active=1" title="/objspecs/getObjSpecJson?id=&lt;2&amp;spec_active=1">/objspecs/getObjSpecJson?id=2&spec_active=1</a>
+        <p><u>Hinweis:</u><br>Die jeweiligen Spezifikationen pro Kategorie k&ouml;nnten auch direkt in einer kompletten Abfrage abgeholt werden (siehe "Objekt-spezifische Spezifikationen :: alle Objekt-spezifische Spezifikationen als JSON.").<br><b>Dies empfiehlt sich allerdings nur bei wenigen, kleinen Inhalten!</b></p>
+    </section>
+    <section> 
+		<h3>6. Online-Anzeige mit Optionen</h3>
+        <p>Bsp.: Content-Anzeige mit Online-Suchfunktion und diversen Ausgabeformaten (Print, PDF)</p>
+    </section>
+    --> <p><b>temporary closed</b></p>
+</article>
+
+</main>
+
+<itis-footer id="itisFooter" message=""></itis-footer>
+</body>
+</html>

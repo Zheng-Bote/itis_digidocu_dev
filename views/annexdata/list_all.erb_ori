@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<%#include "annexdata.h" %>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title><%= controller()->name() + ": " + controller()->activeAction() %></title>
+</head>
+<body>
+
+<h1>Listing Annex Data</h1>
+
+<%== linkTo("Create a new Annex Data", urla("create")) %><br />
+<br />
+<table border="1" cellpadding="5" style="border: 1px #d0d0d0 solid; border-collapse: collapse;">
+  <tr>
+    <th>ID</th>
+    <th>Lfdnr</th>
+    <th>Spec Title</th>
+    <th>Spec Desc</th>
+    <th>Spec Version</th>
+    <th>Spec Release</th>
+    <th>Obj Sname</th>
+    <th>Ac Classes</th>
+    <th>Pc Classes</th>
+    <th>Cat Class</th>
+    <th>Country</th>
+    <th>Lang</th>
+    <th>Spec Content</th>
+    <th>Spec Active</th>
+  </tr>
+<% tfetch(QList<AnnexData>, annexDataList); %>
+<% for (const auto &i : annexDataList) { %>
+  <tr>
+    <td><%= i.id() %></td>
+    <td><%= i.lfdnr() %></td>
+    <td><%= i.specTitle() %></td>
+    <td><%= i.specDesc() %></td>
+    <td><%= i.specVersion() %></td>
+    <td><%= i.specRelease() %></td>
+    <td><%= i.objSname() %></td>
+    <td><%= i.acClasses() %></td>
+    <td><%= i.pcClasses() %></td>
+    <td><%= i.catClass() %></td>
+    <td><%= i.country() %></td>
+    <td><%= i.lang() %></td>
+    <td><%= i.specContent() %></td>
+    <td><%= i.specActive() %></td>
+    <td>
+      <%== linkTo("Show", urla("show", i.id())) %>
+      <%== linkTo("Edit", urla("save", i.id())) %>
+      <%== linkTo("Remove", urla("remove", i.id()), Tf::Post, "confirm('Are you sure?')") %>
+    </td>
+  </tr>
+<% } %>
+</table>
+
+</body>
+</html>

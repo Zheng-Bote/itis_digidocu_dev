@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<%#include "itisnews.h" %>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <html lang="de">
+
+  <title><%= controller()->name() + ": " + controller()->activeAction() %></title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <link rel="icon" href="/favicon.ico">
+
+  <script>
+    function doLocal()
+    {
+        console.log("this is local");
+
+        let l_footer = document.getElementById("itisFooter");
+        l_footer.message = '<a href="/stdsystem/license" title="licenses">Lizenzen</a>&nbsp;<a href="/stdsystem/imprint" title="Imprint">Impressum</a>';
+
+        let prio = getPrioColors();
+        document.getElementById("prio_legend").innerHTML = '<small>Legende:&nbsp;' + prio.low + '&nbsp;' + prio.medium + '&nbsp;' + prio.high + '&nbsp;' + prio.critical + '</small>';   
+    }
+
+	function setLanguage(lang)
+	{
+		if(lang == "0")
+		{lang = "de";}
+		else{lang = "en";}
+		document.cookie = "lang=" + lang + ";" + ";path=/";
+		location.reload();
+	}
+	
+  </script>
+
+  <script type="module" src="/js/itis_init.js" /></script>
+  <script src="/js/itisnews/itisnews.js" /></script>
+  
+  <link rel="stylesheet" href="/css/w3.css">  
+  <link rel="stylesheet" href="/css/custom.css">  
+
+</head>
+
+<body class="w3-container w3-margin" id="body">
+
+  <itis-menu id="itisMenu" message=""></itis-menu>
+
+  <div class="w3-container w3-light-blue">
+    <h2 id="portaltitle">ITIS-API::Admin-Portal</h2>
+  </div>
+
+  <itis-menusub id="itisMenuSub" message="<%= controller()->name() %>"></itis-menusub>
+
+<h3 id="pagetitle"><page-title message=""><%= controller()->name() + ": " + controller()->activeAction() %></page-title></h3>
+<div id="pagedesc"><page-desc message=""></page-desc></div>
+
+<p id="redmsg" style="color: red"><%==$ red_msg %><%=$ error %></p><p id="greenmsg" style="color: green"><%==$ green_msg %><%=$ notice %></p>
+
+<main>
+<annex-data id="annexdata"></annex-data>
+<div id="pagecontent"><page-content message=""></page-content></div>	
+
+	<div id="prio_legend"></div>
+
+	<div class="w3-panel w3-light-grey" style="border-radius: 0.5em 0.5em 0px 0px;">
+		<h4>Admin News</h4>
+			<ol id="news_adm"></ol>
+	</div>
+
+	<div class="w3-panel w3-light-grey" style="border-radius: 0px 0px 0px 0px;">
+		<h4>IT-IS Standards News</h4>
+			<ol id="news_std"></ol>
+	</div>
+
+	<div class="w3-panel w3-light-grey" style="border-radius: 0px 0px 0.5em 0.5em;">
+		<h4>IT-IS Product News</h4>
+			<ol id="news_products"></ol>
+	</div>
+	 
+</main>
+
+<itis-footer id="itisFooter" message=""></itis-footer>
+  
+</body>
+</html>

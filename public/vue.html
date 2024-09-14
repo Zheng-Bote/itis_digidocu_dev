@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+        <meta charset="utf-8">
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+        
+        <title>ReST API Methoden</title>
+        <meta name="description" content="ReST-API Dokumentation">
+        <meta name="version" content="v00.00.21">
+        <meta name="author" content="ZHENG Robert" />
+        <meta name="date" content="2019-06-28T11:49:37+02:00">
+        <meta name="language" content="DE" />
+        <meta name="lang" content="de" />
+        
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+		<link rel="alternate icon" href="/favicon.ico">
+		<link rel="mask-icon" href="/favicon.svg" color="#b2b2b2">
+  
+        <script src="/js/cookie-alert/CookieAlert.js"></script>
+        <script type="module" src="/js/itis_init.js" /></script>
+
+                
+        <link rel="stylesheet" href="/css/w3.css">
+        <link rel="stylesheet" href="/css/custom.css">
+        
+        <!-- dev -->
+        <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+        <!-- prod <script src="https://cdn.jsdelivr.net/npm/vue@2"></script> -->
+        
+
+  <script>
+    function doLocal()
+    {
+        console.log("this is local");
+
+        let l_footer = document.getElementById("itisFooter");
+        l_footer.message = '<a href="/stdsystem/license" title="license">License</a>&nbsp;<a href="/stdsystem/imprint" title="Impressum">Imprint</a>';
+
+        //let l_menu = document.getElementById("itisMenu"); 
+        //l_menu.message = "<%= controller()->name() %>";
+    }
+
+  function setLanguage(lang)
+	{
+		if(lang == "0")
+		{lang = "de";}
+		else{lang = "en";}
+		document.cookie = "lang=" + lang + ";" + ";path=/";
+		location.reload();
+	}    
+
+  </script>   
+  
+<style>
+.w3-half {
+	margin-bottom: 1rem;
+}
+</style>
+</head>
+
+<body id="body" class="w3-container w3-margin">
+
+  <itis-menu id="itisMenu" message=""></itis-menu>
+<span id="menue"></span>
+
+<div class="w3-container w3-light-blue" style="border-radius: 0px 0px 0.5em 0.5em;margin-bottom: 10px;">
+    <h2>IaaS::IT-IS ReST API</h2>
+</div>
+
+<p id="redmsg" style="color: red"></p><p id="greenmsg" style="color: green"></p>
+
+<main>
+	
+    <h3>API Methoden</h3>
+
+<div id="app">
+  {{ message }}
+     <div v-if="totalVuePackages" class="content">
+		 <section>
+		<table style="width:100%;">
+			<tbody>
+				<tr>
+					<td style="background-color:#D9D9D9;border-bottom:1.0pt solid windowtext;border-left:1.0pt solid windowtext;border-right:1.0pt solid windowtext;border-top:1.0pt solid windowtext;padding:2.85pt;vertical-align:top;width:46.55pt;" rowspan="3">
+						<p style="text-align:center;"><strong>BMW Group</strong></p>
+					</td>
+					<td style="border-bottom:1.0pt solid windowtext;border-left:1.0pt none windowtext;border-right:1.0pt solid windowtext;border-top:1.0pt solid windowtext;padding:2.85pt;vertical-align:top;" colspan="2"><strong>Unterlagenklasse:</strong> 3.2
+					</td>
+					<td style="border-bottom:1.0pt solid windowtext;border-left:1.0pt none windowtext;border-right:1.0pt solid windowtext;border-top:1.0pt solid windowtext;padding:2.85pt;vertical-align:top;" colspan="3"><strong>Nr.:</strong> 01
+					</td>
+				</tr>
+				<tr>
+					<td style="border-bottom:1.0pt solid windowtext;border-left:none;border-right:1.0pt solid windowtext;border-top:none;padding:2.85pt;vertical-align:top;" colspan="2"><strong>Gültigkeitsbereich:</strong> BMW Group
+					</td>
+					<td style="border-bottom:1.0pt solid windowtext;border-left:none;border-right:1.0pt solid windowtext;border-top:none;padding:2.85pt;vertical-align:top;" colspan="3"><strong>Version:</strong> {{ lenk_version }}</span>
+					</td>
+				</tr>
+				<tr>
+					<td style="border-bottom:1.0pt solid windowtext;border-left:none;border-right:1.0pt solid windowtext;border-top:none;height:1.0pt;padding:2.85pt;vertical-align:top;" colspan="2"><p style="margin-left:0px;">Vorgabedokument der BMW Group</p><p>für die passive IT Infrastruktur</p><p><strong>{{ obj_sname }}</strong></p><p>&nbsp;</p><p>&nbsp;</p></td><td style="border-bottom:1.0pt solid windowtext;border-left:none;border-right:1.0pt solid windowtext;border-top:none;height:1.0pt;padding:2.85pt;vertical-align:top;" colspan="3"><p><strong>Status:</strong></p><p>{{ status }}</p>
+					</td>
+				</tr>
+				<tr>
+					<td style="background-color:#D9D9D9;border-bottom:1.0pt solid windowtext;border-left:1.0pt solid windowtext;border-right:1.0pt solid windowtext;border-top:1.0pt none windowtext;height:1.0pt;padding:2.85pt;vertical-align:top;">&nbsp;
+					</td>
+					<td style="border-bottom:1.0pt solid windowtext;border-left:none;border-right:1.0pt solid windowtext;border-top:none;height:1.0pt;padding:2.85pt;vertical-align:top;" colspan="2"><p style="text-align:right;"><strong>Beteiligte Personen/Fachstellen/Gremien:&nbsp;</strong></p>
+					</td>
+					<td style="border-bottom:1.0pt solid windowtext;border-left:none;border-right:1.0pt solid windowtext;border-top:none;height:1.0pt;padding:2.85pt;vertical-align:top;" colspan="3">{{ lenk_departments }}
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<br>
+		<table style="width:100%;">
+			<thead>
+				<tr>
+					<th colspan="5" style="text-align: left;">Änderungshistorie</th>
+				</tr>
+				<tr>
+					<th style="min-width:30px;">Version</th>
+					<th>Inhalt</th>
+					<th style="min-width:100px;">Ersteller<br>Kurzzeichen<br>Datum</th>
+					<th style="min-width:100px;">Prüfer<br>Kurzzeichen<br>Datum</th>
+					<th style="min-width:100px;">Freigeber<br>Kurzzeichen<br>Datum</th>
+				</tr>
+			</thead>
+			<tr v-for="item in totalVuePackages" :key="item.obj_sname">
+				<td>{{ item.lenk_version }}</td>
+				<td>{{ item.lenk_content }}</td>
+				<td>{{ item.lenk_creator }}<br>{{ item.lenk_creator_date }}</td>
+				<td>{{ item.lenk_auditor }}<br>{{ item.lenk_auditor_date }}</td>
+				<td>{{ item.lenk_approver }}<br>{{ item.lenk_approver_date }}</td>
+			</tr>
+			<tr v-if="lenk_content" @>
+				<td>{{ lenk_version }}</td>
+				<td>{{ lenk_content }}</td>
+				<td>{{ lenk_creator }}<br>{{ lenk_creator_date }}</td>
+				<td>{{ lenk_auditor }}<br>-/-</td>
+				<td>{{ lenk_approver }}<br>-/-</td>
+			</tr>
+		</table>
+		</section>
+    </div>
+    
+    <form @submit.prevent="handleSubmit">
+		<input type="text" v-model="obj_sname" name="obj_sname"/>
+		<input type="text" v-model="status" name="lang"/>
+    </form>
+    
+    <section> 
+		<h3>Eingabe Lenkungsinformation zum aktuellen Release</h3>
+		<form action="/lenkinfo/create" method="post">
+		<div class="w3-row-padding">
+		  <div class="w3-half">
+			<label class="w3-opacity">Spec Obj<br /><input class="w3-input w3-border w3-round set-width" name="lenkinfo[specObj]" v-model="obj_sname" value="" readonly /></label>
+		  </div>
+		  <div class="w3-half">
+			<label class="w3-opacity">Spec Title<br /><input class="w3-input w3-border w3-round" name="lenkinfo[specTitle]" value="" readonly /></label>
+		  </div>
+		  <div class="w3-half">
+			<label class="w3-opacity">AC Class <small>(1-4)</small><br /><input class="w3-input w3-border w3-round" name="lenkinfo[acClass]" value="" readonly /></label>
+		  </div>
+		  <div class="w3-half">
+			<label class="w3-opacity">PC Class <small>(1-4)</small><br /><input class="w3-input w3-border w3-round" name="lenkinfo[pcClass]" value="" readonly /></label>
+		  </div>
+		  <div class="w3-half">
+			<label class="w3-opacity">Country <small>(WW | DE | EN ...)</small><br /><input class="w3-input w3-border w3-round" name="lenkinfo[country]" value="" readonly /></label>
+		  </div>
+		  <div class="w3-half">
+			<label class="w3-opacity">Lang <small>(de_DE | en_GB)</small><br /><input class="w3-input w3-border w3-round" name="lenkinfo[lang]" v-model="lang" value="" readonly /></label>
+		  </div>
+		  <div class="w3-half">
+			<label class="w3-opacity">Lenk Version <small>(00.00.00)</small><br /><input class="w3-input w3-border w3-round" name="lenkinfo[lenkVersion]" v-model="lenk_version" value="" /></label>
+		  </div>
+		  
+			<label class="w3-opacity">Lenk Status <small>(draft | pre-released | pre-released review | released | expired)</small><br />
+			<select v-model="status">
+			  <option disabled value="">Please select one</option>
+			  <option>pre-released</option>
+			  <option>pre-released (review)</option>
+			  <option disabled value="">released</option>
+			  <option disabled value="">expired</option>
+			</select>
+			<!-- <input class="w3-input w3-border w3-round" name="lenkinfo[lenkStatus]" v-model="status" value="" /> -->
+			</label>
+		  
+<div class="w3-half"><br></div>
+		  <div class="w3-half">
+			<label class="w3-opacity">Lenk Valid Startdate <small>(dd.mm.yyyy)</small><br /><input type="date" class="w3-input w3-border w3-round" name="lenkinfo[lenkValidStartdate]" value="" /></label>
+		  </div>
+		  <div class="w3-half">
+			<label class="w3-opacity">Lenk Departments <small>(FG-84*, FG-85*, FG-86*, ...)</small><br /><input class="w3-input w3-border w3-round" name="lenkinfo[lenkDepartments]" v-model="lenk_departments" value="" /></label>
+		  </div>
+		  <p>
+			<label class="w3-opacity">Lenk Content<br /><input class="w3-input w3-border w3-round" name="lenkinfo[lenkContent]" v-model="lenk_content" value="" /></label>
+		  </p>
+		  <div class="w3-half">
+			<label class="w3-opacity">Lenk Creator <small>(Name, Department)</small><br /><input class="w3-input w3-border w3-round" name="lenkinfo[lenkCreator]" v-model="lenk_creator" value="" /></label>
+		  </div>
+		  <div class="w3-half">
+			<label class="w3-opacity">Lenk Creator Date <small>(dd.mm.yyyy)</small><br /><input type="date" class="w3-input w3-border w3-round" name="lenkinfo[lenkCreatorDate]" v-model="lenk_creator_date" value="" /></label>
+		  </div>
+		  <div class="w3-half">
+			<label class="w3-opacity">Lenk Auditor <small>(Name, Department)</small><br /><input class="w3-input w3-border w3-round" name="lenkinfo[lenkAuditor]" value="" /></label>
+		  </div>
+		  <div class="w3-half">
+			<label class="w3-opacity">Lenk Auditor Date <small>(dd.mm.yyyy)</small><br /><input type="date" class="w3-input w3-border w3-round" name="lenkinfo[lenkAuditorDate]" value="" /></label>
+		  </div>
+		  <div class="w3-half">
+			<label class="w3-opacity">Lenk Approver <small>(Name, Department)</small><br /><input class="w3-input w3-border w3-round" name="lenkinfo[lenkApprover]" value="" /></label>
+		  </div>
+		  <div class="w3-half">
+			<label class="w3-opacity">Lenk Approver Date <small>(dd.mm.yyyy)</small><br /><input type="date" class="w3-input w3-border w3-round" name="lenkinfo[lenkApproverDate]" value="" /></label>
+		  </div>
+		  <p>&nbsp;</p>
+		  <p>
+			<input type="submit" value="Create &raquo;" />
+		  </p>
+		</div>
+		</form>
+
+	</section>
+</div>
+
+
+</main>
+
+<script>
+var app = new Vue({
+  el: '#app',
+  data (){
+	  return {
+    message: 'Hello Vue!',
+    totalVuePackages: null,
+    submitted: false,
+    obj_sname: 'Annex G4',
+    lang: 'de_DE',
+    lenkinfo_version: null,
+    lenk_departments: null,
+    status: 'pre-released',
+    lenk_version: null,
+    lenk_content: null,
+    lenk_creator: null,
+    lenk_creator_date: null,
+    lenk_auditor: null,
+    lenk_approver: null,
+    lenk_departments: null
+}
+  },
+  created () {
+    // fetch the data when the view is created and the data is
+    // already being observed
+    this.getData()
+  },
+
+  methods: {
+	async getData() {
+	  // GET request using fetch with async/await
+	  let pdata = new URLSearchParams([["spec_obj", "Annex D"], ["ac_class", "1"], ["pc_class", "1"], ["country", "WW"], ["lang", "de_DE"]]);
+	  const response = await fetch("/lenkinfo/getJson",
+	  {
+		body: pdata,
+		method: "post"
+	  });
+	  const data = await response.json();
+	  let dlength = data.length;
+	  this.lenk_version = data[dlength -1].lenk_version;
+	  this.lenk_departments = data[dlength -1].lenk_departments;
+	  this.totalVuePackages = data;
+	},
+	handleSubmit (e) {
+		this.submitted = true;
+		const { obj_sname, lang } = this;
+
+		// stop here if form is invalid
+		if (!(username && password)) {
+			return;
+		}
+	}
+  }
+})
+
+</script>
+
+<itis-footer id="itisFooter" message=""></itis-footer>
+</body>
+</html>

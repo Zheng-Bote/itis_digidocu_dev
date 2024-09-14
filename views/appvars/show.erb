@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<%#include "appvars.h" %>
+<% tfetch(AppVars, appVars); %>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <html lang="de">
+
+  <title><%= controller()->name() + ": " + controller()->activeAction() %></title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <link rel="icon" href="/favicon.ico">
+
+  <script>
+    function doLocal()
+    {
+        console.log("this is local");
+
+        let l_footer = document.getElementById("itisFooter");
+        l_footer.message = '<a href="/stdsystem/license" title="licenses">Lizenzen</a>&nbsp;<a href="/stdsystem/imprint" title="Imprint">Impressum</a>';
+
+        //let l_menu = document.getElementById("itisMenu"); 
+        //l_menu.message = "<%= controller()->name() %>";
+    }
+
+	function setLanguage(lang)
+	{
+		if(lang == "0")
+		{lang = "de";}
+		else{lang = "en";}
+		document.cookie = "lang=" + lang + ";" + ";path=/";
+		location.reload();
+	}
+	
+  </script>
+
+  <script type="module" src="/js/itis_init.js" /></script>
+  
+  <link rel="stylesheet" href="/css/w3.css">  
+  <link rel="stylesheet" href="/css/custom.css">  
+
+</head>
+
+<body class="w3-container w3-margin" id="body">
+
+  <itis-menu id="itisMenu" message=""></itis-menu>
+
+  <div class="w3-container w3-light-blue">
+    <h2 id="portaltitle">ITIS-API::Admin-Portal</h2>
+  </div>
+
+  <itis-menusub id="itisMenuSub" message="<%= controller()->name() %>"></itis-menusub>
+
+<h3 id="pagetitle"><page-title message=""><%= controller()->name() + ": " + controller()->activeAction() %></page-title></h3>
+<div id="pagedesc"><page-desc message=""></page-desc></div>
+
+<p id="redmsg" style="color: red"><%==$ red_msg %><%=$ error %></p><p id="greenmsg" style="color: green"><%==$ green_msg %><%=$ notice %></p>
+
+<main>
+    
+<div id="pagecontent"><page-content message=""></page-content></div>	
+
+<span class="w3-btn w3-red w3-wide" style="border-radius: 0.5em 0px 0px 0px;"><img src="/Icons/trash.svg">&nbsp;<%== linkTo("Remove", urla("remove", appVars.id()), Tf::Post, "confirm('Are you sure?')") %></span>
+&nbsp;&nbsp;&nbsp;
+<a href="/AppVars/save/<%= appVars.id() %>" class="w3-btn w3-light-grey"><img src="/Icons/pencil.svg">&nbsp;Q-Edit</a>
+<a href="/AppVars/list_all" class="w3-btn w3-light-grey"><img src="/Icons/justify.svg">&nbsp;zur&uuml;ck</a>
+<br>
+
+<div class="w3-container" style="max-width: 50%;">
+  <p>
+    <label>ID<br /><input type="text" class="w3-input" name="appVars[id]" value="<%= appVars.id() %>" readonly="readonly" /></label>
+  </p>
+  <p>
+    <label>stdType<br /><input type="text" class="w3-input" name="AppVars[objSname]" value="<%= appVars.stdType() %>" readonly /></label>
+  </p>
+  <p>
+    <label>stdAttr<br /><input type="text" class="w3-input" name="AppVars[objLnameDe]" value="<%= appVars.stdAttr() %>" readonly /></label>
+  </p>
+  <p>
+    <label>stdValDe<br /><input type="text" class="w3-input" name="AppVars[descDe]" value="<%= appVars.stdValDe() %>" readonly /></label>
+  </p>
+  <p>
+    <label>stdValEn<br /><input type="text" class="w3-input" name="AppVars[objLnameEn]" value="<%= appVars.stdValEn() %>" readonly /></label>
+  </p>
+  <p>
+    <label>Active<br /><input type="text" class="w3-input" name="AppVars[active]" value="<%= appVars.active() %>" readonly /></label>
+  </p>
+</div>
+
+<br>
+<span class="w3-btn w3-red" style="border-radius: 0px 0px 0px 0.5em"><img src="/Icons/trash.svg">&nbsp;<%== linkTo("Remove", urla("remove", appVars.id()), Tf::Post, "confirm('Are you sure?')") %></span>
+&nbsp;&nbsp;&nbsp;
+<a href="/appVars/save/<%= appVars.id() %>" class="w3-btn w3-light-grey"><img src="/Icons/pencil.svg">&nbsp;Q-Edit</a>
+<a href="/appVars/list_all" class="w3-btn w3-light-grey"><img src="/Icons/justify.svg">&nbsp;zur&uuml;ck</a>
+
+</main>
+
+<itis-footer id="itisFooter" message=""></itis-footer>
+</body>
+</html>

@@ -1,0 +1,62 @@
+CREATE TABLE public.release_mgmt
+(
+    id SERIAL,
+	obj_sname text COLLATE pg_catalog."default",
+    spec_version character varying(100) COLLATE pg_catalog."default",
+    ac_classes character varying(100) COLLATE pg_catalog."default",
+    pc_classes character varying(100) COLLATE pg_catalog."default",
+    cat_class character varying(128) COLLATE pg_catalog."default",
+    country character varying(100) COLLATE pg_catalog."default",
+    lang character varying(100) COLLATE pg_catalog."default",
+    doc_type character varying(100) COLLATE pg_catalog."default",
+	rel_requester character varying(100) COLLATE pg_catalog."default",
+    relrequest_date timestamp without time zone,
+    rel_creator character varying(100) COLLATE pg_catalog."default",
+    relcreator_decisdate timestamp without time zone,
+	rel_inspector character varying(100) COLLATE pg_catalog."default",
+    relinspect_decisdate timestamp without time zone,
+	rel_approver character varying(100) COLLATE pg_catalog."default",
+    relapprov_decisdate timestamp without time zone,
+	ci_date timestamp without time zone,
+	cd_date timestamp without time zone,
+	cdd_date timestamp without time zone,
+    CONSTRAINT release_data_pkey PRIMARY KEY (id)
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE public.release_mgmt
+    OWNER to postgres;
+
+
+######################
+
+-- FUNCTION: public.annex_data_update()
+
+-- DROP FUNCTION public.annex_data_update();
+
+CREATE FUNCTION public.annex_data_update()
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE NOT LEAKPROOF
+AS $BODY$
+BEGIN
+	INSERT INTO public.annex_data_history(changed_on, id_old, lfdnr, spec_title, spec_desc, spec_version, spec_release, obj_sname, ac_classes, pc_classes, cat_class, country, lang, spec_content, spec_active)
+	VALUES (now(), OLD.id, OLD.lfdnr, OLD.spec_title, OLD.spec_desc, OLD.spec_version, OLD.spec_release, OLD.obj_sname, OLD.ac_classes, OLD.pc_classes, OLD.cat_class, OLD.country, OLD.lang, OLD.spec_content, OLD.spec_active);
+	RETURN NEW;
+END;
+$BODY$;
+
+ALTER FUNCTION public.annex_data_update()
+    OWNER TO postgres;
+
+
+CREATE TRIGGER annex_data_update
+    BEFORE UPDATE 
+    ON public.annex_data
+    FOR EACH ROW
+    EXECUTE PROCEDURE public.annex_data_update();
+    
+    
+

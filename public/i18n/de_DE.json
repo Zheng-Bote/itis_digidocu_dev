@@ -1,0 +1,16 @@
+{
+    "values":{
+      "General": "Allgemeines",
+      "Planning": "Planung",
+      "Environment": "Umgebung",
+      "Power": "Stromversorgung",
+      "Cabling": "Verkabelung",
+      "Construction": "Konstruktion",
+      "Operations": "Betrieb",
+      "Management": "Management",
+      "Safety": "Arbeitssicherheit",
+      "Security": "Sicherheit",
+      "footer_copyright": "Alle Rechte vorbehalten. Schutzvermerk nach DIN ISO 16016 beachten.",
+      "not for production": "nicht freigegeben"
+    }
+  }  

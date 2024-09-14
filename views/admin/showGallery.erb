@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <meta charset="UTF-8">
+  <html lang="de">
+
+  <title><%= controller()->name() + ": " + controller()->activeAction() %></title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="alternate icon" href="/favicon.ico">
+  <link rel="mask-icon" href="/favicon.svg" color="#b2b2b2">
+
+  <script>
+    function doLocal()
+    {
+        console.log("this is local");
+
+        let l_footer = document.getElementById("itisFooter");
+        l_footer.message = '<a href="/stdsystem/license" title="licenses">Lizenzen</a>&nbsp;<a href="/stdsystem/imprint" title="Impressum">Imprint</a>';
+        
+        setGalleryImgs(<%==$ jsonArray %>);  
+    }
+
+	function setLanguage(lang)
+	{
+		if(lang == "0")
+		{lang = "de";}
+		else{lang = "en";}
+		document.cookie = "lang=" + lang + ";" + ";path=/";
+		location.reload();
+	}
+
+	function setGalleryImgs(Obj)
+	{
+		let imgPlace = document.getElementById('Images');
+		let ulcont = document.createElement('ul');
+		ulcont.setAttribute('class', 'card-wrapper');
+		
+		let counter = 0;
+		
+        for (i in Obj) 
+        {
+			let id = "img_" + counter;
+			let idclip = "img_" + counter + "_clip";
+			let i_li = document.createElement('li');
+			i_li.setAttribute('class', 'card');
+			i_li.innerHTML = `<img id="${id}" class="imggal" src="${Obj[i].img}" alt="URI: <mark>${Obj[i].img}</mark>" onClick="showPic(${id})" loading="lazy" decoding="async"><h3>${Obj[i].name}</h3><p><small>Bild-Grö&szlig;e: ${Obj[i].size}kB</small><br><input class="w3-input" type="text" value="${Obj[i].img}" id="${idclip}"><br><button onclick="copyUri(${idclip})">Copy URI</button></p>`;
+			ulcont.appendChild(i_li);
+			counter++;
+		}
+		imgPlace.appendChild(ulcont);		
+	}
+  </script>
+
+  <link rel="stylesheet" href="/css/w3.css">  
+  <link rel="stylesheet" href="/css/custom.css">  
+
+  <script type="module" src="/js/itis_init.js" /></script>
+
+	<style>
+   .card {
+      background-color: #fff;
+      border-radius: 0.5rem;
+      box-shadow: 0.05rem 0.1rem 0.3rem -0.03rem rgba(0, 0, 0, 0.45);
+      padding-bottom: 1rem;
+    }
+
+    .card > :last-child {
+      margin-bottom: 0;
+    }
+
+    .card h3 {
+      margin-top: 1rem;
+      font-size: 1.25rem;
+    }
+
+    img.imggal {
+      border-radius: 0.5rem 0.5rem 0 0;
+      max-width: 100%;
+      height: auto;
+      
+        display: block;
+		margin-left: auto;
+		margin-right: auto;
+		padding-top: 1rem;
+    }
+
+    img.imggal ~ * {
+      margin-left: 1rem;
+      margin-right: 1rem;
+    }
+
+    .card-wrapper {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(30ch, 1fr));
+    grid-gap: 1.5rem;
+  }
+ 
+ /* ### */
+ .modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  padding-top: 100px; /* Location of the box */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.9); /* Black w/ opacity */
+}
+
+/* Modal Content (image) */
+.modal-content {
+  margin: auto;
+  display: block;
+  
+  /* width: 80%;
+  max-width: 700px; */
+  max-width: 100%;
+}
+
+/* Caption of Modal Image */
+#caption {
+  margin: auto;
+  display: block;
+  width: 80%;
+  max-width: 700px;
+  text-align: center;
+  color: #ccc;
+  padding: 10px 0;
+  height: 150px;
+}
+
+/* Add Animation */
+.modal-content, #caption {  
+  -webkit-animation-name: zoom;
+  -webkit-animation-duration: 0.6s;
+  animation-name: zoom;
+  animation-duration: 0.6s;
+}
+
+@-webkit-keyframes zoom {
+  from {-webkit-transform:scale(0)} 
+  to {-webkit-transform:scale(1)}
+}
+
+@keyframes zoom {
+  from {transform:scale(0)} 
+  to {transform:scale(1)}
+}
+
+/* The Close Button */
+.close {
+  position: absolute;
+  top: 15px;
+  right: 35px;
+  color: #f1f1f1;
+  font-size: 40px;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+.close:hover,
+.close:focus {
+  color: #bbb;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/* 100% Image Width on Smaller Screens */
+@media only screen and (max-width: 700px){
+  .modal-content {
+    width: 100%;
+  }
+} 
+	</style> 
+</head>
+
+<body class="w3-container w3-margin" id="body">
+
+  <itis-menu id="itisMenu" message=""></itis-menu>
+
+  <div class="w3-container w3-light-blue">
+    <h2 id="portaltitle">ITIS-API::Admin-Portal</h2>
+  </div>
+
+  <itis-menusub id="itisMenuSub" message="<%= controller()->name() %>"></itis-menusub>
+
+<h3 id="pagetitle"><page-title message=""><%= controller()->name() + ": " + controller()->activeAction() %></page-title></h3>
+	<div id="pagedesc"><page-desc message=""><p>Alle Bilder und Photos der Vorgaben und Anhänge.</p><p>&rArr; Bild anklicken für Ansicht in Originalgröße,<br>&rArr; Button anklicken um die URL des Bildes in den Zwischenspeicher zu laden (um z.B. im Baustein-Editor über Bild-URL mittels STRG+V einzufügen).</p></page-desc></div>
+
+<p style="color: red"><span  id="redmsg"><%==$ red_msg %></span> <%=$ error %></p><p style="color: green"><span id="greenmsg"><%==$ green_msg %></span> <%=$ notice %></p>
+
+<main>
+	<div id="pagecontent"><page-content message=""></page-content></div>
+
+	<article>
+
+			<div id="Images"></div>
+
+	</article> 
+
+<!-- The Modal -->
+<div id="myModal" class="modal">
+  <span class="close">&times;</span>
+  <img class="modal-content" id="img01">
+  <div id="caption"></div>
+</div>
+
+<script>
+	function showPic(id)
+	{
+		var modal = document.getElementById("myModal");
+		var img = document.getElementById(id);
+		var modalImg = document.getElementById("img01");
+		var captionText = document.getElementById("caption");
+
+		modal.style.display = "block";
+		modalImg.src = id.src;
+		captionText.innerHTML = id.alt;
+
+		var span = document.getElementsByClassName("close")[0];
+		span.onclick = function() { 
+		  modal.style.display = "none";
+		}
+	}
+	
+	function copyUri(id)
+	{
+		console.log("id: " + id);
+		id.select();
+		id.setSelectionRange(0, 99999); /* For mobile devices */
+		document.execCommand("copy");
+
+		alert("das Bild kann nun per STRG+V eingefügt werden:\n " + id.value);
+	}
+</script>
+
+
+</main>
+<itis-footer id="itisFooter" message=""></itis-footer>
+  
+</body>
+</html>

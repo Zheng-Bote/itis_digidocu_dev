@@ -1,0 +1,165 @@
+
+const STYLE_CLASS = 'w3-bar w3-light-grey w3-round-large w3-border';
+
+const STYLE_RULES = `
+#itisFooter {
+	padding: 10px;
+}
+`;
+
+const STYLE_LINE = `
+border-radius: 0px 0px 0.5em 0.5em;
+`;
+
+class ItisMenuSub extends HTMLElement 
+{
+	constructor() 
+	{
+		super();
+		this._message = "T";
+	}
+	
+	connectedCallback() 
+	{
+			//this.createComponent();
+			this.getMnuSub();
+	}
+	
+	disconnectedCallback()
+	{
+		this.getElementById("itisMenu").removeEventListener("click", this.handleClick);
+	}
+
+	attributeChangedCallback(name, oldValue, newValue)
+	{
+		if(oldValue !== newValue)
+		{
+			if(name === "message")
+			{
+				this._message = newValue;
+				this.updateMessage();
+			}
+		}
+	}
+		
+	static get observedAttributes()
+	{
+		return ["message"];
+	}
+	
+	getMnuSub() 
+	{
+	  return new Promise((res, rej) => {
+		fetch('/Webmenu/getMnuSub/?mnu=' + this._message)
+		  .then(data => data.json())
+		  .then((json) => {
+			this.renderMnuSub(json);
+			res();
+		  })
+		  .catch((error) => {this.annonymous(error);});
+	  })
+	}
+
+	annonymous(error)
+	{
+		const div = document.createElement("div");
+		div.setAttribute("class", STYLE_CLASS);
+		div.setAttribute("style", STYLE_LINE);
+		div.innerHTML = '<a href="/" class="w3-bar-item w3-button" title="ReST Doku">ReST Doku</a>';
+		
+		const span = document.createElement("span");
+		div.appendChild(span);
+
+		this.appendChild(div);		
+	}
+		
+	renderMnuSub(data) 
+	{
+		
+		if(data.length >= 1)
+		{
+			const div = document.createElement("div");
+			div.setAttribute("class", STYLE_CLASS);
+			div.setAttribute("style", STYLE_LINE);
+			//div.innerHTML = '<a href="/Webmenu/" class="w3-bar-item w3-button" title="HOME">Home</a>';
+			
+			//div.innerHTML += '<input type="text" class="w3-bar-item w3-input" placeholder="Search..">';
+		
+			var i;
+			for(i in data)
+			{
+				var patt = /index$/;
+				var result = data[i].mnu_uri.match(patt);
+                
+                // stupid, but kiss
+                var wpatt = /listWaste$/;
+				var wresult = data[i].mnu_uri.match(wpatt);
+				
+                if(result == "index")
+				{
+					div.innerHTML += '<a href="' + data[i].mnu_uri + '" class="w3-bar-item w3-button" alt="' + data[i].mnu_item + '" title="' + data[i].desc_de + '"><img src="/Icons/house.svg">&nbsp;' + data[i].name_de + '</a>';
+				}
+				else if(wresult == "listWaste")
+                {
+                    div.innerHTML += '<a href="' + data[i].mnu_uri + '" class="w3-bar-item w3-button w3-right" alt="' + data[i].mnu_item + '" title="' + data[i].desc_de + '"><img src="/Icons/trash-fill.svg">&nbsp;' + data[i].name_de + '</a>';
+                }
+				else
+				{
+					div.innerHTML += '<a href="' + data[i].mnu_uri + '" class="w3-bar-item w3-button" alt="' + data[i].mnu_item + '" title="' + data[i].desc_de + '">' + data[i].name_de + '</a>';
+				}
+			}
+			
+			const span = document.createElement("span");
+			div.appendChild(span);
+			this.appendChild(div);	
+			//this.updateMessage();
+		}
+	}
+
+	get message()
+	{
+		return this._message;
+	}
+	
+	set message(value)
+	{
+		this._message = value;
+		this.setAttribute("message", value);
+		//this.updateMessage();
+	}
+	
+	updateMessage()
+	{
+		try
+		{
+			//this.querySelector("span").innerHTML = this._message;
+		}
+		catch(e){}
+	}
+	
+	createComponent() 
+	{
+		var d = new Date();
+		var yy = d.getFullYear();
+		
+		//const style = document.createElement("style");
+		//style.appendChild(document.createTextNode(STYLE_RULES));
+		//this.appendChild(style);
+		
+		const div = document.createElement("div");
+		div.setAttribute("class", STYLE_CLASS);
+		div.setAttribute("style", STYLE_LINE);
+		div.innerHTML = '<a href="/" title="Main">Main</a>';
+					
+		//const span = document.createElement("span");
+		//div.appendChild(span);
+
+		this.appendChild(div);		
+				
+		//this._message = 'Hello World!';
+		//this.updateMessage();
+	}
+}
+customElements.define("itis-menusub", ItisMenuSub);
+ 
+ 
