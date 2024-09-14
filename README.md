@@ -1,5 +1,12 @@
 # itis_digidocu_dev
+
+## Brief
+
 A RWA for documenting standards of (passive) IT-Infrastructure and Products. Based on digidocu.dev
+
+
+> \[!CAUTION]
+> itis.digidocu.dev is outdated and deprecated. Please see here: [https://www.digidocu.dev](https://www.digidocu.dev/architecture_v3.html)
 
 
 # License
